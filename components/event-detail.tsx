@@ -188,8 +188,6 @@ export function EventDetail({ event }: EventDetailProps) {
                 {event.geoSnapshotEmbed ? (
                     <div className="bg-white rounded-lg shadow-sm relative">
                         <RichTextPreview content={event.geoSnapshotEmbed} />
-                        <div className="absolute top-1 left-8 bg-white z-10 w-40 h-10 flex items-center justify-center">
-                        </div>
                     </div>
                 ) : (
                     <div className="flex-1 flex items-center justify-center pt-12">
