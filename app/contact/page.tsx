@@ -5,7 +5,7 @@ export default function ContactPage() {
   return (
     <StaticPageLayout>
       <div className="min-h-screen text-mainNavyText">
-        <div className="max-w-8xl mx-auto py-20 px-16">
+        <div className="max-w-7xl mx-auto py-20 px-16">
           <div className="mb-4">
             <h1 className="text-2xl font-bold mb-6">Contact</h1>
             <h2 className="text-xl font-bold uppercase mb-6">HOW TO CONTACT US</h2>

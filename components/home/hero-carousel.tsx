@@ -299,7 +299,7 @@ export function HeroCarousel() {
           </AnimatePresence>
         </motion.div>
 
-        <div className="relative z-20 max-w-8xl mx-auto px-8 h-full flex flex-col justify-center items-start">
+        <div className="relative z-20 max-w-7xl mx-auto px-8 h-full flex flex-col justify-center items-start">
           <motion.div className="mt-20" style={{ y: titleY }}>
             <motion.h1
               className="text-mainBackgroundV1 text-6xl font-[900] mb-8 leading-tight tracking-tight"

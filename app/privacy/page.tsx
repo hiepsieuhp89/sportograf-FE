@@ -3,7 +3,7 @@ import { StaticPageLayout } from "@/components/static-page-layout"
 export default function PrivacyPage() {
   return (
     <StaticPageLayout>
-      <div className="max-w-8xl mx-auto px-4 py-12">
+      <div className="max-w-7xl mx-auto px-4 py-12">
         <h1 className="text-2xl font-bold mb-6">Privacy Policy for Sportograf.com</h1>
 
         <div className="prose max-w-none">
