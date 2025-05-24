@@ -99,27 +99,26 @@ const CenterImage = ({ imageUrl }: { imageUrl: string }) => {
 
 const getClassNameByOrder = (order: number) => {
   const classPatterns = [
-    "w-1/3",                // First pattern
-    "mx-auto w-2/3",       // Second pattern
-    "ml-auto w-1/3",       // Third pattern
-    "ml-24 w-5/12",        // Fourth pattern
+    "w-full sm:w-2/3 md:w-1/3",                // First pattern
+    "mx-auto w-full sm:w-2/3",                 // Second pattern
+    "ml-auto w-full sm:w-2/3 md:w-1/3",       // Third pattern
+    "ml-0 md:ml-24 w-full sm:w-7/12 md:w-5/12", // Fourth pattern
   ]
 
-  // Use modulo to cycle through patterns if we have more than 4 images
   const patternIndex = (order - 1) % classPatterns.length
   return classPatterns[patternIndex]
 }
 
 const ParallaxImages = ({ banners }: { banners: BannerImage[] }) => {
   return (
-    <div className="mx-auto max-w-5xl px-4 pt-[200px]">
+    <div className="mx-auto max-w-5xl px-4 md:px-8 pt-[100px] sm:pt-[150px] md:pt-[200px]">
       {banners.map((banner) => (
         <ParallaxImg
           key={banner.id}
           src={banner.imageUrl}
           alt={banner.title}
-          start={banner.startScroll || -200}
-          end={banner.endScroll || 200}
+          start={banner.startScroll || -100}
+          end={banner.endScroll || 100}
           className={getClassNameByOrder(banner.order)}
         />
       ))}

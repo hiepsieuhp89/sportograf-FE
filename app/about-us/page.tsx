@@ -108,14 +108,14 @@ export default function AboutUsPage() {
             style={{ transformStyle: "preserve-3d" }}
           >
             <motion.h1 
-              className="text-4xl md:text-6xl font-bold text-mainBackgroundV1 mb-8 leading-tight"
+              className="text-3xl md:text-4xl lg:text-6xl font-bold text-mainBackgroundV1 mb-6 lg:mb-8 leading-tight"
               whileHover={{ scale: 1.05, rotateY: 5 }}
               transition={{ type: "spring", stiffness: 300 }}
             >
               About Sportograf
             </motion.h1>
             <motion.p 
-              className="text-xl md:text-2xl text-mainBackgroundV1/90 max-w-3xl mx-auto leading-relaxed"
+              className="text-lg md:text-xl lg:text-2xl text-mainBackgroundV1/90 max-w-3xl mx-auto leading-relaxed"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3, duration: 0.8 }}
@@ -157,7 +157,7 @@ export default function AboutUsPage() {
           style={{ y: historyY }}
         >
           <div className="max-w-7xl mx-auto">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-7xl mx-auto px-16 items-center">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 max-w-7xl mx-auto px-4 md:px-8 lg:px-16 items-center">
               <motion.div
                 initial={{ opacity: 0, x: -100, rotateY: -15 }}
                 whileInView={{ opacity: 1, x: 0, rotateY: 0 }}
@@ -223,7 +223,7 @@ export default function AboutUsPage() {
           <div className="relative z-10 max-w-7xl mx-auto px-6">
             {/* Stats Grid */}
             <motion.div 
-              className="grid grid-cols-2 lg:grid-cols-4 gap-8 mb-16"
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8 mb-12 lg:mb-16"
               initial={{ opacity: 0, y: 50 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
@@ -279,7 +279,7 @@ export default function AboutUsPage() {
 
             {/* Image Grid */}
             <motion.div 
-              className="grid grid-cols-2 md:grid-cols-4 gap-4"
+              className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4"
               initial={{ opacity: 0, scale: 0.8 }}
               whileInView={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.8, delay: 0.6 }}
@@ -362,7 +362,7 @@ export default function AboutUsPage() {
               What Makes Us Different
             </motion.h2>
             
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
               {[
                 {
                   title: "Professional Quality",

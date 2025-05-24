@@ -1,17 +1,20 @@
 "use client"
 
-import { useState } from "react"
-import { Textarea } from "@/components/ui/textarea"
-import { Button } from "@/components/ui/button"
-import { 
-  Bold, 
-  Italic, 
-  Underline, 
-  List, 
-  ListOrdered, 
-  Link,
-  Type
-} from "lucide-react"
+import { useEditor, EditorContent } from '@tiptap/react'
+import StarterKit from '@tiptap/starter-kit'
+import Link from '@tiptap/extension-link'
+import Underline from '@tiptap/extension-underline'
+import { Toggle } from './toggle'
+import { cn } from '@/lib/utils'
+import {
+  Bold,
+  Italic,
+  Underline as UnderlineIcon,
+  Link as LinkIcon,
+  List,
+  ListOrdered,
+  Heading2,
+} from 'lucide-react'
 
 interface RichTextEditorProps {
   value: string
@@ -20,127 +23,110 @@ interface RichTextEditorProps {
   className?: string
 }
 
-export function RichTextEditor({ value, onChange, placeholder, className }: RichTextEditorProps) {
-  const [isPreview, setIsPreview] = useState(false)
+export function RichTextEditor({
+  value,
+  onChange,
+  placeholder,
+  className,
+}: RichTextEditorProps) {
+  const editor = useEditor({
+    extensions: [
+      StarterKit.configure({
+        heading: {
+          levels: [2],
+        },
+      }),
+      Link.configure({
+        openOnClick: false,
+        HTMLAttributes: {
+          class: 'text-primary underline',
+        },
+      }),
+      Underline,
+    ],
+    content: value,
+    editorProps: {
+      attributes: {
+        class: cn(
+          'prose prose-sm max-w-none focus:outline-none min-h-[150px]',
+          'prose-headings:my-3 prose-p:my-2 prose-ul:my-2 prose-ol:my-2',
+          'prose-li:my-0 prose-a:text-primary'
+        ),
+      },
+    },
+    onUpdate: ({ editor }) => {
+      onChange(editor.getHTML())
+    },
+  })
 
-  const insertText = (before: string, after: string = "") => {
-    const textarea = document.querySelector('textarea') as HTMLTextAreaElement
-    if (!textarea) return
-
-    const start = textarea.selectionStart
-    const end = textarea.selectionEnd
-    const selectedText = value.substring(start, end)
-    
-    const newText = value.substring(0, start) + before + selectedText + after + value.substring(end)
-    onChange(newText)
-
-    // Restore cursor position
-    setTimeout(() => {
-      textarea.focus()
-      textarea.setSelectionRange(start + before.length, end + before.length)
-    }, 0)
+  if (!editor) {
+    return null
   }
 
-  const formatButtons = [
-    {
-      icon: Bold,
-      label: "Bold",
-      action: () => insertText("**", "**"),
-    },
-    {
-      icon: Italic,
-      label: "Italic", 
-      action: () => insertText("*", "*"),
-    },
-    {
-      icon: Underline,
-      label: "Underline",
-      action: () => insertText("<u>", "</u>"),
-    },
-    {
-      icon: Type,
-      label: "Heading",
-      action: () => insertText("## "),
-    },
-    {
-      icon: List,
-      label: "Bullet List",
-      action: () => insertText("- "),
-    },
-    {
-      icon: ListOrdered,
-      label: "Numbered List", 
-      action: () => insertText("1. "),
-    },
-    {
-      icon: Link,
-      label: "Link",
-      action: () => insertText("[", "](url)"),
-    },
-  ]
-
-  const convertToHtml = (text: string) => {
-    return text
-      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-      .replace(/\*(.*?)\*/g, '<em>$1</em>')
-      .replace(/^## (.*$)/gm, '<h2>$1</h2>')
-      .replace(/^### (.*$)/gm, '<h3>$1</h3>')
-      .replace(/^- (.*$)/gm, '<li>$1</li>')
-      .replace(/^1\. (.*$)/gm, '<li>$1</li>')
-      .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>')
-      .replace(/\n/g, '<br>')
+  const addLink = () => {
+    const url = window.prompt('URL')
+    if (url) {
+      editor.chain().focus().setLink({ href: url }).run()
+    }
   }
 
   return (
-    <div className={`border border-gray-300 rounded-md ${className}`}>
-      {/* Toolbar */}
-      <div className="flex items-center gap-1 p-2 border-b border-gray-200 bg-gray-50">
-        {formatButtons.map((button) => (
-          <Button
-            key={button.label}
-            type="button"
-            variant="ghost"
-            size="sm"
-            onClick={button.action}
-            className="h-8 w-8 p-0"
-            title={button.label}
-          >
-            <button.icon className="h-4 w-4" />
-          </Button>
-        ))}
-        <div className="ml-auto">
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            onClick={() => setIsPreview(!isPreview)}
-            className="text-xs"
-          >
-            {isPreview ? "Edit" : "Preview"}
-          </Button>
-        </div>
+    <div className={cn('rounded-md border', className)}>
+      <div className="flex flex-wrap gap-1 border-b p-1">
+        <Toggle
+          size="sm"
+          pressed={editor.isActive('heading', { level: 2 })}
+          onPressedChange={() =>
+            editor.chain().focus().toggleHeading({ level: 2 }).run()
+          }
+        >
+          <Heading2 className="h-4 w-4" />
+        </Toggle>
+        <Toggle
+          size="sm"
+          pressed={editor.isActive('bold')}
+          onPressedChange={() => editor.chain().focus().toggleBold().run()}
+        >
+          <Bold className="h-4 w-4" />
+        </Toggle>
+        <Toggle
+          size="sm"
+          pressed={editor.isActive('italic')}
+          onPressedChange={() => editor.chain().focus().toggleItalic().run()}
+        >
+          <Italic className="h-4 w-4" />
+        </Toggle>
+        <Toggle
+          size="sm"
+          pressed={editor.isActive('underline')}
+          onPressedChange={() => editor.chain().focus().toggleUnderline().run()}
+        >
+          <UnderlineIcon className="h-4 w-4" />
+        </Toggle>
+        <Toggle
+          size="sm"
+          pressed={editor.isActive('link')}
+          onPressedChange={addLink}
+        >
+          <LinkIcon className="h-4 w-4" />
+        </Toggle>
+        <Toggle
+          size="sm"
+          pressed={editor.isActive('bulletList')}
+          onPressedChange={() => editor.chain().focus().toggleBulletList().run()}
+        >
+          <List className="h-4 w-4" />
+        </Toggle>
+        <Toggle
+          size="sm"
+          pressed={editor.isActive('orderedList')}
+          onPressedChange={() => editor.chain().focus().toggleOrderedList().run()}
+        >
+          <ListOrdered className="h-4 w-4" />
+        </Toggle>
       </div>
-
-      {/* Editor/Preview */}
-      <div className="min-h-[200px]">
-        {isPreview ? (
-          <div 
-            className="p-4 prose max-w-none"
-            dangerouslySetInnerHTML={{ __html: convertToHtml(value) }}
-          />
-        ) : (
-          <Textarea
-            value={value}
-            onChange={(e) => onChange(e.target.value)}
-            placeholder={placeholder || "Start typing..."}
-            className="min-h-[200px] border-0 resize-none focus:ring-0 rounded-none"
-          />
-        )}
-      </div>
-
-      {/* Help Text */}
-      <div className="p-2 text-xs text-gray-500 border-t border-gray-200 bg-gray-50">
-        Use **bold**, *italic*, ## heading, - list, [link](url) for formatting
+      <div className="p-3">
+        <EditorContent editor={editor} />
       </div>
     </div>
   )

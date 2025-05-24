@@ -21,7 +21,7 @@ export function HeroCarousel() {
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0)
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
   const [showLens, setShowLens] = useState(false)
-  const [lensSize, setLensSize] = useState(150)
+  const [lensSize, setLensSize] = useState(window.innerWidth < 768 ? 100 : 150)
   const [hoverTimeout, setHoverTimeout] = useState<NodeJS.Timeout | null>(null)
   const { ref: inViewRef, inView } = useInView({
     threshold: 0.1,
@@ -299,10 +299,10 @@ export function HeroCarousel() {
           </AnimatePresence>
         </motion.div>
 
-        <div className="relative z-20 max-w-7xl mx-auto px-8 h-full flex flex-col justify-center items-start">
+        <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex flex-col justify-center items-start">
           <motion.div className="mt-20" style={{ y: titleY }}>
             <motion.h1
-              className="text-mainBackgroundV1 text-6xl font-[900] mb-8 leading-tight tracking-tight"
+              className="text-mainBackgroundV1 text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-[900] mb-4 sm:mb-8 leading-tight tracking-tight"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2, duration: 0.8 }}
@@ -317,9 +317,9 @@ export function HeroCarousel() {
                 transformOrigin: "left center"
               }}
             >
-              <span className="text-8xl">PHOTOGRAPHY</span>
+              <span className="text-4xl sm:text-5xl md:text-6xl lg:text-8xl">PHOTOGRAPHY</span>
               <br />
-            <span className="text-mainActiveV1">FOR THE LOVE OF SPORT</span>
+              <span className="text-mainActiveV1">FOR THE LOVE OF SPORT</span>
             </motion.h1>
             <motion.div
               className="w-full max-w-md"
@@ -336,11 +336,11 @@ export function HeroCarousel() {
                 transformOrigin: "left center"
               }}
             >
-              <form className="relative w-full">
+              <form className="relative w-full px-4 sm:px-0">
                 <input
                   type="text"
                   placeholder="Search for event"
-                  className="w-full py-3 px-4 rounded-none border-0 focus:outline-none focus:ring-2 focus:ring-mainBackgroundV1 text-gray-700 placeholder-gray-500"
+                  className="w-full py-2 sm:py-3 px-3 sm:px-4 rounded-none border-0 focus:outline-none focus:ring-2 focus:ring-mainBackgroundV1 text-gray-700 placeholder-gray-500"
                 />
               </form>
             </motion.div>
