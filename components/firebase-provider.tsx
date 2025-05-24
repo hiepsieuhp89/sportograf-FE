@@ -1,10 +1,10 @@
 "use client"
 
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react"
-import { initializeApp, getApps, type FirebaseApp } from "firebase/app"
-import { type Auth, getAuth } from "firebase/auth"
-import { type Firestore, getFirestore } from "firebase/firestore"
+import { getApps, initializeApp, type FirebaseApp } from "firebase/app"
+import { browserLocalPersistence, getAuth, setPersistence, type Auth } from "firebase/auth"
+import { getFirestore, type Firestore } from "firebase/firestore"
 import { getStorage } from "firebase/storage"
+import { createContext, useContext, useEffect, useState, type ReactNode } from "react"
 
 interface FirebaseContextType {
   app: FirebaseApp | null
@@ -52,30 +52,38 @@ export function FirebaseProvider({ children }: FirebaseProviderProps) {
       measurementId: "G-YL95JKXST4",
     }
 
-    try {
-      // Initialize Firebase
-      let app
-      if (!getApps().length) {
-        app = initializeApp(firebaseConfig)
-      } else {
-        app = getApps()[0]
+    const initializeFirebase = async () => {
+      try {
+        // Initialize Firebase
+        let app
+        if (!getApps().length) {
+          app = initializeApp(firebaseConfig)
+        } else {
+          app = getApps()[0]
+        }
+
+        // Initialize services
+        const auth = getAuth(app)
+        
+        // Set persistence to LOCAL
+        await setPersistence(auth, browserLocalPersistence)
+        
+        const db = getFirestore(app)
+        const storage = getStorage(app)
+
+        setFirebaseState({
+          app,
+          auth,
+          db,
+          storage,
+          isInitialized: true,
+        })
+      } catch (error) {
+        console.error("Firebase initialization error:", error)
       }
-
-      // Initialize services
-      const auth = getAuth(app)
-      const db = getFirestore(app)
-      const storage = getStorage(app)
-
-      setFirebaseState({
-        app,
-        auth,
-        db,
-        storage,
-        isInitialized: true,
-      })
-    } catch (error) {
-      console.error("Firebase initialization error:", error)
     }
+
+    initializeFirebase()
   }, [])
 
   return <FirebaseContext.Provider value={firebaseState}>{children}</FirebaseContext.Provider>

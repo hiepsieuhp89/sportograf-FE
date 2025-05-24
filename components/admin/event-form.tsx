@@ -2,23 +2,23 @@
 
 import type React from "react"
 
-import { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
+import { db } from "@/lib/firebase"
+import type { Event, Photographer } from "@/lib/types"
+import { uploadFile } from "@/lib/upload-utils"
 import {
+  addDoc,
   collection,
   doc,
   getDoc,
   getDocs,
-  addDoc,
-  updateDoc,
-  serverTimestamp,
-  query,
   orderBy,
+  query,
+  serverTimestamp,
+  updateDoc,
 } from "firebase/firestore"
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage"
-import { db, storage } from "@/lib/firebase"
-import type { Event, Photographer } from "@/lib/types"
-import { Calendar, MapPin, FileImage, Clock, Users, Info } from "lucide-react"
+import { Calendar, Clock, FileImage, Info, MapPin, Users } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { useEffect, useState } from "react"
 
 interface EventFormProps {
   eventId?: string
@@ -139,9 +139,7 @@ export function EventForm({ eventId }: EventFormProps) {
   }
 
   const uploadImage = async (file: File, path: string): Promise<string> => {
-    const storageRef = ref(storage, path)
-    await uploadBytes(storageRef, file)
-    return getDownloadURL(storageRef)
+    return uploadFile(file, `events/${path}`)
   }
 
   const handleSubmit = async (e: React.FormEvent) => {

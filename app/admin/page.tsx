@@ -1,37 +1,77 @@
 "use client"
 
 import { AdminDashboard } from "@/components/admin/dashboard"
-import { useState, useEffect } from "react"
-import { collection, getDocs, query, where, orderBy, limit } from "firebase/firestore"
-import { db, auth } from "@/lib/firebase"
+import { useFirebase } from "@/components/firebase-provider"
 import type { Event, Photographer } from "@/lib/types"
+import { collection, getDocs, limit, orderBy, query, where } from "firebase/firestore"
+import { ArrowRight, Calendar, Camera } from "lucide-react"
 import Link from "next/link"
-import { Calendar, Camera, ArrowRight } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { useEffect, useState } from "react"
+import { useAuthStore } from "@/lib/store/auth-store"
 
 export default function AdminPage() {
   const [recentEvents, setRecentEvents] = useState<Event[]>([])
   const [photographers, setPhotographers] = useState<Photographer[]>([])
   const [loading, setLoading] = useState(true)
-  const [isAdmin, setIsAdmin] = useState(false)
+  const { auth, db, isInitialized } = useFirebase()
+  const router = useRouter()
+  const { user, isAdmin, setUser, setIsAdmin } = useAuthStore()
 
   useEffect(() => {
     const checkAdminStatus = async () => {
-      const currentUser = auth.currentUser
-      if (currentUser) {
-        const usersQuery = query(collection(db, "users"), where("uid", "==", currentUser.uid))
+      try {
+        // Wait for Firebase to initialize
+        if (!isInitialized) {
+          return
+        }
+
+        // Check if auth is available
+        if (!auth) {
+          console.error("Auth not initialized")
+          router.push("/admin/login")
+          return
+        }
+
+        // Check stored auth state
+        if (!user) {
+          router.push("/admin/login")
+          return
+        }
+
+        if (!db) {
+          console.error("Firestore not initialized")
+          return
+        }
+
+        // Verify admin status in Firestore
+        const usersQuery = query(collection(db, "users"), where("uid", "==", user.uid))
         const snapshot = await getDocs(usersQuery)
         if (!snapshot.empty) {
           const userData = snapshot.docs[0].data()
           setIsAdmin(userData.role === "admin")
+        } else {
+          setUser(null)
+          setIsAdmin(false)
+          router.push("/admin/login")
         }
+      } catch (error) {
+        console.error("Error in auth check:", error)
+        setUser(null)
+        setIsAdmin(false)
+        router.push("/admin/login")
+      } finally {
+        setLoading(false)
       }
     }
 
     checkAdminStatus()
-  }, [])
+  }, [auth, db, router, isInitialized, user, setUser, setIsAdmin])
 
   useEffect(() => {
     const fetchDashboardData = async () => {
+      if (!isAdmin || !db) return
+      
       try {
         // Fetch recent events
         const eventsQuery = query(collection(db, "events"), orderBy("date", "desc"), limit(5))
@@ -42,16 +82,14 @@ export default function AdminPage() {
         })) as Event[]
         setRecentEvents(eventsList)
 
-        // Fetch photographers if admin
-        if (isAdmin) {
-          const photographersQuery = query(collection(db, "photographers"), orderBy("name"), limit(5))
-          const photographersSnapshot = await getDocs(photographersQuery)
-          const photographersList = photographersSnapshot.docs.map((doc) => ({
-            id: doc.id,
-            ...doc.data(),
-          })) as Photographer[]
-          setPhotographers(photographersList)
-        }
+        // Fetch photographers
+        const photographersQuery = query(collection(db, "photographers"), orderBy("name"), limit(5))
+        const photographersSnapshot = await getDocs(photographersQuery)
+        const photographersList = photographersSnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        })) as Photographer[]
+        setPhotographers(photographersList)
       } catch (error) {
         console.error("Error fetching dashboard data:", error)
       } finally {
@@ -60,7 +98,7 @@ export default function AdminPage() {
     }
 
     fetchDashboardData()
-  }, [isAdmin])
+  }, [db, isAdmin])
 
   return (
     <AdminDashboard>

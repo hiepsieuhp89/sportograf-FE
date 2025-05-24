@@ -157,7 +157,7 @@ export default function AboutUsPage() {
           style={{ y: historyY }}
         >
           <div className="max-w-7xl mx-auto">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-8xl mx-auto px-16 items-center">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-7xl mx-auto px-16 items-center">
               <motion.div
                 initial={{ opacity: 0, x: -100, rotateY: -15 }}
                 whileInView={{ opacity: 1, x: 0, rotateY: 0 }}

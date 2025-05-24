@@ -11,6 +11,7 @@ import { db, storage, auth } from "@/lib/firebase"
 import type { Photographer } from "@/lib/types"
 import { User, Mail, FileImage, Info } from "lucide-react"
 import Image from "next/image"
+import { uploadFile } from "@/lib/upload-utils"
 
 interface PhotographerFormProps {
   photographerId?: string
@@ -79,9 +80,7 @@ export function PhotographerForm({ photographerId }: PhotographerFormProps) {
   }
 
   const uploadImage = async (file: File, path: string): Promise<string> => {
-    const storageRef = ref(storage, path)
-    await uploadBytes(storageRef, file)
-    return getDownloadURL(storageRef)
+    return uploadFile(file, `photographers/${path}`)
   }
 
   const handleSubmit = async (e: React.FormEvent) => {

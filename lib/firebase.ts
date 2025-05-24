@@ -3,10 +3,10 @@
 
 "use client"
 
-import { initializeApp, getApps } from "firebase/app"
-import { getAuth } from "firebase/auth"
-import { getFirestore, doc, getDoc, Firestore } from "firebase/firestore"
-import { getStorage } from "firebase/storage"
+import { initializeApp, getApps, FirebaseApp } from "firebase/app"
+import { getAuth, Auth } from "firebase/auth"
+import { getFirestore, doc, getDoc, setDoc, collection, getDocs, Firestore } from "firebase/firestore"
+import { getStorage, FirebaseStorage } from "firebase/storage"
 
 const firebaseConfig = {
   apiKey: "AIzaSyBwNujju8j0ReZiZyEmXZNzDgjjvVvVJfc",
@@ -18,22 +18,14 @@ const firebaseConfig = {
   measurementId: "G-YL95JKXST4",
 }
 
-// Initialize Firebase only on the client side and only if it hasn't been initialized
-let app
-let auth
+// Initialize Firebase
+let app: FirebaseApp
+let auth: Auth
 let db: Firestore
-let storage
+let storage: FirebaseStorage
 
-// Check if we're in the browser environment
 if (typeof window !== "undefined") {
-  // Check if Firebase has already been initialized
-  if (!getApps().length) {
-    app = initializeApp(firebaseConfig)
-  } else {
-    app = getApps()[0] // Use the existing app if it's already initialized
-  }
-
-  // Initialize Firebase services
+  app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig)
   auth = getAuth(app)
   db = getFirestore(app)
   storage = getStorage(app)
@@ -48,6 +40,34 @@ interface UserData {
   name?: string;
 }
 
+// Helper function to check if there are any users in the system
+export const isFirstUser = async (): Promise<boolean> => {
+  try {
+    const usersCollection = collection(db, 'users');
+    const snapshot = await getDocs(usersCollection);
+    return snapshot.empty;
+  } catch (error) {
+    console.error('Error checking first user:', error);
+    return false;
+  }
+}
+
+// Helper function to create a new user in Firestore
+export const createUserInFirestore = async (uid: string, email: string, role: UserRole = 'user'): Promise<void> => {
+  try {
+    const userRef = doc(db, 'users', uid);
+    await setDoc(userRef, {
+      uid,
+      email,
+      role,
+      createdAt: new Date().toISOString(),
+    });
+  } catch (error) {
+    console.error('Error creating user in Firestore:', error);
+    throw error;
+  }
+}
+
 // Helper functions for authentication
 export const isAdmin = async (uid: string): Promise<boolean> => {
   try {
@@ -56,7 +76,16 @@ export const isAdmin = async (uid: string): Promise<boolean> => {
     const userRef = doc(db, 'users', uid);
     const userSnap = await getDoc(userRef);
     
-    if (!userSnap.exists()) return false;
+    if (!userSnap.exists()) {
+      // Check if this is the first user
+      const firstUser = await isFirstUser();
+      if (firstUser) {
+        // Create the first user as admin
+        await createUserInFirestore(uid, auth.currentUser?.email || '', 'admin');
+        return true;
+      }
+      return false;
+    }
     
     const userData = userSnap.data() as UserData;
     return userData.role === 'admin';

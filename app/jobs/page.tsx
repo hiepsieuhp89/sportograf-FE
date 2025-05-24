@@ -5,7 +5,7 @@ import { jobs } from "@/lib/jobs"
 export default function JobsPage() {
   return (
     <StaticPageLayout>
-      <div className="max-w-8xl mx-auto px-16">
+      <div className="max-w-7xl mx-auto px-16">
         <div className="py-20">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {jobs.map((job) => (
