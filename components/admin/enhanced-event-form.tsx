@@ -42,6 +42,14 @@ import { Calendar, FileImage, Info, MapPin, MessageSquare, Tag, Users } from "lu
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+} from "@/components/ui/command"
+import { Check, ChevronsUpDown } from "lucide-react"
 
 interface EnhancedEventFormProps {
   eventId?: string
@@ -537,21 +545,45 @@ export function EnhancedEventForm({ eventId }: EnhancedEventFormProps) {
                     <Label htmlFor="country">
                       Country <span className="text-red-500">*</span>
                     </Label>
-                    <Select
-                      value={formData.country}
-                      onValueChange={(value) => handleSelectChange("country", value)}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select country" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {countries.map((country) => (
-                          <SelectItem key={country.code} value={country.code}>
-                            {country.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          role="combobox"
+                          className="w-full justify-between"
+                        >
+                          {formData.country
+                            ? countries.find((country) => country.code === formData.country)?.name
+                            : "Select country..."}
+                          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-full p-0">
+                        <Command>
+                          <CommandInput placeholder="Search country..." />
+                          <CommandEmpty>No country found.</CommandEmpty>
+                          <CommandGroup className="max-h-[300px] overflow-y-auto">
+                            {countries.map((country) => (
+                              <CommandItem
+                                key={country.code}
+                                value={country.name}
+                                onSelect={() => {
+                                  handleSelectChange("country", country.code)
+                                }}
+                              >
+                                <Check
+                                  className={cn(
+                                    "mr-2 h-4 w-4",
+                                    formData.country === country.code ? "opacity-100" : "opacity-0"
+                                  )}
+                                />
+                                {country.name}
+                              </CommandItem>
+                            ))}
+                          </CommandGroup>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
                   </div>
                 </div>
               </div>
