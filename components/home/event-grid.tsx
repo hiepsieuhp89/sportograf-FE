@@ -4,10 +4,10 @@ import { useState, useEffect } from "react"
 import { collection, getDocs, query, orderBy, limit } from "firebase/firestore"
 import { db } from "@/lib/firebase"
 import type { Event } from "@/lib/types"
-import { EventCard } from "./event-card"
 import { useTranslations } from "@/hooks/use-translations"
 // Add this import at the top
 import { Skeleton } from "@/components/ui/skeleton"
+import { EventCard } from "./event-card"
 
 export function EventGrid() {
   const [events, setEvents] = useState<Event[]>([])

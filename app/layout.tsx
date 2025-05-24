@@ -5,6 +5,7 @@ import "./globals.css"
 import { LanguageProvider } from "@/components/language-provider"
 import { ThemeProvider } from "@/components/theme-provider"
 import { FirebaseProvider } from "@/components/firebase-provider"
+import { ClientOnly } from "@/components/client-only"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -23,13 +24,15 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${montserrat.variable}`}>
-      <body className={inter.className}>
-        <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
-          <FirebaseProvider>
-            <LanguageProvider>{children}</LanguageProvider>
-          </FirebaseProvider>
-        </ThemeProvider>
+    <html lang="en" className={`${montserrat.variable}`} suppressHydrationWarning>
+      <body className={inter.className} suppressHydrationWarning>
+        <ClientOnly>
+          <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
+            <FirebaseProvider>
+              <LanguageProvider>{children}</LanguageProvider>
+            </FirebaseProvider>
+          </ThemeProvider>
+        </ClientOnly>
       </body>
     </html>
   )

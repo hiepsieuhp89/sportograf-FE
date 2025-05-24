@@ -89,11 +89,15 @@ export default function AboutUsPage() {
   return (
     <StaticPageLayout>
       <div className="min-h-screen bg-gradient-to-b from-mainBackgroundV1 to-white">
-        
-        {/* Hero Section */}
         <motion.section 
-          className="relative min-h-[370px] flex items-center justify-center bg-gradient-to-r from-mainDarkBackgroundV1 via-gray-900 to-mainDarkBackgroundV1 overflow-hidden"
-          style={{ y: heroY }}
+          className="relative min-h-screen flex items-center justify-center bg-gradient-to-r from-mainDarkBackgroundV1 via-gray-900 to-mainDarkBackgroundV1 overflow-hidden"
+          style={{ 
+            y: heroY, 
+            backgroundImage: "url('https://www.sportograf.com/c5288368a5230954e964c4c9450e2ca1.jpg')",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat"
+          }}
         >
           <div className="absolute inset-0 bg-black/40" />
           <motion.div
@@ -149,7 +153,7 @@ export default function AboutUsPage() {
 
         {/* History Section */}
         <motion.section 
-          className="min-h-[370px] py-20 px-6"
+          className="min-h-[370px] py-20 px-6 pt-0"
           style={{ y: historyY }}
         >
           <div className="max-w-7xl mx-auto">
@@ -173,7 +177,7 @@ export default function AboutUsPage() {
                   style={{ transformStyle: "preserve-3d" }}
                 >
                   <ImageWithSkeleton
-                    src="/63b7c7e52781f2baed03aafcbd613353.jpg"
+                    src="https://www.sportograf.com/63b7c7e52781f2baed03aafcbd613353.jpg"
                     alt="Sportograf founders"
                     className="rounded-2xl shadow-2xl w-full h-[400px] object-cover"
                     width={600}
@@ -197,7 +201,7 @@ export default function AboutUsPage() {
                   }}
                   transition={{ type: "spring", stiffness: 300 }}
                   style={{ transformStyle: "preserve-3d" }}
-                  className="bg-white p-8 rounded-2xl shadow-xl border border-mainBackgroundV1/20"
+                  className="border-mainBackgroundV1/20"
                 >
                   <h2 className="text-3xl font-bold text-mainDarkBackgroundV1 mb-6">Our Story</h2>
                   <p className="text-lg text-gray-700 leading-relaxed">
@@ -233,7 +237,7 @@ export default function AboutUsPage() {
               ].map((stat, index) => (
                 <motion.div
                   key={index}
-                  className="text-center"
+                  className="text-center h-32 relative"
                   initial={{ opacity: 0, y: 30, rotateX: -15 }}
                   whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
                   transition={{ duration: 0.6, delay: index * 0.1 }}
@@ -245,10 +249,13 @@ export default function AboutUsPage() {
                   viewport={{ once: true }}
                   style={{ transformStyle: "preserve-3d" }}
                 >
-                  <CountUpAnimation end={stat.number} suffix={stat.suffix || ""} />
+                  <Image src="/nhanh-cay.svg" alt="Logo" width={1000} height={1000} className="w-full absolute bottom-0 z-10" quality={100} draggable={false} />
+                 <div className="absolute z-20 w-full">
+                 <CountUpAnimation end={stat.number} suffix={stat.suffix || ""} />
                   <div className="text-mainBackgroundV1 text-sm md:text-base font-medium">
                     {stat.label}
                   </div>
+                 </div>
                 </motion.div>
               ))}
             </motion.div>
@@ -262,7 +269,7 @@ export default function AboutUsPage() {
               viewport={{ once: true }}
             >
               <motion.p 
-                className="text-lg md:text-xl text-mainBackgroundV1/90 leading-relaxed"
+                className="text-lg md:text-2xl text-mainBackgroundV1 leading-relaxed"
                 whileHover={{ scale: 1.02 }}
                 transition={{ type: "spring", stiffness: 300 }}
               >

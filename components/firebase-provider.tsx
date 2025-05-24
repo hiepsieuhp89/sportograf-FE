@@ -4,13 +4,13 @@ import { createContext, useContext, useEffect, useState, type ReactNode } from "
 import { initializeApp, getApps, type FirebaseApp } from "firebase/app"
 import { type Auth, getAuth } from "firebase/auth"
 import { type Firestore, getFirestore } from "firebase/firestore"
-import { type Storage, getStorage } from "firebase/storage"
+import { getStorage } from "firebase/storage"
 
 interface FirebaseContextType {
   app: FirebaseApp | null
   auth: Auth | null
   db: Firestore | null
-  storage: Storage | null
+  storage: any | null
   isInitialized: boolean
 }
 
@@ -38,6 +38,9 @@ export function FirebaseProvider({ children }: FirebaseProviderProps) {
   })
 
   useEffect(() => {
+    // Only initialize Firebase on client side
+    if (typeof window === "undefined") return
+
     // Firebase configuration
     const firebaseConfig = {
       apiKey: "AIzaSyBwNujju8j0ReZiZyEmXZNzDgjjvVvVJfc",

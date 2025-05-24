@@ -5,11 +5,11 @@ import { LanguageContext } from "@/components/language-provider"
 import { translations } from "@/lib/translations"
 
 export function useTranslations() {
-  const { language } = useContext(LanguageContext)
+  const { language, isLoaded } = useContext(LanguageContext)
 
   const t = (key: keyof typeof translations.en) => {
     return translations[language][key] || translations.en[key]
   }
 
-  return { t, language }
+  return { t, language, isLoaded }
 }
