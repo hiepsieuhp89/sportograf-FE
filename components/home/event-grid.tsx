@@ -2,41 +2,43 @@
 
 import { useState, useEffect } from "react"
 import { collection, getDocs, query, orderBy, limit } from "firebase/firestore"
-// import { db } from "@/lib/firebase"
+import { db } from "@/lib/firebase"
 import type { Event } from "@/lib/types"
 import { useTranslations } from "@/hooks/use-translations"
-// Add this import at the top
 import { Skeleton } from "@/components/ui/skeleton"
 import { EventCard } from "./event-card"
 import { useEventStore } from "@/lib/store"
 
 export function EventGrid() {
-  const [events, setEvents] = useState<Event[]>([])
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
   const { t } = useTranslations()
-  const { events: storeEvents } = useEventStore()
+  const { events, setEvents } = useEventStore()
 
-  // useEffect(() => {
-  //   const fetchEvents = async () => {
-  //     try {
-  //       const eventsQuery = query(collection(db , "events"), orderBy("date", "desc"), limit(24))
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        const eventsQuery = query(
+          collection(db, "events"), 
+          orderBy("date", "desc"), 
+          limit(24)
+        )
 
-  //       const snapshot = await getDocs(eventsQuery)
-  //       const eventsList = snapshot.docs.map((doc) => ({
-  //         id: doc.id,
-  //         ...doc.data(),
-  //       })) as Event[]
+        const snapshot = await getDocs(eventsQuery)
+        const eventsList = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        })) as Event[]
 
-  //       setEvents(eventsList)
-  //     } catch (error) {
-  //       console.error("Error fetching events:", error)
-  //     } finally {
-  //       setLoading(false)
-  //     }
-  //   }
+        setEvents(eventsList)
+      } catch (error) {
+        console.error("Error fetching events:", error)
+      } finally {
+        setLoading(false)
+      }
+    }
 
-  //   fetchEvents()
-  // }, [])
+    fetchEvents()
+  }, [setEvents])
 
   if (loading) {
     return (
@@ -59,12 +61,10 @@ export function EventGrid() {
     )
   }
 
-  const displayEvents = events.length > 0 ? events : storeEvents
-
   return (
     <div className="py-12 sm:py-16 lg:py-20">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 px-4 sm:px-6 lg:px-8">
-        {displayEvents.map((event) => (
+        {events.map((event) => (
           <EventCard key={event.id} event={event} />
         ))}
       </div>
