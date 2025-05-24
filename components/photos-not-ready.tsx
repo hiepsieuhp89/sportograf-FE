@@ -25,7 +25,7 @@ export function PhotosNotReady({ event }: PhotosNotReadyProps) {
                     <div className="flex items-center flex-1">
                         {/* Logo */}
                         <Image
-                            src={event.imageUrl}
+                            src={event.imageUrl || ""}
                             alt="Sportograf Logo"
                             draggable={false}
                             quality={100}
