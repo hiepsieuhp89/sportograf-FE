@@ -9,8 +9,13 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage"
 import { createUserWithEmailAndPassword } from "firebase/auth"
 import { db, storage, auth } from "@/lib/firebase"
 import type { Photographer } from "@/lib/types"
-import { User, Mail, FileImage, Info } from "lucide-react"
-import Image from "next/image"
+import { User, Mail, FileImage, Info, ArrowLeft } from "lucide-react"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
 import { uploadFile } from "@/lib/upload-utils"
 
 interface PhotographerFormProps {
@@ -153,145 +158,173 @@ export function PhotographerForm({ photographerId }: PhotographerFormProps) {
   }
 
   return (
-    <div>
-      <h1 className="text-2xl font-bold mb-6">{isEditing ? "Edit Photographer" : "Create Photographer"}</h1>
+    <div className="max-w-4xl mx-auto py-8">
+      <div className="flex items-center gap-4 mb-6">
+        <Button
+          variant="ghost"
+          className="hover:bg-gray-100"
+          onClick={() => router.push("/admin/photographers")}
+        >
+          <ArrowLeft className="h-5 w-5 mr-2" />
+          Back to Photographers
+        </Button>
+        <h1 className="text-2xl font-bold">{isEditing ? "Edit Photographer" : "Create Photographer"}</h1>
+      </div>
 
-      {error && <div className="mb-6 p-4 bg-red-100 text-red-700 rounded-sm">{error}</div>}
+      {error && (
+        <div className="mb-6 p-4 bg-red-100 text-red-700 rounded-lg border border-red-200">
+          {error}
+        </div>
+      )}
 
-      <form onSubmit={handleSubmit} className="bg-mainBackgroundV1 p-6 rounded-lg shadow-sm">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-4">
-            <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-                Name <span className="text-red-500">*</span>
-              </label>
-              <div className="relative">
-                <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-                <input
-                  id="name"
-                  name="name"
-                  type="text"
-                  required
-                  value={formData.name}
-                  onChange={handleInputChange}
-                  className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-mainNavyText"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                Email <span className="text-red-500">*</span>
-              </label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  required
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  disabled={isEditing} // Can't change email if editing
-                  className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-mainNavyText disabled:bg-gray-100 disabled:text-gray-500"
-                />
-              </div>
-              {isEditing && <p className="text-xs text-gray-500 mt-1">Email cannot be changed</p>}
-            </div>
-
-            {!isEditing && (
-              <div>
-                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-                  Password <span className="text-red-500">*</span>
-                </label>
-                <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  required={!isEditing}
-                  value={formData.password || ""}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-mainNavyText"
-                  minLength={6}
-                />
-                <p className="text-xs text-gray-500 mt-1">Minimum 6 characters</p>
-              </div>
-            )}
-
-            <div>
-              <label htmlFor="bio" className="block text-sm font-medium text-gray-700 mb-1">
-                Bio
-              </label>
-              <div className="relative">
-                <Info className="absolute left-3 top-4 text-gray-400 h-5 w-5" />
-                <textarea
-                  id="bio"
-                  name="bio"
-                  rows={4}
-                  value={formData.bio}
-                  onChange={handleInputChange}
-                  className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-mainNavyText"
-                />
-              </div>
-            </div>
-          </div>
-
-          <div>
-            <div>
-              <label htmlFor="profileImage" className="block text-sm font-medium text-gray-700 mb-1">
-                Profile Image
-              </label>
-              <div className="flex items-center space-x-4">
-                <div className="flex-1">
+      <Card>
+        <CardHeader>
+          <CardTitle>Photographer Information</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="name">
+                    Name <span className="text-red-500">*</span>
+                  </Label>
                   <div className="relative">
-                    <FileImage className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+                    <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+                    <Input
+                      id="name"
+                      name="name"
+                      required
+                      value={formData.name}
+                      onChange={handleInputChange}
+                      className="pl-10"
+                      placeholder="Enter photographer name"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <Label htmlFor="email">
+                    Email <span className="text-red-500">*</span>
+                  </Label>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+                    <Input
+                      id="email"
+                      name="email"
+                      type="email"
+                      required
+                      value={formData.email}
+                      onChange={handleInputChange}
+                      disabled={isEditing}
+                      className="pl-10"
+                      placeholder="Enter email address"
+                    />
+                  </div>
+                  {isEditing && <p className="text-xs text-gray-500 mt-1">Email cannot be changed</p>}
+                </div>
+
+                {!isEditing && (
+                  <div>
+                    <Label htmlFor="password">
+                      Password <span className="text-red-500">*</span>
+                    </Label>
+                    <div className="relative">
+                      <Input
+                        id="password"
+                        name="password"
+                        type="password"
+                        required
+                        value={formData.password || ""}
+                        onChange={handleInputChange}
+                        className="pl-10"
+                        minLength={6}
+                        placeholder="Enter password"
+                      />
+                    </div>
+                    <p className="text-xs text-gray-500 mt-1">Minimum 6 characters</p>
+                  </div>
+                )}
+
+                <div>
+                  <Label htmlFor="bio">Bio</Label>
+                  <Textarea
+                    id="bio"
+                    name="bio"
+                    rows={4}
+                    value={formData.bio}
+                    onChange={handleInputChange}
+                    className="resize-none"
+                    placeholder="Write a brief bio about the photographer..."
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <Label>Profile Picture</Label>
+                <div className="flex flex-col items-center p-6 border-2 border-dashed border-gray-300 rounded-lg hover:border-mainNavyText transition-colors">
+                  <Avatar className="h-32 w-32 mb-4">
+                    <AvatarImage src={profileImagePreview || formData.profileImageUrl} />
+                    <AvatarFallback>
+                      {formData.name ? formData.name.charAt(0).toUpperCase() : <User className="h-16 w-16 text-gray-400" />}
+                    </AvatarFallback>
+                  </Avatar>
+                  
+                  <div className="flex flex-col items-center">
+                    <label
+                      htmlFor="profileImage"
+                      className="cursor-pointer inline-flex items-center px-4 py-2 bg-mainNavyText text-mainBackgroundV1 rounded-lg hover:bg-blue-700 transition-colors"
+                    >
+                      <FileImage className="h-5 w-5 mr-2" />
+                      Choose Image
+                    </label>
                     <input
                       id="profileImage"
                       name="profileImage"
                       type="file"
                       accept="image/*"
                       onChange={handleImageChange}
-                      className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-mainNavyText"
+                      className="hidden"
                     />
+                    <p className="text-sm text-gray-500 mt-2">
+                      Upload a profile picture. Images will be cropped to a circle.
+                    </p>
+                    {profileImageFile && (
+                      <p className="text-sm text-mainNavyText mt-2">
+                        Selected: {profileImageFile.name}
+                      </p>
+                    )}
                   </div>
                 </div>
-                {profileImagePreview ? (
-                  <div className="h-20 w-20 relative">
-                    <Image
-                      src={profileImagePreview || "/placeholder.svg"}
-                      alt="Profile preview"
-                      width={80}
-                      height={80}
-                      className="h-full w-full object-cover rounded-full"
-                    />
-                  </div>
-                ) : (
-                  <div className="h-20 w-20 bg-gray-200 rounded-full flex items-center justify-center">
-                    <User className="h-10 w-10 text-gray-500" />
-                  </div>
-                )}
               </div>
             </div>
-          </div>
-        </div>
 
-        <div className="mt-8 flex justify-end space-x-4">
-          <button
-            type="button"
-            onClick={() => router.push("/admin/photographers")}
-            className="px-4 py-2 border border-gray-300 rounded-sm text-gray-700 hover:bg-gray-50 transition-colors"
-          >
-            Cancel
-          </button>
-          <button
-            type="submit"
-            disabled={saving}
-            className="px-4 py-2 bg-mainNavyText text-mainBackgroundV1 rounded-sm hover:bg-blue-700 transition-colors disabled:bg-blue-300"
-          >
-            {saving ? "Saving..." : "Save Photographer"}
-          </button>
-        </div>
-      </form>
+            <div className="flex justify-end gap-4">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => router.push("/admin/photographers")}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                disabled={saving}
+                className="bg-mainNavyText text-mainBackgroundV1 hover:bg-blue-700"
+              >
+                {saving ? (
+                  <>
+                    <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-mainBackgroundV1 border-t-transparent"></div>
+                    Saving...
+                  </>
+                ) : (
+                  isEditing ? 'Save Changes' : 'Create Photographer'
+                )}
+              </Button>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
     </div>
   )
 }

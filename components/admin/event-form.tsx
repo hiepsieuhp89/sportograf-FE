@@ -1,6 +1,7 @@
 "use client"
 
 import type React from "react"
+import Image from "next/image"
 
 import { db } from "@/lib/firebase"
 import type { Event, Photographer } from "@/lib/types"
@@ -129,7 +130,7 @@ export function EventForm({ eventId }: EventFormProps) {
 
   const handlePhotographerChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const options = e.target.options
-    const selectedValues = []
+    const selectedValues: string[] = []
     for (let i = 0; i < options.length; i++) {
       if (options[i].selected) {
         selectedValues.push(options[i].value)

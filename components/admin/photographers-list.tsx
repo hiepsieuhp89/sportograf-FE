@@ -7,6 +7,7 @@ import type { Photographer } from "@/lib/types"
 import Link from "next/link"
 import { Edit, Trash2, Plus, User } from "lucide-react"
 import Image from "next/image"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 export function PhotographersList() {
   const [photographers, setPhotographers] = useState<Photographer[]>([])
@@ -97,21 +98,12 @@ export function PhotographersList() {
                 <tr key={photographer.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
-                      <div className="flex-shrink-0 h-10 w-10 relative">
-                        {photographer.profileImageUrl ? (
-                          <Image
-                            src={photographer.profileImageUrl || "/placeholder.svg"}
-                            alt={photographer.name}
-                            width={40}
-                            height={40}
-                            className="rounded-full object-cover"
-                          />
-                        ) : (
-                          <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
-                            <User className="h-6 w-6 text-gray-500" />
-                          </div>
-                        )}
-                      </div>
+                      <Avatar className="h-10 w-10">
+                        <AvatarImage src={photographer.profileImageUrl} alt={photographer.name} />
+                        <AvatarFallback>
+                          <User className="h-5 w-5 text-gray-500" />
+                        </AvatarFallback>
+                      </Avatar>
                       <div className="ml-4">
                         <div className="text-sm font-medium text-gray-900">{photographer.name}</div>
                       </div>

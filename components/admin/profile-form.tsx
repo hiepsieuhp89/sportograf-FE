@@ -2,15 +2,18 @@
 
 import type React from "react"
 
-import { useState, useEffect } from "react"
-import { doc, getDoc, updateDoc, collection, query, where, getDocs } from "firebase/firestore"
-import { updatePassword, EmailAuthProvider, reauthenticateWithCredential } from "firebase/auth"
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage"
-import { db, storage, auth } from "@/lib/firebase"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { auth, db } from "@/lib/firebase"
 import type { Photographer } from "@/lib/types"
-import { User, Mail, FileImage, Lock } from "lucide-react"
-import Image from "next/image"
 import { uploadFile } from "@/lib/upload-utils"
+import { EmailAuthProvider, reauthenticateWithCredential, updatePassword, updateProfile } from "firebase/auth"
+import { collection, doc, getDoc, getDocs, query, updateDoc, where } from "firebase/firestore"
+import { FileImage, Lock, Mail, User } from "lucide-react"
+import { useEffect, useState } from "react"
 
 export function ProfileForm() {
   const [loading, setLoading] = useState(true)
@@ -53,6 +56,7 @@ export function ProfileForm() {
         const userSnapshot = await getDocs(usersQuery)
 
         if (!userSnapshot.empty) {
+          console.log("userSnapshot", userSnapshot)
           const userData = userSnapshot.docs[0].data()
           if (userData.role === "photographer" && userData.photographerId) {
             setIsPhotographer(true)
@@ -78,8 +82,9 @@ export function ProfileForm() {
             // Admin user
             setFormData((prev) => ({
               ...prev,
-              name: "Admin",
-              email: currentUser.email || "",
+              name: userData.name || "",
+              email: userData.email || "",
+              profileImageUrl: userData.profileImageUrl || "",
             }))
           }
         }
@@ -107,10 +112,6 @@ export function ProfileForm() {
     }
   }
 
-  const uploadImage = async (file: File, path: string): Promise<string> => {
-    return uploadFile(file, `profile/${path}`)
-  }
-
   const handleProfileUpdate = async (e: React.FormEvent) => {
     e.preventDefault()
     setSaving(true)
@@ -118,24 +119,43 @@ export function ProfileForm() {
     setSuccess("")
 
     try {
-      if (!isPhotographer || !photographerId) {
-        throw new Error("Only photographers can update their profile")
-      }
+      const currentUser = auth.currentUser
+      if (!currentUser) throw new Error("User not authenticated")
 
       let profileImageUrl = formData.profileImageUrl
 
       // Upload profile image if provided
       if (profileImageFile) {
-        const path = `photographers/${Date.now()}_${profileImageFile.name}`
-        profileImageUrl = await uploadImage(profileImageFile, path)
+        const path = `profiles/${currentUser.uid}/${Date.now()}_${profileImageFile.name}`
+        profileImageUrl = await uploadFile(profileImageFile, path)
       }
 
-      // Update photographer document
-      await updateDoc(doc(db, "photographers", photographerId), {
-        name: formData.name,
-        bio: formData.bio,
-        profileImageUrl,
+      // Update Firebase Auth profile
+      await updateProfile(currentUser, {
+        displayName: formData.name,
+        photoURL: profileImageUrl || null,
       })
+
+      if (isPhotographer && photographerId) {
+        // Update photographer document
+        await updateDoc(doc(db, "photographers", photographerId), {
+          name: formData.name,
+          bio: formData.bio,
+          profileImageUrl,
+        })
+      } else {
+        // Update admin user document
+        const usersQuery = query(collection(db, "users"), where("uid", "==", currentUser.uid))
+        const userSnapshot = await getDocs(usersQuery)
+
+        if (!userSnapshot.empty) {
+          const userDoc = userSnapshot.docs[0]
+          await updateDoc(doc(db, "users", userDoc.id), {
+            name: formData.name,
+            profileImageUrl,
+          })
+        }
+      }
 
       setSuccess("Profile updated successfully")
     } catch (error: any) {
@@ -202,161 +222,167 @@ export function ProfileForm() {
   }
 
   return (
-    <div>
+    <div className="max-w-4xl mx-auto py-8">
       <h1 className="text-2xl font-bold mb-6">My Profile</h1>
 
-      {error && <div className="mb-6 p-4 bg-red-100 text-red-700 rounded-sm">{error}</div>}
-      {success && <div className="mb-6 p-4 bg-green-100 text-green-700 rounded-sm">{success}</div>}
+      {error && (
+        <div className="mb-6 p-4 bg-red-100 text-red-700 rounded-lg border border-red-200">
+          {error}
+        </div>
+      )}
+      {success && (
+        <div className="mb-6 p-4 bg-green-100 text-green-700 rounded-lg border border-green-200">
+          {success}
+        </div>
+      )}
 
-      <div className="bg-mainBackgroundV1 p-6 rounded-lg shadow-sm mb-8">
-        <h2 className="text-xl font-semibold mb-4">Profile Information</h2>
-
-        <form onSubmit={handleProfileUpdate}>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-4">
-              <div>
-                <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-                  Name
-                </label>
-                <div className="relative">
-                  <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-                  <input
-                    id="name"
-                    name="name"
-                    type="text"
-                    value={formData.name}
-                    onChange={handleInputChange}
-                    disabled={!isPhotographer}
-                    className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-mainNavyText disabled:bg-gray-100"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                  Email
-                </label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-                  <input
-                    id="email"
-                    name="email"
-                    type="email"
-                    value={formData.email}
-                    disabled
-                    className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-sm bg-gray-100"
-                  />
-                </div>
-                <p className="text-xs text-gray-500 mt-1">Email cannot be changed</p>
-              </div>
-
-              {isPhotographer && (
+      <Card className="mb-8">
+        <CardHeader>
+          <CardTitle>Profile Information</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleProfileUpdate} className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="space-y-4">
                 <div>
-                  <label htmlFor="bio" className="block text-sm font-medium text-gray-700 mb-1">
-                    Bio
-                  </label>
-                  <textarea
-                    id="bio"
-                    name="bio"
-                    rows={4}
-                    value={formData.bio}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-mainNavyText"
-                  />
+                  <Label htmlFor="name">Name</Label>
+                  <div className="relative">
+                    <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+                    <Input
+                      id="name"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleInputChange}
+                      className="pl-10"
+                    />
+                  </div>
                 </div>
-              )}
+
+                <div>
+                  <Label htmlFor="email">Email</Label>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+                    <Input
+                      id="email"
+                      name="email"
+                      type="email"
+                      value={formData.email}
+                      disabled
+                      className="pl-10 bg-gray-50"
+                    />
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">Email cannot be changed</p>
+                </div>
+
+                {isPhotographer && (
+                  <div>
+                    <Label htmlFor="bio">Bio</Label>
+                    <textarea
+                      id="bio"
+                      name="bio"
+                      rows={4}
+                      value={formData.bio}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-mainNavyText resize-none"
+                      placeholder="Tell us about yourself..."
+                    />
+                  </div>
+                )}
+              </div>
+
+              <div className="space-y-4">
+                <Label>Profile Picture</Label>
+                <div className="flex flex-col items-center p-6 border-2 border-dashed border-gray-300 rounded-lg hover:border-mainNavyText transition-colors">
+                  <Avatar className="h-32 w-32 mb-4">
+                    <AvatarImage src={profileImagePreview || formData.profileImageUrl} />
+                    <AvatarFallback>
+                      {formData.name ? formData.name.charAt(0).toUpperCase() : <User className="h-16 w-16 text-gray-400" />}
+                    </AvatarFallback>
+                  </Avatar>
+
+                  <div className="flex flex-col items-center">
+                    <label
+                      htmlFor="profileImage"
+                      className="cursor-pointer inline-flex items-center px-4 py-2 bg-mainNavyText text-mainBackgroundV1 rounded-lg hover:bg-blue-700 transition-colors"
+                    >
+                      <FileImage className="h-5 w-5 mr-2" />
+                      Choose Image
+                    </label>
+                    <input
+                      id="profileImage"
+                      name="profileImage"
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageChange}
+                      className="hidden"
+                    />
+                    <p className="text-sm text-gray-500 mt-2">
+                      Upload a profile picture. Images will be cropped to a circle.
+                    </p>
+                    {profileImageFile && (
+                      <p className="text-sm text-mainNavyText mt-2">
+                        Selected: {profileImageFile.name}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
             </div>
 
-            {isPhotographer && (
-              <div>
-                <label htmlFor="profileImage" className="block text-sm font-medium text-gray-700 mb-1">
-                  Profile Image
-                </label>
-                <div className="flex items-center space-x-4">
-                  <div className="flex-1">
-                    <div className="relative">
-                      <FileImage className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-                      <input
-                        id="profileImage"
-                        name="profileImage"
-                        type="file"
-                        accept="image/*"
-                        onChange={handleImageChange}
-                        className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-mainNavyText"
-                      />
-                    </div>
-                  </div>
-                  {profileImagePreview ? (
-                    <div className="h-20 w-20 relative">
-                      <Image
-                        src={profileImagePreview || "/placeholder.svg"}
-                        alt="Profile preview"
-                        width={80}
-                        height={80}
-                        className="h-full w-full object-cover rounded-full"
-                      />
-                    </div>
-                  ) : (
-                    <div className="h-20 w-20 bg-gray-200 rounded-full flex items-center justify-center">
-                      <User className="h-10 w-10 text-gray-500" />
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
-          </div>
-
-          {isPhotographer && (
-            <div className="mt-6 flex justify-end">
-              <button
+            <div className="flex justify-end">
+              <Button
                 type="submit"
                 disabled={saving}
-                className="px-4 py-2 bg-mainNavyText text-mainBackgroundV1 rounded-sm hover:bg-blue-700 transition-colors disabled:bg-blue-300"
+                className="bg-mainNavyText text-mainBackgroundV1 hover:bg-blue-700"
               >
-                {saving ? "Saving..." : "Update Profile"}
-              </button>
+                {saving ? (
+                  <>
+                    <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-mainBackgroundV1 border-t-transparent"></div>
+                    Saving...
+                  </>
+                ) : (
+                  'Update Profile'
+                )}
+              </Button>
             </div>
-          )}
-        </form>
-      </div>
+          </form>
+        </CardContent>
+      </Card>
 
-      <div className="bg-mainBackgroundV1 p-6 rounded-lg shadow-sm">
-        <h2 className="text-xl font-semibold mb-4">Change Password</h2>
-
-        <form onSubmit={handlePasswordUpdate}>
-          <div className="space-y-4 max-w-md">
+      <Card>
+        <CardHeader>
+          <CardTitle>Change Password</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handlePasswordUpdate} className="space-y-4 max-w-md">
             <div>
-              <label htmlFor="currentPassword" className="block text-sm font-medium text-gray-700 mb-1">
-                Current Password
-              </label>
+              <Label htmlFor="currentPassword">Current Password</Label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-                <input
+                <Input
                   id="currentPassword"
                   name="currentPassword"
                   type="password"
                   required
                   value={formData.currentPassword}
                   onChange={handleInputChange}
-                  className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-mainNavyText"
+                  className="pl-10"
                 />
               </div>
             </div>
 
             <div>
-              <label htmlFor="newPassword" className="block text-sm font-medium text-gray-700 mb-1">
-                New Password
-              </label>
+              <Label htmlFor="newPassword">New Password</Label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-                <input
+                <Input
                   id="newPassword"
                   name="newPassword"
                   type="password"
                   required
                   value={formData.newPassword}
                   onChange={handleInputChange}
-                  className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-mainNavyText"
+                  className="pl-10"
                   minLength={6}
                 />
               </div>
@@ -364,35 +390,40 @@ export function ProfileForm() {
             </div>
 
             <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
-                Confirm New Password
-              </label>
+              <Label htmlFor="confirmPassword">Confirm New Password</Label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-                <input
+                <Input
                   id="confirmPassword"
                   name="confirmPassword"
                   type="password"
                   required
                   value={formData.confirmPassword}
                   onChange={handleInputChange}
-                  className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-mainNavyText"
+                  className="pl-10"
                 />
               </div>
             </div>
-          </div>
 
-          <div className="mt-6 flex justify-end">
-            <button
-              type="submit"
-              disabled={saving}
-              className="px-4 py-2 bg-mainNavyText text-mainBackgroundV1 rounded-sm hover:bg-blue-700 transition-colors disabled:bg-blue-300"
-            >
-              {saving ? "Updating..." : "Update Password"}
-            </button>
-          </div>
-        </form>
-      </div>
+            <div className="flex justify-end">
+              <Button
+                type="submit"
+                disabled={saving}
+                className="bg-mainNavyText text-mainBackgroundV1 hover:bg-blue-700"
+              >
+                {saving ? (
+                  <>
+                    <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-mainBackgroundV1 border-t-transparent"></div>
+                    Updating...
+                  </>
+                ) : (
+                  'Update Password'
+                )}
+              </Button>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
     </div>
   )
 }

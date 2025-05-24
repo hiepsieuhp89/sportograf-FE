@@ -19,7 +19,7 @@ export const uploadFile = async (file: File, path: string): Promise<string> => {
     const command = new PutObjectCommand({
       Bucket: s3Config.bucketName,
       Key: fileName,
-      Body: buffer,
+      Body: new Uint8Array(buffer),
       ContentType: file.type,
     });
 

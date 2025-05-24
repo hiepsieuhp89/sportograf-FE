@@ -2,13 +2,30 @@ export interface Event {
   id: string
   title: string
   description: string
-  imageUrl: string
-  bestOfImageUrl: string
   date: string
+  endDate?: string
   time: string
   location: string
-  url?: string
+  country: string
+  eventTypeId: string
+  tags: string[]
+  noteToPhotographer: string
+  url: string
   photographerIds: string[]
+  imageUrl?: string
+  bestOfImageUrl?: string
+  photographerConfirmations?: Record<string, boolean>
+  createdAt?: string
+  updatedAt?: string
+}
+
+export interface EventType {
+  id: string
+  name: string
+  description?: string
+  color?: string
+  createdAt?: any
+  updatedAt?: any
 }
 
 export interface Photographer {
@@ -42,3 +59,13 @@ export interface Offer {
 }
 
 export type Language = "en" | "de" | "fr" | "es"
+
+export interface BannerImage {
+  id: string
+  title: string
+  imageUrl: string
+  order: number
+  type: "center" | "parallax"
+  startScroll?: number
+  endScroll?: number
+}

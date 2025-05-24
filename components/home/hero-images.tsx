@@ -1,46 +1,86 @@
 "use client"
+
 import {
   motion,
   useMotionTemplate,
   useScroll,
   useTransform,
-} from "framer-motion";
-import { useRef } from "react";
-const SECTION_HEIGHT = 1500;
+} from "framer-motion"
+import { useRef, useEffect, useState } from "react"
+import { collection, getDocs, query, orderBy, where } from "firebase/firestore"
+import { db } from "@/lib/firebase"
+import type { BannerImage } from "@/lib/types"
+
+const SECTION_HEIGHT = 1500
+
 export const HeroImages = () => {
+  const [banners, setBanners] = useState<BannerImage[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchBanners = async () => {
+      try {
+        const bannersQuery = query(collection(db, "banners"), orderBy("order"))
+        const bannersSnapshot = await getDocs(bannersQuery)
+        const bannersList = bannersSnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        })) as BannerImage[]
+        setBanners(bannersList)
+      } catch (error) {
+        console.error("Error fetching banners:", error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchBanners()
+  }, [])
+
+  const centerBanner = banners.find(banner => banner.type === "center")
+  const parallaxBanners = banners.filter(banner => banner.type === "parallax")
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen bg-mainDarkBackgroundV1">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-white"></div>
+      </div>
+    )
+  }
+
   return (
     <div className="bg-mainDarkBackgroundV1">
-         <div
-      style={{ height: `calc(${SECTION_HEIGHT}px + 100vh)` }}
-      className="relative w-full"
-    >
-      <CenterImage />
-      <ParallaxImages />
+      <div
+        style={{ height: `calc(${SECTION_HEIGHT}px + 100vh)` }}
+        className="relative w-full"
+      >
+        {centerBanner && <CenterImage imageUrl={centerBanner.imageUrl} />}
+        {parallaxBanners.length > 0 && <ParallaxImages banners={parallaxBanners} />}
 
-      <div className="absolute bottom-0 left-0 right-0 h-96 bg-gradient-to-b from-zinc-950/0 to-mainDarkBackgroundV1" />
+        <div className="absolute bottom-0 left-0 right-0 h-96 bg-gradient-to-b from-zinc-950/0 to-mainDarkBackgroundV1" />
+      </div>
     </div>
-    </div>
-  );
-};
+  )
+}
 
-const CenterImage = () => {
-  const { scrollY } = useScroll();
+const CenterImage = ({ imageUrl }: { imageUrl: string }) => {
+  const { scrollY } = useScroll()
 
-  const clip1 = useTransform(scrollY, [0, 1500], [25, 0]);
-  const clip2 = useTransform(scrollY, [0, 1500], [75, 100]);
+  const clip1 = useTransform(scrollY, [0, 1500], [25, 0])
+  const clip2 = useTransform(scrollY, [0, 1500], [75, 100])
 
-  const clipPath = useMotionTemplate`polygon(${clip1}% ${clip1}%, ${clip2}% ${clip1}%, ${clip2}% ${clip2}%, ${clip1}% ${clip2}%)`;
+  const clipPath = useMotionTemplate`polygon(${clip1}% ${clip1}%, ${clip2}% ${clip1}%, ${clip2}% ${clip2}%, ${clip1}% ${clip2}%)`
 
   const backgroundSize = useTransform(
     scrollY,
     [0, SECTION_HEIGHT + 500],
     ["170%", "100%"]
-  );
+  )
   const opacity = useTransform(
     scrollY,
     [SECTION_HEIGHT, SECTION_HEIGHT + 500],
     [1, 0]
-  );
+  )
 
   return (
     <motion.div
@@ -49,63 +89,57 @@ const CenterImage = () => {
         clipPath,
         backgroundSize,
         opacity,
-        backgroundImage:
-          "url(https://cdn.pixabay.com/photo/2014/10/22/18/04/man-498473_1280.jpg)",
+        backgroundImage: `url(${imageUrl})`,
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
       }}
     />
-  );
-};
+  )
+}
 
-const ParallaxImages = () => {
+const getClassNameByOrder = (order: number) => {
+  const classPatterns = [
+    "w-1/3",                // First pattern
+    "mx-auto w-2/3",       // Second pattern
+    "ml-auto w-1/3",       // Third pattern
+    "ml-24 w-5/12",        // Fourth pattern
+  ]
+
+  // Use modulo to cycle through patterns if we have more than 4 images
+  const patternIndex = (order - 1) % classPatterns.length
+  return classPatterns[patternIndex]
+}
+
+const ParallaxImages = ({ banners }: { banners: BannerImage[] }) => {
   return (
     <div className="mx-auto max-w-5xl px-4 pt-[200px]">
-      <ParallaxImg
-        src="https://cdn.pixabay.com/photo/2016/11/29/10/21/dirt-bike-1868996_1280.jpg"
-        alt="And example of a space launch"
-        start={-200}
-        end={200}
-        className="w-1/3"
-      />
-      <ParallaxImg
-        src="https://cdn.pixabay.com/photo/2016/05/20/21/03/canoe-kayak-1405961_1280.jpg"
-        alt="An example of a space launch"
-        start={200}
-        end={-250}
-        className="mx-auto w-2/3"
-      />
-      <ParallaxImg
-        src="https://cdn.pixabay.com/photo/2020/08/22/00/24/cyclist-5507225_1280.jpg"
-        alt="Orbiting satellite"
-        start={-200}
-        end={200}
-        className="ml-auto w-1/3"
-      />
-      <ParallaxImg
-        src="https://cdn.pixabay.com/photo/2022/11/09/01/59/profile-7579739_640.jpg"
-        alt="Orbiting satellite"
-        start={0}
-        end={-500}
-        className="ml-24 w-5/12"
-      />
+      {banners.map((banner) => (
+        <ParallaxImg
+          key={banner.id}
+          src={banner.imageUrl}
+          alt={banner.title}
+          start={banner.startScroll || -200}
+          end={banner.endScroll || 200}
+          className={getClassNameByOrder(banner.order)}
+        />
+      ))}
     </div>
-  );
-};
+  )
+}
 
 const ParallaxImg = ({ className, alt, src, start, end }: { className: string, alt: string, src: string, start: number, end: number }) => {
-  const ref = useRef(null);
+  const ref = useRef(null)
 
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: [`${start}px end`, `end ${end * -1}px`],
-  });
+  })
 
-  const opacity = useTransform(scrollYProgress, [0.75, 1], [1, 0]);
-  const scale = useTransform(scrollYProgress, [0.75, 1], [1, 0.85]);
+  const opacity = useTransform(scrollYProgress, [0.75, 1], [1, 0])
+  const scale = useTransform(scrollYProgress, [0.75, 1], [1, 0.85])
 
-  const y = useTransform(scrollYProgress, [0, 1], [start, end]);
-  const transform = useMotionTemplate`translateY(${y}px) scale(${scale})`;
+  const y = useTransform(scrollYProgress, [0, 1], [start, end])
+  const transform = useMotionTemplate`translateY(${y}px) scale(${scale})`
 
   return (
     <motion.img
@@ -115,5 +149,5 @@ const ParallaxImg = ({ className, alt, src, start, end }: { className: string, a
       ref={ref}
       style={{ transform, opacity }}
     />
-  );
-};
+  )
+}
