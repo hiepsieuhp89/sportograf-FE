@@ -10,110 +10,48 @@ export function Footer() {
 
   return (
     <footer className="bg-sportograf-navyblue text-gray-400 pt-12 pb-6">
-      <div className="max-w-[1200px] mx-auto px-4">
+      <div className="max-w-8xl mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
-          {/* Payment Methods */}
-          <div className="flex flex-col">
-            <div className="grid grid-cols-4 gap-3 mb-6">
-              <Image
-                src="/placeholder.svg?height=30&width=50"
-                alt="PayPal"
-                width={50}
-                height={30}
-                className="bg-white p-1 rounded"
-              />
-              <Image
-                src="/placeholder.svg?height=30&width=50"
-                alt="Visa"
-                width={50}
-                height={30}
-                className="bg-white p-1 rounded"
-              />
-              <Image
-                src="/placeholder.svg?height=30&width=50"
-                alt="Mastercard"
-                width={50}
-                height={30}
-                className="bg-white p-1 rounded"
-              />
-              <Image
-                src="/placeholder.svg?height=30&width=50"
-                alt="Maestro"
-                width={50}
-                height={30}
-                className="bg-white p-1 rounded"
-              />
-              <Image
-                src="/placeholder.svg?height=30&width=50"
-                alt="American Express"
-                width={50}
-                height={30}
-                className="bg-white p-1 rounded"
-              />
-              <Image
-                src="/placeholder.svg?height=30&width=50"
-                alt="Apple Pay"
-                width={50}
-                height={30}
-                className="bg-white p-1 rounded"
-              />
-              <Image
-                src="/placeholder.svg?height=30&width=50"
-                alt="Google Pay"
-                width={50}
-                height={30}
-                className="bg-white p-1 rounded"
-              />
-              <Image
-                src="/placeholder.svg?height=30&width=50"
-                alt="Klarna"
-                width={50}
-                height={30}
-                className="bg-white p-1 rounded"
-              />
-            </div>
-          </div>
-
           {/* Navigation Links */}
           <div className="grid grid-cols-2 gap-8">
             <div>
-              <nav className="flex flex-col space-y-3">
-                <Link href="/" className="hover:text-white text-xs uppercase">
-                  HOME
+              <nav className="flex flex-col space-y-4">
+                <Link href="/" className="hover:text-mainBackgroundV1 text-xs uppercase">
+                  Home
                 </Link>
-                <Link href="/faq" className="hover:text-white text-xs uppercase">
+                <Link href="https://helpdesk.sportograf.com/en/support/home" target="_blank" rel="noreferrer noopener" className="hover:text-mainBackgroundV1 text-xs uppercase">
                   FAQ
                 </Link>
-                <Link href="/blog" className="hover:text-white text-xs uppercase">
-                  BLOG
+                <Link href="https://blog.sportograf.com" target="_blank" rel="noreferrer noopener" className="hover:text-mainBackgroundV1 text-xs uppercase">
+                  Blog
                 </Link>
-                <Link href="/newsletter" className="hover:text-white text-xs uppercase">
-                  NEWSLETTER
+                <Link href="/newsletter" className="hover:text-mainBackgroundV1 text-xs uppercase">
+                  Newsletter
                 </Link>
-                <Link href="/jobs" className="hover:text-white text-xs uppercase">
-                  JOBS
+                <Link href="/jobs" className="hover:text-mainBackgroundV1 text-xs uppercase">
+                  Jobs
                 </Link>
-                <Link href="/about-us" className="hover:text-white text-xs uppercase">
-                  ABOUT US
+                <Link href="/about" className="hover:text-mainBackgroundV1 text-xs uppercase">
+                  About Us
                 </Link>
               </nav>
             </div>
             <div>
-              <nav className="flex flex-col space-y-3">
-                <Link href="/contact" className="hover:text-white text-xs uppercase">
-                  CONTACT
+              <nav className="flex flex-col space-y-4">
+                <Link href="/contact" className="hover:text-mainBackgroundV1 text-xs uppercase">
+                  Contact
                 </Link>
-                <Link href="/legal" className="hover:text-white text-xs uppercase">
-                  LEGAL
+                <Link href="/legal" className="hover:text-mainBackgroundV1 text-xs uppercase">
+                  Legal
                 </Link>
-                <Link href="/terms-and-conditions" className="hover:text-white text-xs uppercase">
-                  TERMS AND CONDITIONS
+                <Link href="/agb" className="hover:text-mainBackgroundV1 text-xs uppercase">
+                  Terms and Conditions
                 </Link>
-                <Link href="/privacy" className="hover:text-white text-xs uppercase">
-                  PRIVACY
+                <Link href="/privacy" className="hover:text-mainBackgroundV1 text-xs uppercase">
+                  Privacy
                 </Link>
-                <Link href="/cookies" className="hover:text-white text-xs uppercase">
-                  COOKIES
+                <Link href="/cookies" className="hover:text-mainBackgroundV1 text-xs uppercase">
+                  Cookies
                 </Link>
               </nav>
             </div>
@@ -122,13 +60,13 @@ export function Footer() {
           {/* Social Media */}
           <div className="flex justify-end">
             <div className="flex space-x-4">
-              <Link href="https://instagram.com" aria-label="Instagram" className="hover:text-white">
+              <Link href="https://www.instagram.com/sportograf/" aria-label="Instagram" className="hover:text-mainBackgroundV1">
                 <Instagram className="h-6 w-6" />
               </Link>
-              <Link href="https://facebook.com" aria-label="Facebook" className="hover:text-white">
+              <Link href="https://www.facebook.com/sportograf/" aria-label="Facebook" className="hover:text-mainBackgroundV1">
                 <Facebook className="h-6 w-6" />
               </Link>
-              <Link href="https://twitter.com" aria-label="Twitter" className="hover:text-white">
+              <Link href="https://twitter.com/sportograf" aria-label="Twitter" className="hover:text-mainBackgroundV1">
                 <Twitter className="h-6 w-6" />
               </Link>
             </div>

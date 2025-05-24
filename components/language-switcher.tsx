@@ -12,7 +12,7 @@ export function LanguageSwitcher() {
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center text-white hover:text-gray-300 bg-white bg-opacity-20 px-3 py-1 rounded"
+        className="flex items-center text-mainBackgroundV1 hover:text-gray-300 bg-mainBackgroundV1 bg-opacity-20 px-3 py-1 h-6 rounded"
       >
         <span className="mr-1">🇬🇧</span>
         <span className="mr-2 font-medium">EN</span>
@@ -20,7 +20,7 @@ export function LanguageSwitcher() {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 z-20 mt-2 w-32 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+        <div className="absolute right-0 z-20 mt-2 w-32 origin-top-right rounded-md bg-mainBackgroundV1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
           <div className="py-1">
             <button
               onClick={() => {

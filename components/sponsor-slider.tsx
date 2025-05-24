@@ -24,8 +24,8 @@ export function SponsorSlider() {
   }, [sponsors.length])
 
   return (
-    <div className="bg-white py-6 border-b border-gray-200">
-      <div className="max-w-[1200px] mx-auto px-4">
+    <div className="bg-mainBackgroundV1 py-6 border-b border-gray-200">
+      <div className="max-w-8xl mx-auto px-4">
         <div className="overflow-hidden">
           <div
             className="flex transition-transform duration-500 ease-in-out"

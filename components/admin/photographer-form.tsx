@@ -159,7 +159,7 @@ export function PhotographerForm({ photographerId }: PhotographerFormProps) {
 
       {error && <div className="mb-6 p-4 bg-red-100 text-red-700 rounded-md">{error}</div>}
 
-      <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow-sm">
+      <form onSubmit={handleSubmit} className="bg-mainBackgroundV1 p-6 rounded-lg shadow-sm">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-4">
             <div>
@@ -175,7 +175,7 @@ export function PhotographerForm({ photographerId }: PhotographerFormProps) {
                   required
                   value={formData.name}
                   onChange={handleInputChange}
-                  className="pl-10 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
             </div>
@@ -194,7 +194,7 @@ export function PhotographerForm({ photographerId }: PhotographerFormProps) {
                   value={formData.email}
                   onChange={handleInputChange}
                   disabled={isEditing} // Can't change email if editing
-                  className="pl-10 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:text-gray-500"
+                  className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:text-gray-500"
                 />
               </div>
               {isEditing && <p className="text-xs text-gray-500 mt-1">Email cannot be changed</p>}
@@ -212,7 +212,7 @@ export function PhotographerForm({ photographerId }: PhotographerFormProps) {
                   required={!isEditing}
                   value={formData.password || ""}
                   onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   minLength={6}
                 />
                 <p className="text-xs text-gray-500 mt-1">Minimum 6 characters</p>
@@ -224,14 +224,14 @@ export function PhotographerForm({ photographerId }: PhotographerFormProps) {
                 Bio
               </label>
               <div className="relative">
-                <Info className="absolute left-3 top-3 text-gray-400 h-5 w-5" />
+                <Info className="absolute left-3 top-4 text-gray-400 h-5 w-5" />
                 <textarea
                   id="bio"
                   name="bio"
                   rows={4}
                   value={formData.bio}
                   onChange={handleInputChange}
-                  className="pl-10 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
             </div>
@@ -252,7 +252,7 @@ export function PhotographerForm({ photographerId }: PhotographerFormProps) {
                       type="file"
                       accept="image/*"
                       onChange={handleImageChange}
-                      className="pl-10 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
                 </div>
@@ -287,7 +287,7 @@ export function PhotographerForm({ photographerId }: PhotographerFormProps) {
           <button
             type="submit"
             disabled={saving}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors disabled:bg-blue-300"
+            className="px-4 py-2 bg-blue-600 text-mainBackgroundV1 rounded-md hover:bg-blue-700 transition-colors disabled:bg-blue-300"
           >
             {saving ? "Saving..." : "Save Photographer"}
           </button>

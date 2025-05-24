@@ -17,7 +17,7 @@ export function EventGrid() {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const eventsQuery = query(collection(db, "events"), orderBy("date", "desc"), limit(24))
+        const eventsQuery = query(collection(db , "events"), orderBy("date", "desc"), limit(24))
 
         const snapshot = await getDocs(eventsQuery)
         const eventsList = snapshot.docs.map((doc) => ({
@@ -36,13 +36,12 @@ export function EventGrid() {
     fetchEvents()
   }, [])
 
-  // Replace the existing loading state with this enhanced skeleton loader
   if (loading) {
     return (
       <div className="py-8">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[...Array(12)].map((_, index) => (
-            <div key={index} className="rounded-lg overflow-hidden shadow-md bg-white border border-gray-100">
+            <div key={index} className="rounded-lg overflow-hidden shadow-md bg-mainBackgroundV1 border border-gray-100">
               <div className="relative h-40 bg-gray-100">
                 <Skeleton className="h-full w-full" />
               </div>
@@ -58,7 +57,6 @@ export function EventGrid() {
     )
   }
 
-  // Update the placeholderEvents array with real data from the Sportograf website
   const placeholderEvents = [
     {
       id: "15000",

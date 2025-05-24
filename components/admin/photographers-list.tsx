@@ -59,7 +59,7 @@ export function PhotographersList() {
         <h1 className="text-2xl font-bold">Photographers</h1>
         <Link
           href="/admin/photographers/create"
-          className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
+          className="flex items-center gap-2 bg-blue-600 text-mainBackgroundV1 px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
         >
           <Plus className="h-4 w-4" />
           <span>Create Photographer</span>
@@ -67,17 +67,17 @@ export function PhotographersList() {
       </div>
 
       {photographers.length === 0 ? (
-        <div className="bg-white p-6 rounded-lg shadow-sm text-center">
+        <div className="bg-mainBackgroundV1 p-6 rounded-lg shadow-sm text-center">
           <p className="text-gray-500">No photographers found.</p>
           <Link
             href="/admin/photographers/create"
-            className="inline-block mt-4 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
+            className="inline-block mt-4 bg-blue-600 text-mainBackgroundV1 px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
           >
             Create your first photographer
           </Link>
         </div>
       ) : (
-        <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+        <div className="bg-mainBackgroundV1 rounded-lg shadow-sm overflow-hidden">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
@@ -92,7 +92,7 @@ export function PhotographersList() {
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-mainBackgroundV1 divide-y divide-gray-200">
               {photographers.map((photographer) => (
                 <tr key={photographer.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">

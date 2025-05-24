@@ -3,7 +3,7 @@ import { StaticPageLayout } from "@/components/static-page-layout"
 export default function LegalPage() {
   return (
     <StaticPageLayout>
-      <div className="max-w-[1200px] mx-auto px-4 py-12">
+      <div className="max-w-8xl mx-auto px-4 py-12">
         <h1 className="text-2xl font-bold mb-6">Legal notice</h1>
 
         <div className="mb-8">

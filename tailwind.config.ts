@@ -22,6 +22,24 @@ const config: Config = {
         montserrat: ["var(--font-montserrat)"],
       },
       colors: {
+          mainBackgroundV1: "#DFDFF2",
+          mainDarkBackgroundV1: "#000000",
+          mainActiveV1: "#EDFF66",
+        mainSecondaryActiveV1: "#5542FF",
+        mainHoverV1: "#213241",
+        mainBorderV1: "#314B61",
+        mainTextV1: "#BDCEDD",
+        mainCardV1: "#2B4154",
+        secondaryTextV1: "#687D92",
+        mainTextHoverV1: "#604AE3",
+        mainSuccessV1: "#5CC184",
+        mainSuccessHoverV1: "#53AE77",
+        mainWarningV1: "#F0934E",
+        mainWarningHoverV1: "#D88446",
+        mainDangerV1: "#E66666",
+        mainDangerHoverV1: '#D25D5D',
+        mainInfoV1: "#45C5CD",
+        mainInfoHoverV1: "#3EB1B9",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -88,7 +106,7 @@ const config: Config = {
   },
   plugins: [
     require("tailwindcss-animate"),
-    ({ addUtilities }) => {
+    ({ addUtilities }: { addUtilities: any }) => {
       const newUtilities = {
         ".perspective-1000": {
           perspective: "1000px",

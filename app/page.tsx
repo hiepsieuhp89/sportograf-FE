@@ -9,11 +9,11 @@ import "lenis/dist/lenis.css"
 export default function Home() {
   return (
     <SmoothScrollProvider>
-      <main className="bg-white">
+      <main className="bg-mainBackgroundV1">
         <Header />
         <HeroCarousel />
-        <SponsorSlider />
-        <div className="max-w-[1200px] mx-auto px-4">
+        {/* <SponsorSlider /> */}
+        <div className="max-w-8xl mx-auto px-16">
           <EventGrid />
         </div>
         <Footer />

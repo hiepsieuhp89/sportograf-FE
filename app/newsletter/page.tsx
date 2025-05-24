@@ -13,15 +13,15 @@ export default function NewsletterPage() {
         ></div>
         <div className="absolute inset-0 bg-black bg-opacity-50"></div>
 
-        <div className="relative max-w-[1200px] mx-auto px-4 py-16">
+        <div className="relative max-w-8xl mx-auto px-4 py-16">
           <div className="flex flex-col md:flex-row items-center">
             <div className="md:w-1/2 mb-8 md:mb-0">
-              <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
+              <h1 className="text-4xl md:text-5xl font-bold text-mainBackgroundV1 mb-4">
                 SPORTOGRAF
                 <br />
                 <span className="text-blue-500">RACELETTER</span>
               </h1>
-              <div className="bg-blue-600 text-white p-8 rounded-lg max-w-md">
+              <div className="bg-blue-600 text-mainBackgroundV1 p-8 rounded-lg max-w-md">
                 <h2 className="text-xl font-bold mb-4 uppercase">JOIN THE SPORTOGRAF RACELETTER</h2>
                 <p className="mb-6">
                   Get updates on exciting events, insights from the world of sport, and special offers from our
@@ -50,7 +50,7 @@ export default function NewsletterPage() {
 
                   <button
                     type="submit"
-                    className="w-full bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700 transition-colors"
+                    className="w-full bg-red-600 text-mainBackgroundV1 py-2 px-4 rounded-md hover:bg-red-700 transition-colors"
                   >
                     Subscribe
                   </button>
@@ -59,7 +59,7 @@ export default function NewsletterPage() {
             </div>
 
             <div className="md:w-1/2 md:pl-12">
-              <div className="text-white">
+              <div className="text-mainBackgroundV1">
                 <h2 className="text-2xl font-bold mb-4">Why Join Our Newsletter?</h2>
                 <ul className="space-y-4">
                   <li className="flex items-start">

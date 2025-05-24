@@ -205,7 +205,7 @@ export function EventForm({ eventId }: EventFormProps) {
 
       {error && <div className="mb-6 p-4 bg-red-100 text-red-700 rounded-md">{error}</div>}
 
-      <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow-sm">
+      <form onSubmit={handleSubmit} className="bg-mainBackgroundV1 p-6 rounded-lg shadow-sm">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-4">
             <div>
@@ -221,7 +221,7 @@ export function EventForm({ eventId }: EventFormProps) {
                   required
                   value={formData.title}
                   onChange={handleInputChange}
-                  className="pl-10 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
             </div>
@@ -236,7 +236,7 @@ export function EventForm({ eventId }: EventFormProps) {
                 rows={4}
                 value={formData.description}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
 
@@ -253,7 +253,7 @@ export function EventForm({ eventId }: EventFormProps) {
                   required
                   value={formData.date}
                   onChange={handleInputChange}
-                  className="pl-10 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
             </div>
@@ -270,7 +270,7 @@ export function EventForm({ eventId }: EventFormProps) {
                   type="time"
                   value={formData.time}
                   onChange={handleInputChange}
-                  className="pl-10 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
             </div>
@@ -288,7 +288,7 @@ export function EventForm({ eventId }: EventFormProps) {
                   required
                   value={formData.location}
                   onChange={handleInputChange}
-                  className="pl-10 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
             </div>
@@ -303,7 +303,7 @@ export function EventForm({ eventId }: EventFormProps) {
                 type="url"
                 value={formData.url}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
           </div>
@@ -323,7 +323,7 @@ export function EventForm({ eventId }: EventFormProps) {
                       type="file"
                       accept="image/*"
                       onChange={(e) => handleImageChange(e, "image")}
-                      className="pl-10 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
                 </div>
@@ -356,7 +356,7 @@ export function EventForm({ eventId }: EventFormProps) {
                       type="file"
                       accept="image/*"
                       onChange={(e) => handleImageChange(e, "bestOfImage")}
-                      className="pl-10 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
                 </div>
@@ -382,14 +382,14 @@ export function EventForm({ eventId }: EventFormProps) {
                 Assign Photographers
               </label>
               <div className="relative">
-                <Users className="absolute left-3 top-3 text-gray-400 h-5 w-5" />
+                <Users className="absolute left-3 top-4 text-gray-400 h-5 w-5" />
                 <select
                   id="photographers"
                   name="photographers"
                   multiple
                   value={formData.photographerIds}
                   onChange={handlePhotographerChange}
-                  className="pl-10 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 h-40"
+                  className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 h-40"
                 >
                   {photographers.map((photographer) => (
                     <option key={photographer.id} value={photographer.id}>
@@ -414,7 +414,7 @@ export function EventForm({ eventId }: EventFormProps) {
           <button
             type="submit"
             disabled={saving}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors disabled:bg-blue-300"
+            className="px-4 py-2 bg-blue-600 text-mainBackgroundV1 rounded-md hover:bg-blue-700 transition-colors disabled:bg-blue-300"
           >
             {saving ? "Saving..." : "Save Event"}
           </button>

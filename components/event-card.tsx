@@ -31,10 +31,10 @@ export function EventCard({ event }: EventCardProps) {
       <div className="relative h-40 overflow-hidden bg-gray-100">
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10"></div>
         <Image
-          src={event.imageUrl || "/placeholder.svg?height=160&width=300"}
+          src={event.imageUrl}
           alt={event.title}
           fill
-          className="object-contain p-4 transition-transform duration-500 group-hover:scale-110"
+          className="object-cover transition-transform duration-500 group-hover:scale-110"
         />
       </div>
 
@@ -51,7 +51,7 @@ export function EventCard({ event }: EventCardProps) {
 
         <Link
           href={`/events/${event.id}`}
-          className="block w-full bg-white text-blue-600 py-2 px-4 text-sm font-semibold border border-blue-600 rounded-md hover:bg-blue-600 hover:text-white transition-all duration-300 uppercase text-center"
+          className="block w-full py-2 px-4 text-sm font-semibold border bg-mainDarkBackgroundV1 text-mainActiveV1 hover:text-mainBackgroundV1 transition-all duration-300 uppercase text-center h-10"
         >
           {t("showPhotos")}
         </Link>

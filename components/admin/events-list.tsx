@@ -85,7 +85,7 @@ export function EventsList() {
         {userRole === "admin" && (
           <Link
             href="/admin/events/create"
-            className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
+            className="flex items-center gap-2 bg-blue-600 text-mainBackgroundV1 px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
           >
             <Plus className="h-4 w-4" />
             <span>Create Event</span>
@@ -94,19 +94,19 @@ export function EventsList() {
       </div>
 
       {events.length === 0 ? (
-        <div className="bg-white p-6 rounded-lg shadow-sm text-center">
+        <div className="bg-mainBackgroundV1 p-6 rounded-lg shadow-sm text-center">
           <p className="text-gray-500">No events found.</p>
           {userRole === "admin" && (
             <Link
               href="/admin/events/create"
-              className="inline-block mt-4 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
+              className="inline-block mt-4 bg-blue-600 text-mainBackgroundV1 px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
             >
               Create your first event
             </Link>
           )}
         </div>
       ) : (
-        <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+        <div className="bg-mainBackgroundV1 rounded-lg shadow-sm overflow-hidden">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
@@ -127,7 +127,7 @@ export function EventsList() {
                 )}
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-mainBackgroundV1 divide-y divide-gray-200">
               {events.map((event) => (
                 <tr key={event.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">

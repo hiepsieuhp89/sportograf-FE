@@ -5,7 +5,7 @@ import { jobs } from "@/lib/jobs"
 export default function JobsPage() {
   return (
     <StaticPageLayout>
-      <div className="max-w-[1200px] mx-auto px-4 py-12">
+      <div className="max-w-8xl mx-auto px-4 py-12">
         <div className="text-center mb-12">
           <h1 className="text-3xl font-bold mb-4">Join Our Team</h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">

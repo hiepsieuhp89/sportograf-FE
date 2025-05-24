@@ -10,7 +10,7 @@ interface JobCardProps {
 
 export function JobCard({ job }: JobCardProps) {
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
+    <div className="bg-mainBackgroundV1 rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
       <div className="p-6">
         <div className="flex justify-center mb-4">
           <Image
@@ -28,7 +28,7 @@ export function JobCard({ job }: JobCardProps) {
 
           <Link
             href={`/jobs/${job.id}`}
-            className="inline-block w-full bg-white border border-blue-600 text-blue-600 py-2 px-4 rounded-md hover:bg-blue-50 transition-colors text-sm font-medium uppercase"
+            className="inline-block w-full bg-mainBackgroundV1 border border-blue-600 text-blue-600 py-2 px-4 rounded-md hover:bg-blue-50 transition-colors text-sm font-medium uppercase"
           >
             SHOW JOB
           </Link>

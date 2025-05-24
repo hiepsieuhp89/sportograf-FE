@@ -3,7 +3,7 @@ import { StaticPageLayout } from "@/components/static-page-layout"
 export default function ContactPage() {
   return (
     <StaticPageLayout>
-      <div className="max-w-[1200px] mx-auto px-4 py-12">
+      <div className="max-w-8xl mx-auto px-4 py-12">
         <div className="mb-4">
           <h1 className="text-2xl font-bold mb-6">Contact</h1>
           <h2 className="text-xl font-bold uppercase mb-6">HOW TO CONTACT US</h2>
@@ -24,7 +24,7 @@ export default function ContactPage() {
           </p>
         </div>
 
-        <div className="bg-white p-6 rounded-lg shadow-sm mb-8">
+        <div className="bg-mainBackgroundV1 p-6 rounded-lg shadow-sm mb-8">
           <h3 className="text-lg font-semibold mb-4">Contact Form</h3>
           <form>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
@@ -37,7 +37,7 @@ export default function ContactPage() {
                   name="name"
                   type="text"
                   required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
               <div>
@@ -49,7 +49,7 @@ export default function ContactPage() {
                   name="email"
                   type="email"
                   required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
             </div>
@@ -62,7 +62,7 @@ export default function ContactPage() {
                 name="subject"
                 type="text"
                 required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
             <div className="mb-6">
@@ -74,12 +74,12 @@ export default function ContactPage() {
                 name="message"
                 rows={6}
                 required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               ></textarea>
             </div>
             <button
               type="submit"
-              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+              className="px-4 py-2 bg-blue-600 text-mainBackgroundV1 rounded-md hover:bg-blue-700 transition-colors"
             >
               Send Message
             </button>

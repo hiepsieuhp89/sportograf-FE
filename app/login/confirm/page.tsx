@@ -63,7 +63,7 @@ export default function ConfirmLoginPage() {
   return (
     <StaticPageLayout>
       <div className="max-w-md mx-auto px-4 py-12">
-        <div className="bg-white p-8 rounded-lg shadow-sm">
+        <div className="bg-mainBackgroundV1 p-8 rounded-lg shadow-sm">
           <h1 className="text-2xl font-bold mb-6 text-center">Completing Login</h1>
 
           {status === "loading" && (
@@ -86,7 +86,7 @@ export default function ConfirmLoginPage() {
               <p className="text-gray-600">Please try logging in again or contact support if the problem persists.</p>
               <button
                 onClick={() => router.push("/login")}
-                className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                className="mt-4 px-4 py-2 bg-blue-600 text-mainBackgroundV1 rounded-md hover:bg-blue-700 transition-colors"
               >
                 Back to Login
               </button>

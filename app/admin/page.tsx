@@ -72,7 +72,7 @@ export default function AdminPage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-white p-6 rounded-lg shadow-sm">
+          <div className="bg-mainBackgroundV1 p-6 rounded-lg shadow-sm">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-lg font-semibold flex items-center">
                 <Calendar className="h-5 w-5 mr-2" />
@@ -99,7 +99,7 @@ export default function AdminPage() {
           </div>
 
           {isAdmin && (
-            <div className="bg-white p-6 rounded-lg shadow-sm">
+            <div className="bg-mainBackgroundV1 p-6 rounded-lg shadow-sm">
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-lg font-semibold flex items-center">
                   <Camera className="h-5 w-5 mr-2" />

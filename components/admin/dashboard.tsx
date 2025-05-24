@@ -69,7 +69,7 @@ export function AdminDashboard({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex min-h-screen bg-gray-100">
       {/* Sidebar */}
-      <div className="w-64 bg-[#0f1923] text-white">
+      <div className="w-64 bg-[#0f1923] text-mainBackgroundV1">
         <div className="p-4 border-b border-gray-700">
           <h1 className="text-xl font-bold">Sportograf Admin</h1>
         </div>

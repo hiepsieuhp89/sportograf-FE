@@ -55,7 +55,7 @@ export default function LoginPage() {
   return (
     <StaticPageLayout>
       <div className="max-w-md mx-auto px-4 py-12">
-        <div className="bg-white p-8 rounded-lg shadow-sm">
+        <div className="bg-mainBackgroundV1 p-8 rounded-lg shadow-sm">
           <h1 className="text-2xl font-bold mb-6 text-center">{t("signupLogin")}</h1>
 
           {success ? (
@@ -79,7 +79,7 @@ export default function LoginPage() {
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     required
                   />
                 </div>
@@ -87,7 +87,7 @@ export default function LoginPage() {
                 <button
                   type="submit"
                   disabled={loading || !isClient}
-                  className="w-full bg-blue-600 text-white py-3 rounded-md hover:bg-blue-700 transition-colors disabled:bg-blue-300"
+                  className="w-full bg-blue-600 text-mainBackgroundV1 py-3 rounded-md hover:bg-blue-700 transition-colors disabled:bg-blue-300"
                 >
                   {loading ? "Sending..." : t("sendMagicLink")}
                 </button>
