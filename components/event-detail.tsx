@@ -1,7 +1,7 @@
 "use client"
 
 import Image from "next/image"
-import { Calendar, MapPin, Clock, Tag as TagIcon, ExternalLink, Info } from "lucide-react"
+import { Calendar, MapPin, Clock, Tag as TagIcon, ExternalLink, Info, X } from "lucide-react"
 import type { Event, EventType } from "@/lib/types"
 import { useTranslations } from "@/hooks/use-translations"
 import { RichTextPreview } from "@/components/ui/rich-text-preview"
@@ -182,6 +182,47 @@ export function EventDetail({ event }: EventDetailProps) {
                                     />
                                 </div>
                             ))}
+                        </div>
+                    </div>
+                )}
+                {event.geoSnapshotEmbed ? (
+                    <div className="bg-white rounded-lg px-6 shadow-sm relative">
+                        <RichTextPreview content={event.geoSnapshotEmbed} />
+                        <div className="absolute top-1 left-8 bg-white z-10 w-40 h-10 flex items-center justify-center">
+                        </div>
+                    </div>
+                ) : (
+                    <div className="flex-1 flex items-center justify-center pt-12">
+                        <div className="text-center max-w-md mx-auto px-4 sm:px-0 pt-4 w-full sm:w-[470px]">
+                            {/* Loading Icon */}
+                            <div className="mb-8 flex justify-center">
+                                <div className="relative w-24 h-24">
+                                    <div className="absolute inset-0 border-4 border-gray-200 rounded-full"></div>
+                                    <div className="absolute inset-0 border-4 border-transparent border-t-mainNavyText rounded-full animate-spin"></div>
+                                    <div className="absolute inset-4 flex items-center justify-center">
+                                        <div className="grid grid-cols-2 gap-1">
+                                            <div className="w-3 h-3 bg-mainNavyText rounded-sm"></div>
+                                            <div className="w-3 h-3 bg-gray-300 rounded-sm"></div>
+                                            <div className="w-3 h-3 bg-gray-300 rounded-sm"></div>
+                                            <div className="w-3 h-3 bg-mainNavyText rounded-sm"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Message */}
+                            <h2 className="text-3xl text-mainNavyText mb-6 tracking-wide">
+                                WE ARE ON IT!
+                            </h2>
+                            <p className="text-mainNavyText text-sm mb-2">
+                                The photos are not online yet.
+                            </p>
+                            <p className="text-mainNavyText mb-8 text-sm">
+                                Get a notification as soon as your pictures are online.
+                            </p>
+                            <button className="bg-mainNavyText hover:bg-mainNavyText/80 text-white font-semibold text-sm uppercase transition-colors duration-200 w-full h-12 flex items-center justify-center">
+                                Notify me
+                            </button>
                         </div>
                     </div>
                 )}
