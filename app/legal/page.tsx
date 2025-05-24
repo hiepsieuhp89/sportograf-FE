@@ -12,14 +12,14 @@ export default function LegalPage() {
           <p className="mb-1">52072 Aachen - Germany</p>
           <p className="mb-4">
             Email:{" "}
-            <a href="mailto:legal@sportograf.com" className="text-blue-600 hover:underline">
+            <a href="mailto:legal@sportograf.com" className="text-mainNavyText hover:underline">
               legal@sportograf.com
             </a>
           </p>
 
           <p className="mb-4">
             To contact our support, please{" "}
-            <a href="#" className="text-blue-600 hover:underline">
+            <a href="#" className="text-mainNavyText hover:underline">
               use our contact form
             </a>
             .

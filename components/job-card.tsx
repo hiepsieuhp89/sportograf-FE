@@ -23,12 +23,12 @@ export function JobCard({ job }: JobCardProps) {
         </div>
 
         <div className="text-center">
-          <h3 className="text-lg font-semibold text-blue-600 mb-1">{job.title}</h3>
+          <h3 className="text-lg font-semibold text-mainNavyText mb-1">{job.title}</h3>
           <p className="text-gray-600 text-sm mb-4">{job.department}</p>
 
           <Link
             href={`/jobs/${job.id}`}
-            className="inline-block w-full bg-mainBackgroundV1 border border-blue-600 text-blue-600 py-2 px-4 rounded-md hover:bg-blue-50 transition-colors text-sm font-medium uppercase"
+            className="inline-block w-full bg-mainBackgroundV1 border border-mainNavyText text-mainNavyText py-2 px-4 rounded-md hover:bg-blue-50 transition-colors text-sm font-medium uppercase"
           >
             SHOW JOB
           </Link>

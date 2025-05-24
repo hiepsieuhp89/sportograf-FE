@@ -4,6 +4,7 @@
 
 body {
   font-family: Arial, Helvetica, sans-serif;
+  overflow-x: hidden;
 }
 
 html.lenis,
@@ -109,4 +110,24 @@ html.lenis body {
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Custom scrollbar styles */
+::-webkit-scrollbar {
+  width: 14px;
+  height: 14px;
+}
+::-webkit-scrollbar-thumb {
+  background: #151818;
+  border-radius: 4px;
+  margin: 1px;
+}
+::-webkit-scrollbar-track {
+  background: #DFDFF2;
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #151818 #DFDFF2;
 }

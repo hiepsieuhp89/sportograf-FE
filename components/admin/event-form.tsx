@@ -194,7 +194,7 @@ export function EventForm({ eventId }: EventFormProps) {
   if (loading) {
     return (
       <div className="flex justify-center p-8">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-mainNavyText"></div>
       </div>
     )
   }
@@ -221,7 +221,7 @@ export function EventForm({ eventId }: EventFormProps) {
                   required
                   value={formData.title}
                   onChange={handleInputChange}
-                  className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-mainNavyText"
                 />
               </div>
             </div>
@@ -236,7 +236,7 @@ export function EventForm({ eventId }: EventFormProps) {
                 rows={4}
                 value={formData.description}
                 onChange={handleInputChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-mainNavyText"
               />
             </div>
 
@@ -253,7 +253,7 @@ export function EventForm({ eventId }: EventFormProps) {
                   required
                   value={formData.date}
                   onChange={handleInputChange}
-                  className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-mainNavyText"
                 />
               </div>
             </div>
@@ -270,7 +270,7 @@ export function EventForm({ eventId }: EventFormProps) {
                   type="time"
                   value={formData.time}
                   onChange={handleInputChange}
-                  className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-mainNavyText"
                 />
               </div>
             </div>
@@ -288,7 +288,7 @@ export function EventForm({ eventId }: EventFormProps) {
                   required
                   value={formData.location}
                   onChange={handleInputChange}
-                  className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-mainNavyText"
                 />
               </div>
             </div>
@@ -303,7 +303,7 @@ export function EventForm({ eventId }: EventFormProps) {
                 type="url"
                 value={formData.url}
                 onChange={handleInputChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-mainNavyText"
               />
             </div>
           </div>
@@ -323,7 +323,7 @@ export function EventForm({ eventId }: EventFormProps) {
                       type="file"
                       accept="image/*"
                       onChange={(e) => handleImageChange(e, "image")}
-                      className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-mainNavyText"
                     />
                   </div>
                 </div>
@@ -356,7 +356,7 @@ export function EventForm({ eventId }: EventFormProps) {
                       type="file"
                       accept="image/*"
                       onChange={(e) => handleImageChange(e, "bestOfImage")}
-                      className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-mainNavyText"
                     />
                   </div>
                 </div>
@@ -389,7 +389,7 @@ export function EventForm({ eventId }: EventFormProps) {
                   multiple
                   value={formData.photographerIds}
                   onChange={handlePhotographerChange}
-                  className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 h-40"
+                  className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-mainNavyText h-40"
                 >
                   {photographers.map((photographer) => (
                     <option key={photographer.id} value={photographer.id}>
@@ -414,7 +414,7 @@ export function EventForm({ eventId }: EventFormProps) {
           <button
             type="submit"
             disabled={saving}
-            className="px-4 py-2 bg-blue-600 text-mainBackgroundV1 rounded-md hover:bg-blue-700 transition-colors disabled:bg-blue-300"
+            className="px-4 py-2 bg-mainNavyText text-mainBackgroundV1 rounded-md hover:bg-blue-700 transition-colors disabled:bg-blue-300"
           >
             {saving ? "Saving..." : "Save Event"}
           </button>

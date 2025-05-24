@@ -2,9 +2,11 @@
 
 import Link from "next/link"
 import Image from "next/image"
+import { useRouter } from "next/navigation"
 import { useTranslations } from "@/hooks/use-translations"
 import type { Event } from "@/lib/types"
 import { Calendar } from "lucide-react"
+import { useEventStore } from "@/lib/store"
 
 interface EventCardProps {
   event: Event
@@ -12,6 +14,8 @@ interface EventCardProps {
 
 export function EventCard({ event }: EventCardProps) {
   const { t } = useTranslations()
+  const router = useRouter()
+  const { setSelectedEvent } = useEventStore()
 
   // Format date as DD/MM/YYYY
   const formatEventDate = (dateString: string) => {
@@ -25,8 +29,13 @@ export function EventCard({ event }: EventCardProps) {
     }
   }
 
+  const handleEventClick = () => {
+    setSelectedEvent(event)
+    router.push(`/events/${event.id}`)
+  }
+
   return (
-    <div className="group relative overflow-hidden rounded-lg shadow-md transition-all duration-300 hover:shadow-xl bg-white border border-gray-100">
+    <div className="group relative overflow-hidden rounded-lg shadow-md transition-all duration-300 hover:shadow-xl bg-white border-[2px] border-gray-100 hover:border-mainDarkBackgroundV1 cursor-pointer">
       {/* Image container with overlay effect */}
       <div className="relative h-40 overflow-hidden bg-gray-100">
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10"></div>
@@ -45,20 +54,20 @@ export function EventCard({ event }: EventCardProps) {
           <span>{formatEventDate(event.date)}</span>
         </div>
 
-        <h3 className="font-semibold text-sm mb-3 line-clamp-2 h-10 text-gray-800 group-hover:text-blue-600 transition-colors">
+        <h3 className="font-semibold text-sm mb-3 line-clamp-2 h-10 text-gray-800 group-hover:text-mainNavyText transition-colors">
           {event.title}
         </h3>
 
-        <Link
-          href={`/events/${event.id}`}
-          className="block w-full py-2 px-4 text-sm font-semibold border bg-mainDarkBackgroundV1 text-mainActiveV1 hover:text-mainBackgroundV1 transition-all duration-300 uppercase text-center h-10"
+        <button
+          onClick={handleEventClick}
+          className="block w-full py-2 px-4 text-sm font-medium border bg-mainDarkBackgroundV1 text-mainActiveV1 hover:text-mainBackgroundV1 transition-all duration-300 uppercase text-center h-10"
         >
           {t("showPhotos")}
-        </Link>
+        </button>
       </div>
 
       {/* Hover effect overlay */}
-      <div className="absolute inset-0 bg-blue-600/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+      <div className="absolute inset-0 bg-mainNavyText/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
     </div>
   )
 }

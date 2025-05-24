@@ -42,7 +42,7 @@ export function EventHeader({ event }: EventHeaderProps) {
             {event.url && (
               <div className="flex items-center gap-1">
                 <LinkIcon className="w-4 h-4" />
-                <a href={event.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                <a href={event.url} target="_blank" rel="noopener noreferrer" className="text-mainNavyText hover:underline">
                   {new URL(event.url).hostname}
                 </a>
               </div>
@@ -50,7 +50,7 @@ export function EventHeader({ event }: EventHeaderProps) {
           </div>
         </div>
         <div className="flex-shrink-0">
-          <button className="flex items-center gap-1 bg-blue-600 text-mainBackgroundV1 px-4 py-2 rounded-md hover:bg-blue-700 transition-colors">
+          <button className="flex items-center gap-1 bg-mainNavyText text-mainBackgroundV1 px-4 py-2 rounded-md hover:bg-blue-700 transition-colors">
             <Star className="w-4 h-4" />
             <span>See Best of</span>
           </button>

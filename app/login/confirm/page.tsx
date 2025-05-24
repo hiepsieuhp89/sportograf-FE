@@ -68,7 +68,7 @@ export default function ConfirmLoginPage() {
 
           {status === "loading" && (
             <div className="text-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mx-auto mb-4"></div>
+              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-mainNavyText mx-auto mb-4"></div>
               <p className="text-gray-600">Verifying your login...</p>
             </div>
           )}
@@ -86,7 +86,7 @@ export default function ConfirmLoginPage() {
               <p className="text-gray-600">Please try logging in again or contact support if the problem persists.</p>
               <button
                 onClick={() => router.push("/login")}
-                className="mt-4 px-4 py-2 bg-blue-600 text-mainBackgroundV1 rounded-md hover:bg-blue-700 transition-colors"
+                className="mt-4 px-4 py-2 bg-mainNavyText text-mainBackgroundV1 rounded-md hover:bg-blue-700 transition-colors"
               >
                 Back to Login
               </button>

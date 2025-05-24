@@ -197,7 +197,7 @@ export function ProfileForm() {
   if (loading) {
     return (
       <div className="flex justify-center p-8">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-mainNavyText"></div>
       </div>
     )
   }
@@ -228,7 +228,7 @@ export function ProfileForm() {
                     value={formData.name}
                     onChange={handleInputChange}
                     disabled={!isPhotographer}
-                    className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+                    className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-mainNavyText disabled:bg-gray-100"
                   />
                 </div>
               </div>
@@ -262,7 +262,7 @@ export function ProfileForm() {
                     rows={4}
                     value={formData.bio}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-mainNavyText"
                   />
                 </div>
               )}
@@ -283,7 +283,7 @@ export function ProfileForm() {
                         type="file"
                         accept="image/*"
                         onChange={handleImageChange}
-                        className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-mainNavyText"
                       />
                     </div>
                   </div>
@@ -312,7 +312,7 @@ export function ProfileForm() {
               <button
                 type="submit"
                 disabled={saving}
-                className="px-4 py-2 bg-blue-600 text-mainBackgroundV1 rounded-md hover:bg-blue-700 transition-colors disabled:bg-blue-300"
+                className="px-4 py-2 bg-mainNavyText text-mainBackgroundV1 rounded-md hover:bg-blue-700 transition-colors disabled:bg-blue-300"
               >
                 {saving ? "Saving..." : "Update Profile"}
               </button>
@@ -339,7 +339,7 @@ export function ProfileForm() {
                   required
                   value={formData.currentPassword}
                   onChange={handleInputChange}
-                  className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-mainNavyText"
                 />
               </div>
             </div>
@@ -357,7 +357,7 @@ export function ProfileForm() {
                   required
                   value={formData.newPassword}
                   onChange={handleInputChange}
-                  className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-mainNavyText"
                   minLength={6}
                 />
               </div>
@@ -377,7 +377,7 @@ export function ProfileForm() {
                   required
                   value={formData.confirmPassword}
                   onChange={handleInputChange}
-                  className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-mainNavyText"
                 />
               </div>
             </div>
@@ -387,7 +387,7 @@ export function ProfileForm() {
             <button
               type="submit"
               disabled={saving}
-              className="px-4 py-2 bg-blue-600 text-mainBackgroundV1 rounded-md hover:bg-blue-700 transition-colors disabled:bg-blue-300"
+              className="px-4 py-2 bg-mainNavyText text-mainBackgroundV1 rounded-md hover:bg-blue-700 transition-colors disabled:bg-blue-300"
             >
               {saving ? "Updating..." : "Update Password"}
             </button>

@@ -31,7 +31,7 @@ export default function JobDetailPage({ params }: JobDetailPageProps) {
 
         {/* Job Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-blue-600 uppercase mb-2">{job.title}</h1>
+          <h1 className="text-3xl font-bold text-mainNavyText uppercase mb-2">{job.title}</h1>
           <p className="text-lg text-gray-600 uppercase font-medium">{job.department}</p>
         </div>
 
@@ -47,7 +47,7 @@ export default function JobDetailPage({ params }: JobDetailPageProps) {
           <ul className="space-y-4">
             {job.requirements.map((requirement, index) => (
               <li key={index} className="flex items-start">
-                <span className="inline-block w-2 h-2 bg-blue-600 rounded-full mt-2 mr-3 flex-shrink-0"></span>
+                <span className="inline-block w-2 h-2 bg-mainNavyText rounded-full mt-2 mr-3 flex-shrink-0"></span>
                 <span className="text-gray-700">{requirement}</span>
               </li>
             ))}
@@ -63,7 +63,7 @@ export default function JobDetailPage({ params }: JobDetailPageProps) {
 
           <a
             href={`mailto:${job.applicationEmail}?subject=Application for ${job.title}`}
-            className="inline-block bg-blue-600 text-mainBackgroundV1 py-3 px-8 rounded-md hover:bg-blue-700 transition-colors font-medium"
+            className="inline-block bg-mainNavyText text-mainBackgroundV1 py-3 px-8 rounded-md hover:bg-blue-700 transition-colors font-medium"
           >
             Apply Now
           </a>

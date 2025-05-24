@@ -79,7 +79,7 @@ export default function LoginPage() {
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-mainNavyText"
                     required
                   />
                 </div>
@@ -87,19 +87,19 @@ export default function LoginPage() {
                 <button
                   type="submit"
                   disabled={loading || !isClient}
-                  className="w-full bg-blue-600 text-mainBackgroundV1 py-3 rounded-md hover:bg-blue-700 transition-colors disabled:bg-blue-300"
+                  className="w-full bg-mainNavyText text-mainBackgroundV1 py-3 rounded-md hover:bg-blue-700 transition-colors disabled:bg-blue-300"
                 >
                   {loading ? "Sending..." : t("sendMagicLink")}
                 </button>
               </form>
 
               <div className="mt-4 text-center">
-                <button className="text-sm text-blue-600 hover:underline">{t("whatIsAMagicLink")}</button>
+                <button className="text-sm text-mainNavyText hover:underline">{t("whatIsAMagicLink")}</button>
               </div>
 
               <div className="mt-8 text-center text-xs text-gray-500">
                 For more information on data protection, please see our{" "}
-                <a href="/privacy" className="text-blue-600 hover:underline">
+                <a href="/privacy" className="text-mainNavyText hover:underline">
                   {t("privacyPolicy")}
                 </a>
                 .

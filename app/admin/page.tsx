@@ -68,7 +68,7 @@ export default function AdminPage() {
 
       {loading ? (
         <div className="flex justify-center p-8">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-mainNavyText"></div>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -78,7 +78,7 @@ export default function AdminPage() {
                 <Calendar className="h-5 w-5 mr-2" />
                 Recent Events
               </h2>
-              <Link href="/admin/events" className="text-sm text-blue-600 hover:underline flex items-center">
+              <Link href="/admin/events" className="text-sm text-mainNavyText hover:underline flex items-center">
                 View all <ArrowRight className="h-4 w-4 ml-1" />
               </Link>
             </div>
@@ -88,7 +88,7 @@ export default function AdminPage() {
               <ul className="divide-y divide-gray-200">
                 {recentEvents.map((event) => (
                   <li key={event.id} className="py-3">
-                    <Link href={`/admin/events/${event.id}/edit`} className="hover:text-blue-600">
+                    <Link href={`/admin/events/${event.id}/edit`} className="hover:text-mainNavyText">
                       <div className="font-medium">{event.title}</div>
                       <div className="text-sm text-gray-500">{event.date}</div>
                     </Link>
@@ -105,7 +105,7 @@ export default function AdminPage() {
                   <Camera className="h-5 w-5 mr-2" />
                   Photographers
                 </h2>
-                <Link href="/admin/photographers" className="text-sm text-blue-600 hover:underline flex items-center">
+                <Link href="/admin/photographers" className="text-sm text-mainNavyText hover:underline flex items-center">
                   View all <ArrowRight className="h-4 w-4 ml-1" />
                 </Link>
               </div>
@@ -115,7 +115,7 @@ export default function AdminPage() {
                 <ul className="divide-y divide-gray-200">
                   {photographers.map((photographer) => (
                     <li key={photographer.id} className="py-3">
-                      <Link href={`/admin/photographers/${photographer.id}/edit`} className="hover:text-blue-600">
+                      <Link href={`/admin/photographers/${photographer.id}/edit`} className="hover:text-mainNavyText">
                         <div className="font-medium">{photographer.name}</div>
                         <div className="text-sm text-gray-500">{photographer.email}</div>
                       </Link>

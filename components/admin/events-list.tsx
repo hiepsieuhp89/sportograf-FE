@@ -73,7 +73,7 @@ export function EventsList() {
   if (loading) {
     return (
       <div className="flex justify-center p-8">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-mainNavyText"></div>
       </div>
     )
   }
@@ -85,7 +85,7 @@ export function EventsList() {
         {userRole === "admin" && (
           <Link
             href="/admin/events/create"
-            className="flex items-center gap-2 bg-blue-600 text-mainBackgroundV1 px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
+            className="flex items-center gap-2 bg-mainNavyText text-mainBackgroundV1 px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
           >
             <Plus className="h-4 w-4" />
             <span>Create Event</span>
@@ -99,7 +99,7 @@ export function EventsList() {
           {userRole === "admin" && (
             <Link
               href="/admin/events/create"
-              className="inline-block mt-4 bg-blue-600 text-mainBackgroundV1 px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
+              className="inline-block mt-4 bg-mainNavyText text-mainBackgroundV1 px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
             >
               Create your first event
             </Link>
@@ -166,7 +166,7 @@ export function EventsList() {
                   </td>
                   {userRole === "admin" && (
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <Link href={`/admin/events/${event.id}/edit`} className="text-blue-600 hover:text-blue-900 mr-4">
+                      <Link href={`/admin/events/${event.id}/edit`} className="text-mainNavyText hover:text-blue-900 mr-4">
                         <Edit className="h-5 w-5 inline" />
                       </Link>
                       <button onClick={() => handleDeleteEvent(event.id)} className="text-red-600 hover:text-red-900">

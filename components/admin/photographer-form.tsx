@@ -148,7 +148,7 @@ export function PhotographerForm({ photographerId }: PhotographerFormProps) {
   if (loading) {
     return (
       <div className="flex justify-center p-8">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-mainNavyText"></div>
       </div>
     )
   }
@@ -175,7 +175,7 @@ export function PhotographerForm({ photographerId }: PhotographerFormProps) {
                   required
                   value={formData.name}
                   onChange={handleInputChange}
-                  className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-mainNavyText"
                 />
               </div>
             </div>
@@ -194,7 +194,7 @@ export function PhotographerForm({ photographerId }: PhotographerFormProps) {
                   value={formData.email}
                   onChange={handleInputChange}
                   disabled={isEditing} // Can't change email if editing
-                  className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:text-gray-500"
+                  className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-mainNavyText disabled:bg-gray-100 disabled:text-gray-500"
                 />
               </div>
               {isEditing && <p className="text-xs text-gray-500 mt-1">Email cannot be changed</p>}
@@ -212,7 +212,7 @@ export function PhotographerForm({ photographerId }: PhotographerFormProps) {
                   required={!isEditing}
                   value={formData.password || ""}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-mainNavyText"
                   minLength={6}
                 />
                 <p className="text-xs text-gray-500 mt-1">Minimum 6 characters</p>
@@ -231,7 +231,7 @@ export function PhotographerForm({ photographerId }: PhotographerFormProps) {
                   rows={4}
                   value={formData.bio}
                   onChange={handleInputChange}
-                  className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-mainNavyText"
                 />
               </div>
             </div>
@@ -252,7 +252,7 @@ export function PhotographerForm({ photographerId }: PhotographerFormProps) {
                       type="file"
                       accept="image/*"
                       onChange={handleImageChange}
-                      className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-mainNavyText"
                     />
                   </div>
                 </div>
@@ -287,7 +287,7 @@ export function PhotographerForm({ photographerId }: PhotographerFormProps) {
           <button
             type="submit"
             disabled={saving}
-            className="px-4 py-2 bg-blue-600 text-mainBackgroundV1 rounded-md hover:bg-blue-700 transition-colors disabled:bg-blue-300"
+            className="px-4 py-2 bg-mainNavyText text-mainBackgroundV1 rounded-md hover:bg-blue-700 transition-colors disabled:bg-blue-300"
           >
             {saving ? "Saving..." : "Save Photographer"}
           </button>

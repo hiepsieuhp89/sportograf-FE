@@ -88,7 +88,7 @@ export default function AboutUsPage() {
 
   return (
     <StaticPageLayout>
-      <div className="min-h-screen bg-gradient-to-b from-mainBackgroundV1 to-white">
+      <div className="min-h-screen bg-mainBackgroundV1">
         <motion.section 
           className="relative min-h-screen flex items-center justify-center bg-gradient-to-r from-mainDarkBackgroundV1 via-gray-900 to-mainDarkBackgroundV1 overflow-hidden"
           style={{ 
@@ -153,11 +153,11 @@ export default function AboutUsPage() {
 
         {/* History Section */}
         <motion.section 
-          className="min-h-[370px] py-20 px-6 pt-0"
+          className="min-h-[370px] py-20 pt-0"
           style={{ y: historyY }}
         >
           <div className="max-w-7xl mx-auto">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-8xl mx-auto px-16 items-center">
               <motion.div
                 initial={{ opacity: 0, x: -100, rotateY: -15 }}
                 whileInView={{ opacity: 1, x: 0, rotateY: 0 }}
@@ -286,14 +286,14 @@ export default function AboutUsPage() {
               viewport={{ once: true }}
             >
               {[
-                "/5e9234b25308ec9e9031062a7c66fefc.jpg",
-                "/1bca915d3f55da73ef92d01e2c684058.jpg",
-                "/7c967f820cc692a7470bededad1fc630.jpg",
-                "/6e19a1327457dedc7eb3280995dd5187.jpg",
-                "/2efaa7cefecac519996c3c25cb73c42d.jpg",
-                "/f55e9bd8fcf9ddf780751ec5fb88231c.jpg",
-                "/f7aac68f5fd8b7d684a907348424cbe9.jpg",
-                "/e036dfbccb96be91a08369fbcfeb4cda.jpg"
+                "https://www.sportograf.com/5e9234b25308ec9e9031062a7c66fefc.jpg",
+                "https://www.sportograf.com/1bca915d3f55da73ef92d01e2c684058.jpg",
+                "https://www.sportograf.com/7c967f820cc692a7470bededad1fc630.jpg",
+                "https://www.sportograf.com/6e19a1327457dedc7eb3280995dd5187.jpg",
+                "https://www.sportograf.com/2efaa7cefecac519996c3c25cb73c42d.jpg",
+                "https://www.sportograf.com/f55e9bd8fcf9ddf780751ec5fb88231c.jpg",
+                "https://www.sportograf.com/f7aac68f5fd8b7d684a907348424cbe9.jpg",
+                "https://www.sportograf.com/e036dfbccb96be91a08369fbcfeb4cda.jpg"
               ].map((src, index) => (
                 <motion.div
                   key={index}
@@ -313,7 +313,7 @@ export default function AboutUsPage() {
                   <ImageWithSkeleton
                     src={src}
                     alt={`Sports photography ${index + 1}`}
-                    className="rounded-lg shadow-lg w-full h-32 md:h-40 object-cover"
+                    className="rounded-sm shadow-lg w-full h-32 md:h-40 object-cover"
                     width={200}
                     height={160}
                   />
@@ -350,7 +350,7 @@ export default function AboutUsPage() {
         </motion.section>
 
         {/* Additional Features Section */}
-        <motion.section className="py-20 px-6 bg-gradient-to-b from-white to-mainBackgroundV1/30">
+        <motion.section className="py-20 px-6 bg-mainBackgroundV1 pt-0">
           <div className="max-w-7xl mx-auto">
             <motion.h2 
               className="text-3xl md:text-4xl font-bold text-center text-mainDarkBackgroundV1 mb-16"

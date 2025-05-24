@@ -29,7 +29,7 @@ export function SubeventCard({ subevent }: SubeventCardProps) {
         <h3 className="font-medium text-sm mb-4">{subevent.title}</h3>
         <Link
           href={`/events/${subevent.eventId}/subevents/${subevent.id}`}
-          className="block w-full bg-blue-600 text-mainBackgroundV1 py-2 px-4 text-sm font-medium hover:bg-blue-700 transition-colors"
+          className="block w-full bg-mainNavyText text-mainBackgroundV1 py-2 px-4 text-sm font-medium hover:bg-blue-700 transition-colors"
         >
           {t("showPhotos")}
         </Link>

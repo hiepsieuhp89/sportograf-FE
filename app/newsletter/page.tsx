@@ -19,9 +19,9 @@ export default function NewsletterPage() {
               <h1 className="text-4xl md:text-5xl font-bold text-mainBackgroundV1 mb-4">
                 SPORTOGRAF
                 <br />
-                <span className="text-blue-500">RACELETTER</span>
+                <span className="text-mainNavyText">RACELETTER</span>
               </h1>
-              <div className="bg-blue-600 text-mainBackgroundV1 p-8 rounded-lg max-w-md">
+              <div className="bg-mainNavyText text-mainBackgroundV1 p-8 rounded-lg max-w-md">
                 <h2 className="text-xl font-bold mb-4 uppercase">JOIN THE SPORTOGRAF RACELETTER</h2>
                 <p className="mb-6">
                   Get updates on exciting events, insights from the world of sport, and special offers from our
@@ -33,7 +33,7 @@ export default function NewsletterPage() {
                     <input
                       type="email"
                       placeholder="Enter your email"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-800"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-mainNavyText text-gray-800"
                       required
                     />
                   </div>
@@ -63,28 +63,28 @@ export default function NewsletterPage() {
                 <h2 className="text-2xl font-bold mb-4">Why Join Our Newsletter?</h2>
                 <ul className="space-y-4">
                   <li className="flex items-start">
-                    <div className="mr-2 mt-1 text-blue-400">✓</div>
+                    <div className="mr-2 mt-1 text-mainNavyText">✓</div>
                     <div>
                       <strong className="block">Event Alerts</strong>
                       <p>Be the first to know about upcoming events where Sportograf will be capturing your moments.</p>
                     </div>
                   </li>
                   <li className="flex items-start">
-                    <div className="mr-2 mt-1 text-blue-400">✓</div>
+                    <div className="mr-2 mt-1 text-mainNavyText">✓</div>
                     <div>
                       <strong className="block">Special Offers</strong>
                       <p>Get exclusive discounts and promotions only available to our newsletter subscribers.</p>
                     </div>
                   </li>
                   <li className="flex items-start">
-                    <div className="mr-2 mt-1 text-blue-400">✓</div>
+                    <div className="mr-2 mt-1 text-mainNavyText">✓</div>
                     <div>
                       <strong className="block">Photography Tips</strong>
                       <p>Learn how to look your best in action photos and make the most of your sporting moments.</p>
                     </div>
                   </li>
                   <li className="flex items-start">
-                    <div className="mr-2 mt-1 text-blue-400">✓</div>
+                    <div className="mr-2 mt-1 text-mainNavyText">✓</div>
                     <div>
                       <strong className="block">Athlete Stories</strong>
                       <p>Read inspiring stories from athletes around the world and their journey in sports.</p>
