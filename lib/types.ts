@@ -14,6 +14,7 @@ export interface Event {
   photographerIds: string[]
   imageUrl?: string
   bestOfImageUrl?: string
+  geoSnapshotEmbed?: string
   photographerConfirmations?: Record<string, boolean>
   createdAt?: string
   updatedAt?: string

@@ -80,6 +80,7 @@ export function EnhancedEventForm({ eventId }: EnhancedEventFormProps) {
     noteToPhotographer: "",
     url: "",
     photographerIds: [],
+    geoSnapshotEmbed: "",
   })
 
   const [imageFile, setImageFile] = useState<File | null>(null)
@@ -115,6 +116,7 @@ export function EnhancedEventForm({ eventId }: EnhancedEventFormProps) {
             photographerIds: eventData.photographerIds || [],
             imageUrl: eventData.imageUrl || "",
             bestOfImageUrl: eventData.bestOfImageUrl || "",
+            geoSnapshotEmbed: eventData.geoSnapshotEmbed || "",
           })
 
           if (eventData.imageUrl) {
@@ -726,6 +728,19 @@ export function EnhancedEventForm({ eventId }: EnhancedEventFormProps) {
                 />
               </div>
 
+              {/* Geo Snapshot Embed */}
+              <div className="space-y-2">
+                <Label htmlFor="geoSnapshotEmbed">Geo Snapshot Embed Code</Label>
+                <Textarea
+                  id="geoSnapshotEmbed"
+                  name="geoSnapshotEmbed"
+                  value={formData.geoSnapshotEmbed}
+                  onChange={handleInputChange}
+                  placeholder="Paste your Geo Snapshot embed code here"
+                  rows={4}
+                />
+              </div>
+
               {/* Event URL */}
               <div className="space-y-2">
                 <Label htmlFor="url">Event URL</Label>
@@ -865,6 +880,16 @@ export function EnhancedEventForm({ eventId }: EnhancedEventFormProps) {
                 <div
                   className="prose max-w-none"
                   dangerouslySetInnerHTML={{ __html: formData.description }}
+                />
+              </div>
+            )}
+
+            {formData.geoSnapshotEmbed && (
+              <div>
+                <h4 className="font-semibold mb-2">Geo Snapshot Preview</h4>
+                <div 
+                  className="w-full"
+                  dangerouslySetInnerHTML={{ __html: formData.geoSnapshotEmbed }}
                 />
               </div>
             )}

@@ -15,6 +15,7 @@ import {
   ListOrdered,
   Heading2,
 } from 'lucide-react'
+import '@/styles/rich-text-editor.scss'
 
 interface RichTextEditorProps {
   value: string
@@ -47,11 +48,7 @@ export function RichTextEditor({
     content: value,
     editorProps: {
       attributes: {
-        class: cn(
-          'prose prose-sm max-w-none focus:outline-none min-h-[150px]',
-          'prose-headings:my-3 prose-p:my-2 prose-ul:my-2 prose-ol:my-2',
-          'prose-li:my-0 prose-a:text-primary'
-        ),
+        class: 'rich-text-editor',
       },
     },
     onUpdate: ({ editor }) => {

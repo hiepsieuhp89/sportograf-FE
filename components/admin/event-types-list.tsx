@@ -5,7 +5,7 @@ import { collection, getDocs, deleteDoc, doc, query, orderBy } from "firebase/fi
 import { db } from "@/lib/firebase"
 import type { EventType } from "@/lib/types"
 import Link from "next/link"
-import { Edit, Trash2, Plus, Tag } from "lucide-react"
+import { Edit, Trash2, Plus, Tag, Eye } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
   Table,
@@ -16,10 +16,19 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
 
 export function EventTypesList() {
   const [eventTypes, setEventTypes] = useState<EventType[]>([])
   const [loading, setLoading] = useState(true)
+  const [selectedEventType, setSelectedEventType] = useState<EventType | null>(null)
+  const [showPreview, setShowPreview] = useState(false)
 
   useEffect(() => {
     const fetchEventTypes = async () => {
@@ -51,6 +60,11 @@ export function EventTypesList() {
     } catch (error) {
       console.error("Error deleting event type:", error)
     }
+  }
+
+  const handleViewDetails = (eventType: EventType) => {
+    setSelectedEventType(eventType)
+    setShowPreview(true)
   }
 
   if (loading) {
@@ -115,6 +129,13 @@ export function EventTypesList() {
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleViewDetails(eventType)}
+                      >
+                        <Eye className="h-4 w-4" />
+                      </Button>
                       <Link href={`/admin/event-types/${eventType.id}/edit`}>
                         <Button variant="outline" size="sm">
                           <Edit className="h-4 w-4" />
@@ -136,6 +157,58 @@ export function EventTypesList() {
           </Table>
         </div>
       )}
+
+      {/* Preview Dialog */}
+      <Dialog open={showPreview} onOpenChange={setShowPreview}>
+        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Event Type Details</DialogTitle>
+            <DialogDescription>
+              Preview of event type details and geo snapshot
+            </DialogDescription>
+          </DialogHeader>
+
+          {selectedEventType && (
+            <div className="space-y-6">
+              <div>
+                <h4 className="font-semibold">Name</h4>
+                <p>{selectedEventType.name}</p>
+              </div>
+
+              {selectedEventType.description && (
+                <div>
+                  <h4 className="font-semibold">Description</h4>
+                  <p>{selectedEventType.description}</p>
+                </div>
+              )}
+
+              {selectedEventType.color && (
+                <div>
+                  <h4 className="font-semibold">Color</h4>
+                  <Badge 
+                    style={{ backgroundColor: selectedEventType.color }}
+                    className="text-white"
+                  >
+                    {selectedEventType.color}
+                  </Badge>
+                </div>
+              )}
+
+              {/* Example Geo Snapshot Embed */}
+              <div>
+                <h4 className="font-semibold">Example Geo Snapshot Embed</h4>
+                <div className="w-full">
+                  <iframe 
+                    src="https://geosnapshot.com/e/hyrox-taipei-2025/37296?embed=true&source=event-embed" 
+                    style={{ width: '100%', height: '800px', border: '1px solid #e6e7e8' }}
+                    allow="camera; geolocation"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   )
 } 
