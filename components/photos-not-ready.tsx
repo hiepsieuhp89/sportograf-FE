@@ -20,7 +20,7 @@ export function PhotosNotReady({ event }: PhotosNotReadyProps) {
 
     return (
         <div className="min-h-screen bg-white">
-            <div className="bg-[#F8FAFB] text-mainNavyText max-w-5xl mx-auto">
+            <div className="bg-[#F8FAFB] text-mainNavyText max-w-7xl mx-auto">
                 <div className="flex items-center justify-between w-full">
                     <div className="flex items-center flex-1">
                         {/* Logo */}
