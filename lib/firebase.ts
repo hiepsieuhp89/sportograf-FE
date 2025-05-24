@@ -5,7 +5,7 @@
 
 import { initializeApp, getApps } from "firebase/app"
 import { getAuth } from "firebase/auth"
-import { getFirestore } from "firebase/firestore"
+import { getFirestore, doc, getDoc, Firestore } from "firebase/firestore"
 import { getStorage } from "firebase/storage"
 
 const firebaseConfig = {
@@ -21,7 +21,7 @@ const firebaseConfig = {
 // Initialize Firebase only on the client side and only if it hasn't been initialized
 let app
 let auth
-let db
+let db: Firestore
 let storage
 
 // Check if we're in the browser environment
@@ -39,17 +39,65 @@ if (typeof window !== "undefined") {
   storage = getStorage(app)
 }
 
-// Helper functions for authentication
-export const isAdmin = async (uid: string) => {
-  // In a real app, you would check against a database
-  // For this demo, we'll hardcode the admin user ID
-  return uid === "admin123"
+// User roles type
+export type UserRole = 'admin' | 'photographer' | 'user';
+
+interface UserData {
+  role: UserRole;
+  email: string;
+  name?: string;
 }
 
-export const isPhotographer = async (uid: string) => {
-  // In a real app, you would check against a database
-  // For this demo, we'll return true for any non-admin user
-  return uid !== "admin123" && uid !== ""
+// Helper functions for authentication
+export const isAdmin = async (uid: string): Promise<boolean> => {
+  try {
+    if (!uid) return false;
+    
+    const userRef = doc(db, 'users', uid);
+    const userSnap = await getDoc(userRef);
+    
+    if (!userSnap.exists()) return false;
+    
+    const userData = userSnap.data() as UserData;
+    return userData.role === 'admin';
+  } catch (error) {
+    console.error('Error checking admin status:', error);
+    return false;
+  }
+}
+
+export const isPhotographer = async (uid: string): Promise<boolean> => {
+  try {
+    if (!uid) return false;
+    
+    const userRef = doc(db, 'users', uid);
+    const userSnap = await getDoc(userRef);
+    
+    if (!userSnap.exists()) return false;
+    
+    const userData = userSnap.data() as UserData;
+    return userData.role === 'photographer';
+  } catch (error) {
+    console.error('Error checking photographer status:', error);
+    return false;
+  }
+}
+
+// Helper function to get user data
+export const getUserData = async (uid: string): Promise<UserData | null> => {
+  try {
+    if (!uid) return null;
+    
+    const userRef = doc(db, 'users', uid);
+    const userSnap = await getDoc(userRef);
+    
+    if (!userSnap.exists()) return null;
+    
+    return userSnap.data() as UserData;
+  } catch (error) {
+    console.error('Error fetching user data:', error);
+    return null;
+  }
 }
 
 export { auth, db, storage }
