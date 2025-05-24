@@ -289,16 +289,21 @@ export default function ViewEventPage({ params }: { params: { id: string } }) {
                   />
                 </div>
               )}
-              {event.bestOfImageUrl && (
-                <div>
-                  <p className="text-sm font-medium mb-2">Best of Image</p>
-                  <Image
-                    src={event.bestOfImageUrl}
-                    alt="Best of"
-                    width={300}
-                    height={200}
-                    className="rounded-md object-cover w-full"
-                  />
+              {event.bestOfImageUrls && event.bestOfImageUrls.length > 0 && (
+                <div className="space-y-4">
+                  <p className="text-sm font-medium mb-2">Best of Images</p>
+                  <div className="grid grid-cols-1 gap-4">
+                    {event.bestOfImageUrls.map((imageUrl, index) => (
+                      <Image
+                        key={index}
+                        src={imageUrl}
+                        alt={`Best of ${index + 1}`}
+                        width={300}
+                        height={200}
+                        className="rounded-md object-cover w-full"
+                      />
+                    ))}
+                  </div>
                 </div>
               )}
             </CardContent>

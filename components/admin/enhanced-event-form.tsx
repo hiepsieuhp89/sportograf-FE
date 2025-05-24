@@ -38,7 +38,7 @@ import {
     serverTimestamp,
     updateDoc,
 } from "firebase/firestore"
-import { Calendar, FileImage, Info, MapPin, MessageSquare, Tag, Users } from "lucide-react"
+import { Calendar, FileImage, Info, MapPin, MessageSquare, Tag, Users, Trash2 } from "lucide-react"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
@@ -84,9 +84,9 @@ export function EnhancedEventForm({ eventId }: EnhancedEventFormProps) {
   })
 
   const [imageFile, setImageFile] = useState<File | null>(null)
-  const [bestOfImageFile, setBestOfImageFile] = useState<File | null>(null)
+  const [bestOfImageFiles, setBestOfImageFiles] = useState<File[]>([])
   const [imagePreview, setImagePreview] = useState<string | null>(null)
-  const [bestOfImagePreview, setBestOfImagePreview] = useState<string | null>(null)
+  const [bestOfImagePreviews, setBestOfImagePreviews] = useState<string[]>([])
   const [selectedDate, setSelectedDate] = useState<Date>()
   const [selectedEndDate, setSelectedEndDate] = useState<Date>()
   const [tagInput, setTagInput] = useState("")
@@ -115,7 +115,7 @@ export function EnhancedEventForm({ eventId }: EnhancedEventFormProps) {
             url: eventData.url || "",
             photographerIds: eventData.photographerIds || [],
             imageUrl: eventData.imageUrl || "",
-            bestOfImageUrl: eventData.bestOfImageUrl || "",
+            bestOfImageUrls: eventData.bestOfImageUrls || [],
             geoSnapshotEmbed: eventData.geoSnapshotEmbed || "",
           })
 
@@ -123,8 +123,8 @@ export function EnhancedEventForm({ eventId }: EnhancedEventFormProps) {
             setImagePreview(eventData.imageUrl)
           }
 
-          if (eventData.bestOfImageUrl) {
-            setBestOfImagePreview(eventData.bestOfImageUrl)
+          if (eventData.bestOfImageUrls?.length) {
+            setBestOfImagePreviews(eventData.bestOfImageUrls)
           }
 
           if (eventData.date) {
@@ -204,13 +204,15 @@ export function EnhancedEventForm({ eventId }: EnhancedEventFormProps) {
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>, type: "image" | "bestOfImage") => {
     if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0]
+      const files = Array.from(e.target.files)
       if (type === "image") {
+        const file = files[0]
         setImageFile(file)
         setImagePreview(URL.createObjectURL(file))
       } else {
-        setBestOfImageFile(file)
-        setBestOfImagePreview(URL.createObjectURL(file))
+        setBestOfImageFiles(prev => [...prev, ...files])
+        const newPreviews = files.map(file => URL.createObjectURL(file))
+        setBestOfImagePreviews(prev => [...prev, ...newPreviews])
       }
     }
   }
@@ -249,29 +251,42 @@ export function EnhancedEventForm({ eventId }: EnhancedEventFormProps) {
     setShowPreview(true)
   }
 
+  const handleRemoveBestOfImage = (index: number) => {
+    setBestOfImageFiles(prev => prev.filter((_, i) => i !== index))
+    setBestOfImagePreviews(prev => prev.filter((_, i) => i !== index))
+    setFormData(prev => ({
+      ...prev,
+      bestOfImageUrls: prev.bestOfImageUrls?.filter((_, i) => i !== index) || []
+    }))
+  }
+
   const handleSubmit = async () => {
     setSaving(true)
     setError("")
 
     try {
       let imageUrl = formData.imageUrl
-      let bestOfImageUrl = formData.bestOfImageUrl
+      let bestOfImageUrls = formData.bestOfImageUrls || []
 
-      // Upload images if provided
+      // Upload main image if provided
       if (imageFile) {
         const path = `${Date.now()}_${imageFile.name}`
         imageUrl = await uploadImage(imageFile, path)
       }
 
-      if (bestOfImageFile) {
-        const path = `best-of/${Date.now()}_${bestOfImageFile.name}`
-        bestOfImageUrl = await uploadImage(bestOfImageFile, path)
-      }
+      // Upload best of images if provided
+      const uploadPromises = bestOfImageFiles.map(async (file) => {
+        const path = `best-of/${Date.now()}_${file.name}`
+        return uploadImage(file, path)
+      })
+      
+      const newBestOfImageUrls = await Promise.all(uploadPromises)
+      bestOfImageUrls = [...(formData.bestOfImageUrls || []), ...newBestOfImageUrls]
 
       const eventData = {
         ...formData,
         imageUrl,
-        bestOfImageUrl,
+        bestOfImageUrls,
         updatedAt: serverTimestamp(),
       }
 
@@ -627,26 +642,37 @@ export function EnhancedEventForm({ eventId }: EnhancedEventFormProps) {
 
                   <div className="space-y-2">
                     <Label htmlFor="bestOfImage">
-                      Best of Image <span className="text-red-500">*</span>
+                      Best of Images <span className="text-red-500">*</span>
                     </Label>
                     <Input
                       id="bestOfImage"
                       name="bestOfImage"
                       type="file"
                       accept="image/*"
+                      multiple
                       onChange={(e) => handleImageChange(e, "bestOfImage")}
                     />
-                    {bestOfImagePreview && (
-                      <div className="mt-2">
-                        <Image
-                          src={bestOfImagePreview}
-                          alt="Best of preview"
-                          width={200}
-                          height={150}
-                          className="rounded-md object-cover"
-                        />
-                      </div>
-                    )}
+                    <div className="grid grid-cols-2 gap-4 mt-2">
+                      {bestOfImagePreviews.map((preview, index) => (
+                        <div key={index} className="relative">
+                          <Image
+                            src={preview}
+                            alt={`Best of preview ${index + 1}`}
+                            width={200}
+                            height={150}
+                            className="rounded-md object-cover"
+                          />
+                          <Button
+                            variant="destructive"
+                            size="sm"
+                            className="absolute top-2 right-2"
+                            onClick={() => handleRemoveBestOfImage(index)}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -803,18 +829,18 @@ export function EnhancedEventForm({ eventId }: EnhancedEventFormProps) {
                       />
                     </div>
                   )}
-                  {bestOfImagePreview && (
-                    <div>
-                      <p className="text-sm text-gray-600 mb-1">Best of Image</p>
+                  {bestOfImagePreviews.length > 0 && bestOfImagePreviews.map((preview, index) => (
+                    <div key={index}>
+                      <p className="text-sm text-gray-600 mb-1">Best of Image {index + 1}</p>
                       <Image
-                        src={bestOfImagePreview}
-                        alt="Best of preview"
+                        src={preview}
+                        alt={`Best of preview ${index + 1}`}
                         width={300}
                         height={200}
                         className="rounded-md object-cover"
                       />
                     </div>
-                  )}
+                  ))}
                 </div>
               </div>
 

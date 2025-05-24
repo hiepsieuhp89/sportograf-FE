@@ -13,7 +13,7 @@ export interface Event {
   url: string
   photographerIds: string[]
   imageUrl?: string
-  bestOfImageUrl?: string
+  bestOfImageUrls?: string[]
   geoSnapshotEmbed?: string
   photographerConfirmations?: Record<string, boolean>
   createdAt?: string
