@@ -78,7 +78,7 @@ export function AdminDashboard({ children }: { children: React.ReactNode }) {
             {role === "admin" && (
               <>
                 <li>
-                  <Link href="/admin/events" className="flex items-center gap-2 p-2 rounded-md hover:bg-gray-700">
+                  <Link href="/admin/events" className="flex items-center gap-2 p-2 rounded-sm hover:bg-gray-700">
                     <Calendar className="h-5 w-5" />
                     <span>Events</span>
                   </Link>
@@ -86,7 +86,7 @@ export function AdminDashboard({ children }: { children: React.ReactNode }) {
                 <li>
                   <Link
                     href="/admin/photographers"
-                    className="flex items-center gap-2 p-2 rounded-md hover:bg-gray-700"
+                    className="flex items-center gap-2 p-2 rounded-sm hover:bg-gray-700"
                   >
                     <Camera className="h-5 w-5" />
                     <span>Photographers</span>
@@ -95,7 +95,7 @@ export function AdminDashboard({ children }: { children: React.ReactNode }) {
               </>
             )}
             <li>
-              <Link href="/admin/profile" className="flex items-center gap-2 p-2 rounded-md hover:bg-gray-700">
+              <Link href="/admin/profile" className="flex items-center gap-2 p-2 rounded-sm hover:bg-gray-700">
                 <User className="h-5 w-5" />
                 <span>Profile</span>
               </Link>
@@ -103,7 +103,7 @@ export function AdminDashboard({ children }: { children: React.ReactNode }) {
             <li>
               <button
                 onClick={handleLogout}
-                className="flex items-center gap-2 p-2 rounded-md hover:bg-gray-700 w-full text-left"
+                className="flex items-center gap-2 p-2 rounded-sm hover:bg-gray-700 w-full text-left"
               >
                 <LogOut className="h-5 w-5" />
                 <span>Logout</span>

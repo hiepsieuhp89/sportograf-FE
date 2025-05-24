@@ -58,12 +58,12 @@ export default function SubeventsPage({ params }: { params: { id: string } }) {
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-mainNavyText"></div>
           </div>
         ) : error ? (
-          <div className="bg-red-100 text-red-700 p-4 rounded-md">{error}</div>
+          <div className="bg-red-100 text-red-700 p-4 rounded-sm">{error}</div>
         ) : (
           <>
             <h1 className="text-2xl font-bold mb-6">Subevents</h1>
             {subevents.length === 0 ? (
-              <div className="bg-gray-100 p-6 rounded-md text-center">
+              <div className="bg-gray-100 p-6 rounded-sm text-center">
                 <p className="text-gray-500">No subevents found for this event.</p>
               </div>
             ) : (

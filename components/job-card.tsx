@@ -28,7 +28,7 @@ export function JobCard({ job }: JobCardProps) {
 
           <Link
             href={`/jobs/${job.id}`}
-            className="inline-block w-full bg-mainBackgroundV1 border border-mainNavyText text-mainNavyText py-2 px-4 rounded-md hover:bg-blue-50 transition-colors text-sm font-medium uppercase"
+            className="inline-block w-full bg-mainBackgroundV1 border border-mainNavyText text-mainNavyText py-2 px-4 rounded-sm hover:bg-blue-50 transition-colors text-sm font-medium uppercase"
           >
             SHOW JOB
           </Link>

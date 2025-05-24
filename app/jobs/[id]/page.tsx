@@ -63,7 +63,7 @@ export default function JobDetailPage({ params }: JobDetailPageProps) {
 
           <a
             href={`mailto:${job.applicationEmail}?subject=Application for ${job.title}`}
-            className="inline-block bg-mainNavyText text-mainBackgroundV1 py-3 px-8 rounded-md hover:bg-blue-700 transition-colors font-medium"
+            className="inline-block bg-mainNavyText text-mainBackgroundV1 py-3 px-8 rounded-sm hover:bg-blue-700 transition-colors font-medium"
           >
             Apply Now
           </a>
@@ -73,7 +73,7 @@ export default function JobDetailPage({ params }: JobDetailPageProps) {
         <div className="pt-8 border-t border-gray-200">
           <Link
             href="/jobs"
-            className="inline-block bg-gray-200 text-gray-700 py-2 px-6 rounded-md hover:bg-gray-300 transition-colors"
+            className="inline-block bg-gray-200 text-gray-700 py-2 px-6 rounded-sm hover:bg-gray-300 transition-colors"
           >
             Back
           </Link>

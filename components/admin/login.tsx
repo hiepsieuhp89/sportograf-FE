@@ -34,7 +34,7 @@ export function AdminLogin() {
     <div className="max-w-md mx-auto p-6 bg-mainBackgroundV1 rounded-lg shadow-md">
       <h1 className="text-2xl font-bold mb-6 text-center">Admin Login</h1>
 
-      {error && <div className="mb-4 p-4 bg-red-100 text-red-700 rounded-md">{error}</div>}
+      {error && <div className="mb-4 p-4 bg-red-100 text-red-700 rounded-sm">{error}</div>}
 
       <form onSubmit={handleLogin}>
         <div className="mb-4">
@@ -46,7 +46,7 @@ export function AdminLogin() {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-mainNavyText"
+            className="w-full px-4 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-mainNavyText"
             required
           />
         </div>
@@ -60,7 +60,7 @@ export function AdminLogin() {
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-mainNavyText"
+            className="w-full px-4 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-mainNavyText"
             required
           />
         </div>
@@ -68,7 +68,7 @@ export function AdminLogin() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-mainNavyText text-mainBackgroundV1 py-2 px-4 rounded-md hover:bg-blue-700 transition-colors disabled:bg-blue-300"
+          className="w-full bg-mainNavyText text-mainBackgroundV1 py-2 px-4 rounded-sm hover:bg-blue-700 transition-colors disabled:bg-blue-300"
         >
           {loading ? "Logging in..." : "Login"}
         </button>

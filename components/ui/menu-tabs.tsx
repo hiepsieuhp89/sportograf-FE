@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion'
 import { useState } from 'react'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 
 interface TabItem {
   text: string
@@ -73,8 +74,27 @@ const Tab = ({
 }
 
 const ButtonShapeTabs = ({ tabs, onTabSelect }: ButtonShapeTabsProps) => {
-  const [selected, setSelected] = useState<string>(tabs[0]?.text || '')
+  const pathname = usePathname()
   const [hoveredTab, setHoveredTab] = useState<string | null>(null)
+  
+  // Determine which tab should be selected based on pathname
+  const getSelectedTab = () => {
+    // Special case for home route
+    if (pathname === '/') {
+      const homeTab = tabs.find(tab => tab.href === '/')
+      return homeTab?.text || ''
+    }
+    
+    // Find tab whose href is included in the current pathname
+    const activeTab = tabs.find(tab => {
+      if (tab.href === '/') return false // Don't match home for other routes
+      return pathname.includes(tab.href)
+    })
+    
+    return activeTab?.text || ''
+  }
+  
+  const selected = getSelectedTab()
   
   return (
     <div className="mb-0 flex flex-wrap items-center gap-2 w-fit">
@@ -86,7 +106,6 @@ const ButtonShapeTabs = ({ tabs, onTabSelect }: ButtonShapeTabsProps) => {
               selected={selected === tab.text}
               isHovered={hoveredTab === tab.text}
               setSelected={() => {
-                setSelected(tab.text)
                 onTabSelect?.(tab)
               }}
               setHovered={(hovered) => {

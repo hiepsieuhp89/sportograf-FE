@@ -85,7 +85,7 @@ export function EventsList() {
         {userRole === "admin" && (
           <Link
             href="/admin/events/create"
-            className="flex items-center gap-2 bg-mainNavyText text-mainBackgroundV1 px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
+            className="flex items-center gap-2 bg-mainNavyText text-mainBackgroundV1 px-4 py-2 rounded-sm hover:bg-blue-700 transition-colors"
           >
             <Plus className="h-4 w-4" />
             <span>Create Event</span>
@@ -99,7 +99,7 @@ export function EventsList() {
           {userRole === "admin" && (
             <Link
               href="/admin/events/create"
-              className="inline-block mt-4 bg-mainNavyText text-mainBackgroundV1 px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
+              className="inline-block mt-4 bg-mainNavyText text-mainBackgroundV1 px-4 py-2 rounded-sm hover:bg-blue-700 transition-colors"
             >
               Create your first event
             </Link>
@@ -138,7 +138,7 @@ export function EventsList() {
                           alt={event.title}
                           width={40}
                           height={40}
-                          className="rounded-md object-cover"
+                          className="rounded-sm object-cover"
                         />
                       </div>
                       <div className="ml-4">

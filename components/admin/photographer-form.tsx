@@ -157,7 +157,7 @@ export function PhotographerForm({ photographerId }: PhotographerFormProps) {
     <div>
       <h1 className="text-2xl font-bold mb-6">{isEditing ? "Edit Photographer" : "Create Photographer"}</h1>
 
-      {error && <div className="mb-6 p-4 bg-red-100 text-red-700 rounded-md">{error}</div>}
+      {error && <div className="mb-6 p-4 bg-red-100 text-red-700 rounded-sm">{error}</div>}
 
       <form onSubmit={handleSubmit} className="bg-mainBackgroundV1 p-6 rounded-lg shadow-sm">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -175,7 +175,7 @@ export function PhotographerForm({ photographerId }: PhotographerFormProps) {
                   required
                   value={formData.name}
                   onChange={handleInputChange}
-                  className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-mainNavyText"
+                  className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-mainNavyText"
                 />
               </div>
             </div>
@@ -194,7 +194,7 @@ export function PhotographerForm({ photographerId }: PhotographerFormProps) {
                   value={formData.email}
                   onChange={handleInputChange}
                   disabled={isEditing} // Can't change email if editing
-                  className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-mainNavyText disabled:bg-gray-100 disabled:text-gray-500"
+                  className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-mainNavyText disabled:bg-gray-100 disabled:text-gray-500"
                 />
               </div>
               {isEditing && <p className="text-xs text-gray-500 mt-1">Email cannot be changed</p>}
@@ -212,7 +212,7 @@ export function PhotographerForm({ photographerId }: PhotographerFormProps) {
                   required={!isEditing}
                   value={formData.password || ""}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-mainNavyText"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-mainNavyText"
                   minLength={6}
                 />
                 <p className="text-xs text-gray-500 mt-1">Minimum 6 characters</p>
@@ -231,7 +231,7 @@ export function PhotographerForm({ photographerId }: PhotographerFormProps) {
                   rows={4}
                   value={formData.bio}
                   onChange={handleInputChange}
-                  className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-mainNavyText"
+                  className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-mainNavyText"
                 />
               </div>
             </div>
@@ -252,7 +252,7 @@ export function PhotographerForm({ photographerId }: PhotographerFormProps) {
                       type="file"
                       accept="image/*"
                       onChange={handleImageChange}
-                      className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-mainNavyText"
+                      className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-mainNavyText"
                     />
                   </div>
                 </div>
@@ -280,14 +280,14 @@ export function PhotographerForm({ photographerId }: PhotographerFormProps) {
           <button
             type="button"
             onClick={() => router.push("/admin/photographers")}
-            className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors"
+            className="px-4 py-2 border border-gray-300 rounded-sm text-gray-700 hover:bg-gray-50 transition-colors"
           >
             Cancel
           </button>
           <button
             type="submit"
             disabled={saving}
-            className="px-4 py-2 bg-mainNavyText text-mainBackgroundV1 rounded-md hover:bg-blue-700 transition-colors disabled:bg-blue-300"
+            className="px-4 py-2 bg-mainNavyText text-mainBackgroundV1 rounded-sm hover:bg-blue-700 transition-colors disabled:bg-blue-300"
           >
             {saving ? "Saving..." : "Save Photographer"}
           </button>

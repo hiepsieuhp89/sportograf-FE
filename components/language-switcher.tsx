@@ -20,7 +20,7 @@ export function LanguageSwitcher() {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 z-20 mt-2 w-32 origin-top-right rounded-md bg-mainBackgroundV1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+        <div className="absolute right-0 z-20 mt-2 w-32 origin-top-right rounded-sm bg-mainBackgroundV1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
           <div className="py-1">
             <button
               onClick={() => {

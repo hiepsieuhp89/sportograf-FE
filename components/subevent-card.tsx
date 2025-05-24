@@ -14,7 +14,7 @@ export function SubeventCard({ subevent }: SubeventCardProps) {
   const { t } = useTranslations()
 
   return (
-    <div className="flex flex-col border border-gray-200 rounded-md overflow-hidden">
+    <div className="flex flex-col border border-gray-200 rounded-sm overflow-hidden">
       <div className="p-4 text-center">
         <div className="mb-4">
           <Image

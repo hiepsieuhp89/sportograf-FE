@@ -203,7 +203,7 @@ export function EventForm({ eventId }: EventFormProps) {
     <div>
       <h1 className="text-2xl font-bold mb-6">{isEditing ? "Edit Event" : "Create Event"}</h1>
 
-      {error && <div className="mb-6 p-4 bg-red-100 text-red-700 rounded-md">{error}</div>}
+      {error && <div className="mb-6 p-4 bg-red-100 text-red-700 rounded-sm">{error}</div>}
 
       <form onSubmit={handleSubmit} className="bg-mainBackgroundV1 p-6 rounded-lg shadow-sm">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -221,7 +221,7 @@ export function EventForm({ eventId }: EventFormProps) {
                   required
                   value={formData.title}
                   onChange={handleInputChange}
-                  className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-mainNavyText"
+                  className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-mainNavyText"
                 />
               </div>
             </div>
@@ -236,7 +236,7 @@ export function EventForm({ eventId }: EventFormProps) {
                 rows={4}
                 value={formData.description}
                 onChange={handleInputChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-mainNavyText"
+                className="w-full px-4 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-mainNavyText"
               />
             </div>
 
@@ -253,7 +253,7 @@ export function EventForm({ eventId }: EventFormProps) {
                   required
                   value={formData.date}
                   onChange={handleInputChange}
-                  className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-mainNavyText"
+                  className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-mainNavyText"
                 />
               </div>
             </div>
@@ -270,7 +270,7 @@ export function EventForm({ eventId }: EventFormProps) {
                   type="time"
                   value={formData.time}
                   onChange={handleInputChange}
-                  className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-mainNavyText"
+                  className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-mainNavyText"
                 />
               </div>
             </div>
@@ -288,7 +288,7 @@ export function EventForm({ eventId }: EventFormProps) {
                   required
                   value={formData.location}
                   onChange={handleInputChange}
-                  className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-mainNavyText"
+                  className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-mainNavyText"
                 />
               </div>
             </div>
@@ -303,7 +303,7 @@ export function EventForm({ eventId }: EventFormProps) {
                 type="url"
                 value={formData.url}
                 onChange={handleInputChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-mainNavyText"
+                className="w-full px-4 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-mainNavyText"
               />
             </div>
           </div>
@@ -323,7 +323,7 @@ export function EventForm({ eventId }: EventFormProps) {
                       type="file"
                       accept="image/*"
                       onChange={(e) => handleImageChange(e, "image")}
-                      className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-mainNavyText"
+                      className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-mainNavyText"
                     />
                   </div>
                 </div>
@@ -334,7 +334,7 @@ export function EventForm({ eventId }: EventFormProps) {
                       alt="Event preview"
                       width={64}
                       height={64}
-                      className="h-full w-full object-cover rounded-md"
+                      className="h-full w-full object-cover rounded-sm"
                     />
                   </div>
                 )}
@@ -356,7 +356,7 @@ export function EventForm({ eventId }: EventFormProps) {
                       type="file"
                       accept="image/*"
                       onChange={(e) => handleImageChange(e, "bestOfImage")}
-                      className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-mainNavyText"
+                      className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-mainNavyText"
                     />
                   </div>
                 </div>
@@ -367,7 +367,7 @@ export function EventForm({ eventId }: EventFormProps) {
                       alt="Best of preview"
                       width={64}
                       height={64}
-                      className="h-full w-full object-cover rounded-md"
+                      className="h-full w-full object-cover rounded-sm"
                     />
                   </div>
                 )}
@@ -389,7 +389,7 @@ export function EventForm({ eventId }: EventFormProps) {
                   multiple
                   value={formData.photographerIds}
                   onChange={handlePhotographerChange}
-                  className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-mainNavyText h-40"
+                  className="pl-10 w-full px-4 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-mainNavyText h-40"
                 >
                   {photographers.map((photographer) => (
                     <option key={photographer.id} value={photographer.id}>
@@ -407,14 +407,14 @@ export function EventForm({ eventId }: EventFormProps) {
           <button
             type="button"
             onClick={() => router.push("/admin/events")}
-            className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors"
+            className="px-4 py-2 border border-gray-300 rounded-sm text-gray-700 hover:bg-gray-50 transition-colors"
           >
             Cancel
           </button>
           <button
             type="submit"
             disabled={saving}
-            className="px-4 py-2 bg-mainNavyText text-mainBackgroundV1 rounded-md hover:bg-blue-700 transition-colors disabled:bg-blue-300"
+            className="px-4 py-2 bg-mainNavyText text-mainBackgroundV1 rounded-sm hover:bg-blue-700 transition-colors disabled:bg-blue-300"
           >
             {saving ? "Saving..." : "Save Event"}
           </button>

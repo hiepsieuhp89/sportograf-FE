@@ -33,7 +33,7 @@ export default function NewsletterPage() {
                     <input
                       type="email"
                       placeholder="Enter your email"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-mainNavyText text-gray-800"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-mainNavyText text-gray-800"
                       required
                     />
                   </div>
@@ -50,7 +50,7 @@ export default function NewsletterPage() {
 
                   <button
                     type="submit"
-                    className="w-full bg-red-600 text-mainBackgroundV1 py-2 px-4 rounded-md hover:bg-red-700 transition-colors"
+                    className="w-full bg-red-600 text-mainBackgroundV1 py-2 px-4 rounded-sm hover:bg-red-700 transition-colors"
                   >
                     Subscribe
                   </button>

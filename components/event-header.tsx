@@ -13,7 +13,7 @@ export function EventHeader({ event }: EventHeaderProps) {
   const { t } = useTranslations()
 
   return (
-    <div className="bg-mainBackgroundV1 p-6 rounded-md shadow-sm">
+    <div className="bg-mainBackgroundV1 p-6 rounded-sm shadow-sm">
       <div className="flex flex-col md:flex-row items-center gap-6">
         <div className="w-24 h-24 flex-shrink-0">
           <Image
@@ -50,7 +50,7 @@ export function EventHeader({ event }: EventHeaderProps) {
           </div>
         </div>
         <div className="flex-shrink-0">
-          <button className="flex items-center gap-1 bg-mainNavyText text-mainBackgroundV1 px-4 py-2 rounded-md hover:bg-blue-700 transition-colors">
+          <button className="flex items-center gap-1 bg-mainNavyText text-mainBackgroundV1 px-4 py-2 rounded-sm hover:bg-blue-700 transition-colors">
             <Star className="w-4 h-4" />
             <span>See Best of</span>
           </button>

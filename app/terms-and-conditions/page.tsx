@@ -74,7 +74,7 @@ export default function TermsPage() {
           </p>
 
           <h2 className="text-xl font-semibold mt-8 mb-4">5. Right of cancellation</h2>
-          <div className="bg-gray-100 p-4 rounded-md mb-6">
+          <div className="bg-gray-100 p-4 rounded-sm mb-6">
             <h3 className="font-semibold mb-2">Right of cancellation</h3>
             <p className="mb-4">
               You have the right to cancel this contract within fourteen days, without stating any reasons. The

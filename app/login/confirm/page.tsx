@@ -75,18 +75,18 @@ export default function ConfirmLoginPage() {
 
           {status === "success" && (
             <div className="text-center">
-              <div className="mb-4 p-4 bg-green-100 text-green-700 rounded-md">Login successful!</div>
+              <div className="mb-4 p-4 bg-green-100 text-green-700 rounded-sm">Login successful!</div>
               <p className="text-gray-600">You are now signed in. Redirecting...</p>
             </div>
           )}
 
           {status === "error" && (
             <div className="text-center">
-              <div className="mb-4 p-4 bg-red-100 text-red-700 rounded-md">{error}</div>
+              <div className="mb-4 p-4 bg-red-100 text-red-700 rounded-sm">{error}</div>
               <p className="text-gray-600">Please try logging in again or contact support if the problem persists.</p>
               <button
                 onClick={() => router.push("/login")}
-                className="mt-4 px-4 py-2 bg-mainNavyText text-mainBackgroundV1 rounded-md hover:bg-blue-700 transition-colors"
+                className="mt-4 px-4 py-2 bg-mainNavyText text-mainBackgroundV1 rounded-sm hover:bg-blue-700 transition-colors"
               >
                 Back to Login
               </button>

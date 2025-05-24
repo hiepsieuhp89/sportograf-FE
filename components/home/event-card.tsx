@@ -35,7 +35,7 @@ export function EventCard({ event }: EventCardProps) {
   }
 
   return (
-    <div className="group relative overflow-hidden rounded-lg shadow-md transition-all duration-300 hover:shadow-xl bg-white border-[2px] border-gray-100 hover:border-mainDarkBackgroundV1 cursor-pointer">
+    <div className="group relative overflow-hidden rounded-lg shadow-md transition-all duration-300 hover:shadow-xl bg-white border-[2px] border-gray-50 hover:border-mainDarkBackgroundV1 cursor-pointer">
       {/* Image container with overlay effect */}
       <div className="relative h-40 overflow-hidden bg-gray-100">
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10"></div>

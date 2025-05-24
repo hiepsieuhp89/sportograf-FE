@@ -21,6 +21,7 @@ export function Header() {
     { text: "HOME", href: "/" },
     { text: "LOGIN", href: "/login" },
     { text: "ABOUT US", href: "/about-us" },
+    { text: "JOBS", href: "/jobs" },
   ]
 
   return (

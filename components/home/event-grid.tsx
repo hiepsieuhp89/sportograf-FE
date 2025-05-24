@@ -50,7 +50,7 @@ export function EventGrid() {
               <div className="p-4">
                 <Skeleton className="h-4 w-20 mb-2" />
                 <Skeleton className="h-10 w-full mb-3" />
-                <Skeleton className="h-10 w-full rounded-md" />
+                <Skeleton className="h-10 w-full rounded-sm" />
               </div>
             </div>
           ))}

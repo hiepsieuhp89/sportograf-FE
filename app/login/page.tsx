@@ -6,7 +6,7 @@ import { useState, useEffect } from "react"
 import { StaticPageLayout } from "@/components/static-page-layout"
 import { useTranslations } from "@/hooks/use-translations"
 import { sendSignInLinkToEmail } from "firebase/auth"
-import { auth } from "@/lib/firebase"
+// import { auth } from "@/lib/firebase"
 
 export default function LoginPage() {
   const { t } = useTranslations()
@@ -27,9 +27,9 @@ export default function LoginPage() {
     setError("")
 
     try {
-      if (!auth) {
-        throw new Error("Authentication is not initialized")
-      }
+      // if (!auth) {
+      //   throw new Error("Authentication is not initialized")
+      // }
 
       // Configure ActionCodeSettings
       const actionCodeSettings = {
@@ -38,7 +38,7 @@ export default function LoginPage() {
       }
 
       // Send sign-in link
-      await sendSignInLinkToEmail(auth, email, actionCodeSettings)
+      // await sendSignInLinkToEmail(auth, email, actionCodeSettings)
 
       // Save email to localStorage for confirmation page
       localStorage.setItem("emailForSignIn", email)
@@ -60,14 +60,14 @@ export default function LoginPage() {
 
           {success ? (
             <div className="text-center">
-              <div className="mb-4 p-4 bg-green-100 text-green-700 rounded-md">
+              <div className="mb-4 p-4 bg-green-100 text-green-700 rounded-sm">
                 Magic link sent! Check your email to complete login.
               </div>
               <p className="text-gray-600">We've sent a login link to {email}.</p>
             </div>
           ) : (
             <>
-              {error && <div className="mb-4 p-4 bg-red-100 text-red-700 rounded-md">{error}</div>}
+              {error && <div className="mb-4 p-4 bg-red-100 text-red-700 rounded-sm">{error}</div>}
 
               <form onSubmit={handleSubmit}>
                 <div className="mb-6">
@@ -79,7 +79,7 @@ export default function LoginPage() {
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-mainNavyText"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-none focus:outline-none focus:ring-2 focus:ring-mainNavyText"
                     required
                   />
                 </div>
@@ -87,7 +87,7 @@ export default function LoginPage() {
                 <button
                   type="submit"
                   disabled={loading || !isClient}
-                  className="w-full bg-mainNavyText text-mainBackgroundV1 py-3 rounded-md hover:bg-blue-700 transition-colors disabled:bg-blue-300"
+                  className="w-full bg-mainNavyText text-mainBackgroundV1 py-3 rounded-none hover:bg-blue-700 transition-colors disabled:bg-blue-300"
                 >
                   {loading ? "Sending..." : t("sendMagicLink")}
                 </button>

@@ -27,6 +27,7 @@ export function StaticPageLayout({ children }: StaticPageLayoutProps) {
     { text: "HOME", href: "/" },
     { text: "LOGIN", href: "/login" },
     { text: "ABOUT US", href: "/about-us" },
+    { text: "JOBS", href: "/jobs" },
   ]
   return (
     <main className="bg-mainBackgroundV1 min-h-screen">
