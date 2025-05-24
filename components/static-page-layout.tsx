@@ -71,7 +71,7 @@ export function StaticPageLayout({ children }: StaticPageLayoutProps) {
           </div>
         </div>
       </header>
-      <div className="flex-1 px-4 md:px-8">{children}</div>
+      <div className="flex-1">{children}</div>
       <Footer />
     </main>
   )
