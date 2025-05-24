@@ -14,7 +14,7 @@ export default function Home() {
         <Header />
         <HeroCarousel />
         <HeroImages />
-        <div className="max-w-7xl mx-auto px-16">
+        <div className="max-w-7xl mx-auto">
           <EventGrid />
         </div>
         <Footer />
