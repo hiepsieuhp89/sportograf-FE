@@ -5,7 +5,6 @@ import { db } from "@/lib/firebase"
 import { PhotosNotReady } from "@/components/photos-not-ready"
 import { EventDetail } from "@/components/event-detail"
 import { StaticPageLayout } from "@/components/static-page-layout"
-import { useEventStore } from "@/lib/store"
 import type { Event } from "@/lib/types"
 import { doc, getDoc } from "firebase/firestore"
 
@@ -13,34 +12,21 @@ export default function EventPage({ params }: { params: { id: string } }) {
   const [event, setEvent] = useState<Event | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
-  const { selectedEvent, getEventById } = useEventStore()
 
   useEffect(() => {
     const fetchEvent = async () => {
       try {
-        // First try to get from store
-        if (selectedEvent && selectedEvent.id === params.id) {
-          setEvent(selectedEvent)
-          setLoading(false)
-          return
-        }
-
-        const storeEvent = getEventById(params.id)
-        if (storeEvent) {
-          setEvent(storeEvent)
-          setLoading(false)
-          return
-        }
-
-        // If not in store, fetch from Firestore
         const eventDoc = await getDoc(doc(db, "events", params.id))
         if (!eventDoc.exists()) {
           setError("Event not found")
-          setLoading(false)
           return
         }
 
-        const eventData = { id: eventDoc.id, ...eventDoc.data() } as Event
+        const eventData = { 
+          id: eventDoc.id, 
+          ...eventDoc.data() 
+        } as Event
+        
         setEvent(eventData)
       } catch (error) {
         console.error("Error fetching event:", error)
@@ -51,12 +37,20 @@ export default function EventPage({ params }: { params: { id: string } }) {
     }
 
     fetchEvent()
-  }, [params.id, selectedEvent, getEventById])
+  }, [params.id])
 
-  const isEventCompleted = (event: Event) => {
-    const eventDate = new Date(event.date)
-    const today = new Date()
-    return eventDate < today
+  const isEventNotStarted = (event: Event) => {
+    // Parse event date and time
+    const [hours, minutes] = event.time.split(":").map(Number)
+    const eventDateTime = new Date(event.date)
+    eventDateTime.setHours(hours, minutes, 0, 0)
+
+    // Get current date and time
+    const now = new Date()
+
+    console.log("eventDateTime", eventDateTime)
+    console.log("now", now)
+    return eventDateTime > now
   }
 
   if (loading) {
@@ -72,17 +66,21 @@ export default function EventPage({ params }: { params: { id: string } }) {
   if (error || !event) {
     return (
       <StaticPageLayout>
-        <div className="bg-red-100 text-red-700 p-4 rounded-sm">{error || "Event not found"}</div>
+        <div className="bg-red-100 text-red-700 p-4 rounded-sm">
+          {error || "Event not found"}
+        </div>
       </StaticPageLayout>
     )
   }
 
+  console.log("event", event)
+  console.log("isEventNotStarted", isEventNotStarted(event))
   return (
     <StaticPageLayout>
-      {isEventCompleted(event) ? (
-        <EventDetail event={event} />
-      ) : (
+      {isEventNotStarted(event) ? (
         <PhotosNotReady event={event} />
+      ) : (
+        <EventDetail event={event} />
       )}
     </StaticPageLayout>
   )
