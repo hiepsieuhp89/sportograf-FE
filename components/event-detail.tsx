@@ -73,7 +73,7 @@ export function EventDetail({ event }: EventDetailProps) {
                     <div className="flex flex-col sm:flex-row items-center justify-between w-full p-6">
                         <div className="flex flex-col sm:flex-row items-center flex-1 w-full sm:w-auto gap-6">
                             {/* Event Image */}
-                            <div className="w-32 h-32 relative flex-shrink-0">
+                            <div className="w-44 h-44 relative flex-shrink-0">
                                 <Image
                                     src={event.imageUrl || ""}
                                     alt={event.title}
