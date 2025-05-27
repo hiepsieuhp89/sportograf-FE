@@ -6,10 +6,12 @@ import { useState, useEffect } from "react"
 import { StaticPageLayout } from "@/components/static-page-layout"
 import { useTranslations } from "@/hooks/use-translations"
 import { sendSignInLinkToEmail } from "firebase/auth"
+import { useFirebase } from "@/components/firebase-provider"
 // import { auth } from "@/lib/firebase"
 
 export default function LoginPage() {
   const { t } = useTranslations()
+  const { auth } = useFirebase()
   const [email, setEmail] = useState("")
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
@@ -27,21 +29,32 @@ export default function LoginPage() {
     setError("")
 
     try {
-      // if (!auth) {
-      //   throw new Error("Authentication is not initialized")
-      // }
+      if (!auth) {
+        throw new Error("Authentication is not initialized")
+      }
 
-      // Configure ActionCodeSettings
+      // Configure ActionCodeSettings with more specific settings
       const actionCodeSettings = {
+        // This URL must be whitelisted in the Firebase Console
         url: `${window.location.origin}/login/confirm`,
         handleCodeInApp: true,
+        // Add these settings to make it more robust
+        dynamicLinkDomain: window.location.hostname,
+        iOS: {
+          bundleId: 'com.yourapp.ios'
+        },
+        android: {
+          packageName: 'com.yourapp.android',
+          installApp: true,
+          minimumVersion: '12'
+        }
       }
 
       // Send sign-in link
-      // await sendSignInLinkToEmail(auth, email, actionCodeSettings)
+      await sendSignInLinkToEmail(auth, email, actionCodeSettings)
 
       // Save email to localStorage for confirmation page
-      localStorage.setItem("emailForSignIn", email)
+      window.localStorage.setItem("emailForSignIn", email)
 
       setSuccess(true)
     } catch (error: any) {

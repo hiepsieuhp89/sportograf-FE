@@ -1,11 +1,13 @@
+"use client"
+
 import type React from "react"
-import type { Metadata } from "next"
 import { Inter, Montserrat } from "next/font/google"
 import "./globals.css"
 import { LanguageProvider } from "@/components/language-provider"
 import { ThemeProvider } from "@/components/theme-provider"
 import { FirebaseProvider } from "@/components/firebase-provider"
 import { ClientOnly } from "@/components/client-only"
+import { UserProvider } from "@/contexts/user-context"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -16,12 +18,6 @@ const montserrat = Montserrat({
   variable: "--font-montserrat",
 })
 
-export const metadata: Metadata = {
-  title: "Sportograf - Photography for the love of sport",
-  description: "Find your event photos from sports events around the world",
-    generator: 'v0.dev'
-}
-
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${montserrat.variable}`} suppressHydrationWarning>
@@ -29,7 +25,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <ClientOnly>
           <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
             <FirebaseProvider>
-              <LanguageProvider>{children}</LanguageProvider>
+              <UserProvider>
+                <LanguageProvider>{children}</LanguageProvider>
+              </UserProvider>
             </FirebaseProvider>
           </ThemeProvider>
         </ClientOnly>

@@ -3,93 +3,109 @@
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { isSignInWithEmailLink, signInWithEmailLink } from "firebase/auth"
-import { auth } from "@/lib/firebase"
+import { useFirebase } from "@/components/firebase-provider"
 import { StaticPageLayout } from "@/components/static-page-layout"
 
 export default function ConfirmLoginPage() {
   const router = useRouter()
-  const [status, setStatus] = useState<"loading" | "error" | "success">("loading")
-  const [error, setError] = useState("")
-  const [isClient, setIsClient] = useState(false)
+  const { auth } = useFirebase()
+  const [error, setError] = useState<string>("")
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    setIsClient(true)
-  }, [])
-
-  useEffect(() => {
-    if (!isClient || !auth) return
-
-    const completeSignIn = async () => {
+    const handleEmailLink = async () => {
       try {
+        if (!auth) {
+          console.log("Auth not initialized yet")
+          return
+        }
+
+        // Add debug logging
+        console.log("Current URL:", window.location.href)
+        console.log("Is sign in link:", isSignInWithEmailLink(auth, window.location.href))
+
+        // Check if the link is a sign-in link
         if (isSignInWithEmailLink(auth, window.location.href)) {
-          let email = localStorage.getItem("emailForSignIn")
+          // Get the email from localStorage
+          let email = window.localStorage.getItem("emailForSignIn")
+          console.log("Retrieved email from storage:", email)
 
-          // If email is missing, prompt user
           if (!email) {
+            // If email is not found in localStorage, prompt user
             email = window.prompt("Please provide your email for confirmation")
+            console.log("Prompted email:", email)
           }
 
           if (!email) {
-            setStatus("error")
-            setError("Email is required to complete sign in")
-            return
+            throw new Error("Email is required to complete sign in")
           }
 
-          await signInWithEmailLink(auth, email, window.location.href)
+          try {
+            // Complete the sign-in process
+            const result = await signInWithEmailLink(auth, email, window.location.href)
+            console.log("Sign in successful:", result)
 
-          // Clear email from storage
-          localStorage.removeItem("emailForSignIn")
+            // Clear email from storage
+            window.localStorage.removeItem("emailForSignIn")
 
-          setStatus("success")
+            // Show success message before redirect
+            setLoading(false)
+            setError("")
 
-          // Redirect after successful login
-          setTimeout(() => {
-            router.push("/")
-          }, 2000)
+            // Add a small delay before redirect to show success state
+            setTimeout(() => {
+              router.push("/")
+            }, 1500)
+          } catch (signInError: any) {
+            console.error("Specific sign in error:", signInError)
+            if (signInError.code === 'auth/invalid-action-code') {
+              throw new Error("This login link has expired or already been used. Please request a new one.")
+            }
+            throw signInError
+          }
         } else {
-          setStatus("error")
-          setError("Invalid sign in link")
+          throw new Error("Invalid magic link. Please ensure you're using the link from your email.")
         }
       } catch (error: any) {
         console.error("Error signing in with email link:", error)
-        setStatus("error")
-        setError(error.message || "Failed to complete sign in")
+        setError(error.message || "Failed to complete sign in. Please try requesting a new login link.")
+      } finally {
+        setLoading(false)
       }
     }
 
-    completeSignIn()
-  }, [router, isClient])
+    // Only run if auth is initialized
+    if (auth) {
+      handleEmailLink()
+    }
+  }, [auth, router])
 
   return (
     <StaticPageLayout>
       <div className="max-w-md mx-auto px-4 py-12">
         <div className="bg-mainBackgroundV1 p-8 rounded-lg shadow-sm">
-          <h1 className="text-2xl font-bold mb-6 text-center">Completing Login</h1>
+          <h1 className="text-2xl font-bold mb-6 text-center">Completing Sign In</h1>
 
-          {status === "loading" && (
+          {loading ? (
             <div className="text-center">
               <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-mainNavyText mx-auto mb-4"></div>
-              <p className="text-gray-600">Verifying your login...</p>
+              <p>Verifying your login...</p>
             </div>
-          )}
-
-          {status === "success" && (
-            <div className="text-center">
-              <div className="mb-4 p-4 bg-green-100 text-green-700 rounded-sm">Login successful!</div>
-              <p className="text-gray-600">You are now signed in. Redirecting...</p>
-            </div>
-          )}
-
-          {status === "error" && (
+          ) : error ? (
             <div className="text-center">
               <div className="mb-4 p-4 bg-red-100 text-red-700 rounded-sm">{error}</div>
-              <p className="text-gray-600">Please try logging in again or contact support if the problem persists.</p>
               <button
                 onClick={() => router.push("/login")}
-                className="mt-4 px-4 py-2 bg-mainNavyText text-mainBackgroundV1 rounded-sm hover:bg-blue-700 transition-colors"
+                className="text-mainNavyText hover:underline"
               >
-                Back to Login
+                Return to login
               </button>
+            </div>
+          ) : (
+            <div className="text-center">
+              <div className="mb-4 p-4 bg-green-100 text-green-700 rounded-sm">
+                Login successful! Redirecting...
+              </div>
             </div>
           )}
         </div>

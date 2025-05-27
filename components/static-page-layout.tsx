@@ -4,11 +4,15 @@ import type React from "react"
 import Link from "next/link"
 import { useTranslations } from "@/hooks/use-translations"
 import { LanguageSwitcher } from "./language-switcher"
-import { Facebook, Instagram, Twitter } from "lucide-react"
+import { Facebook, Instagram, Twitter, LogOut, User } from "lucide-react"
 import { Footer } from "./footer"
 import Image from "next/image"
 import ButtonShapeTabs from "./ui/menu-tabs"
 import { MobileMenu } from "./mobile-menu"
+import { useUser } from "@/contexts/user-context"
+import { useFirebase } from "./firebase-provider"
+import { signOut } from "firebase/auth"
+import { useRouter } from "next/navigation"
 
 interface StaticPageLayoutProps {
   children: React.ReactNode
@@ -16,6 +20,21 @@ interface StaticPageLayoutProps {
 
 export function StaticPageLayout({ children }: StaticPageLayoutProps) {
   const { t } = useTranslations()
+  const { userData, loading, initialized } = useUser()
+  const { auth } = useFirebase()
+  const router = useRouter()
+
+  const handleLogout = async () => {
+    try {
+      if (auth) {
+        await signOut(auth)
+        router.push("/")
+      }
+    } catch (error) {
+      console.error("Error signing out:", error)
+    }
+  }
+
   const mainTabs = [
     { text: "CONTACT", href: "/contact" },
     { text: "LEGAL", href: "/legal" },
@@ -24,12 +43,24 @@ export function StaticPageLayout({ children }: StaticPageLayoutProps) {
     { text: "NEWSLETTER", href: "/newsletter" },
     { text: "FAQ", href: "/faq" },
   ]
+
+  // Dynamically set auth-related tabs based on user state
   const extraTabs = [
     { text: "HOME", href: "/" },
-    { text: "LOGIN", href: "/login" },
+    ...(initialized && !loading && !userData
+      ? [{ text: "LOGIN", href: "/login" }]
+      : [
+          { text: "PROFILE", href: "/profile" },
+          {
+            text: "LOGOUT",
+            href: "#",
+            onClick: handleLogout,
+          },
+        ]),
     { text: "ABOUT US", href: "/about-us" },
     { text: "JOBS", href: "/jobs" },
   ]
+
   return (
     <main className="bg-mainBackgroundV1 min-h-screen">
       {/* Static Header */}
@@ -56,6 +87,21 @@ export function StaticPageLayout({ children }: StaticPageLayoutProps) {
               <div className="hidden lg:flex space-x-4 items-center">
                 <ButtonShapeTabs tabs={extraTabs} />
                 <LanguageSwitcher />
+                {initialized && !loading && userData && (
+                  <Link href="/profile" className="flex items-center space-x-2 hover:text-gray-300">
+                    {userData.profileImageUrl ? (
+                      <Image
+                        src={userData.profileImageUrl}
+                        alt="Profile"
+                        width={32}
+                        height={32}
+                        className="rounded-full"
+                      />
+                    ) : (
+                      <User className="h-5 w-5" />
+                    )}
+                  </Link>
+                )}
                 <Link href="https://facebook.com" aria-label="Facebook">
                   <Facebook className="h-5 w-5 hover:text-gray-300" />
                 </Link>
@@ -66,7 +112,12 @@ export function StaticPageLayout({ children }: StaticPageLayoutProps) {
                   <Twitter className="h-5 w-5 hover:text-gray-300" />
                 </Link>
               </div>
-              <MobileMenu mainTabs={mainTabs} extraTabs={extraTabs} />
+              <MobileMenu 
+                mainTabs={mainTabs} 
+                extraTabs={extraTabs} 
+                userData={userData}
+                onLogout={handleLogout}
+              />
             </div>
           </div>
         </div>

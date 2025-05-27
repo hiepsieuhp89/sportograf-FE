@@ -1,5 +1,5 @@
-import { PutObjectCommand } from '@aws-sdk/client-s3';
-import { s3Client, s3Config } from './aws-config';
+import { PutObjectCommand } from '@aws-sdk/client-s3'
+import { s3Client, s3Config } from './aws-config'
 
 /**
  * Uploads a file to AWS S3 and returns the URL
@@ -7,28 +7,32 @@ import { s3Client, s3Config } from './aws-config';
  * @param path Path where the file should be stored (e.g. 'photographers/profile-images/')
  * @returns Promise<string> The URL of the uploaded file
  */
-export const uploadFile = async (file: File, path: string): Promise<string> => {
+export async function uploadFile(file: File, path: string): Promise<string> {
   try {
-    // Create a unique file name
-    const fileName = `${path}${Date.now()}_${file.name.replace(/[^a-zA-Z0-9._-]/g, '')}`;
-    
+    // Create unique file name to prevent overwriting
+    const uniqueFileName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '')}`
+    const fullPath = `${path}/${uniqueFileName}`
+
     // Convert file to buffer
-    const buffer = await file.arrayBuffer();
-    
+    const fileBuffer = await file.arrayBuffer()
+
     // Upload to S3
     const command = new PutObjectCommand({
       Bucket: s3Config.bucketName,
-      Key: fileName,
-      Body: new Uint8Array(buffer),
+      Key: fullPath,
+      Body: Buffer.from(fileBuffer),
       ContentType: file.type,
-    });
+    })
 
-    await s3Client.send(command);
+    await s3Client.send(command)
 
-    // Return the public URL
-    return `https://${s3Config.bucketName}.s3.${s3Config.region}.amazonaws.com/${fileName}`;
+    // Construct the URL
+    // Format: https://<bucket-name>.s3.<region>.amazonaws.com/<path>
+    const fileUrl = `https://${s3Config.bucketName}.s3.${s3Config.region}.amazonaws.com/${fullPath}`
+    
+    return fileUrl
   } catch (error) {
-    console.error('Error uploading file:', error);
-    throw new Error('Failed to upload file');
+    console.error("Error uploading file to S3:", error)
+    throw new Error("Failed to upload file to S3")
   }
-}; 
+} 
