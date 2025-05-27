@@ -1,71 +1,94 @@
-"use client"
+"use client";
 
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Calendar as CalendarComponent } from "@/components/ui/calendar"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Checkbox } from "@/components/ui/checkbox"
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Calendar as CalendarComponent } from "@/components/ui/calendar";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-} from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { RichTextEditor } from "@/components/ui/rich-text-editor"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Separator } from "@/components/ui/separator"
-import { Textarea } from "@/components/ui/textarea"
-import { getCountries } from "@/lib/countries"
-import { generateConfirmationLink, sendEventConfirmationEmail } from "@/lib/email-service"
-import { db } from "@/lib/firebase"
-import type { Event, EventType, Photographer } from "@/lib/types"
-import { uploadFile } from "@/lib/upload-utils"
-import { cn } from "@/lib/utils"
-import { format } from "date-fns"
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
-    addDoc,
-    collection,
-    doc,
-    getDoc,
-    getDocs,
-    orderBy,
-    query,
-    serverTimestamp,
-    updateDoc,
-} from "firebase/firestore"
-import { Calendar, FileImage, Info, MapPin, MessageSquare, Tag, Users, Trash2 } from "lucide-react"
-import Image from "next/image"
-import { useRouter } from "next/navigation"
-import { useEffect, useState } from "react"
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { RichTextEditor } from "@/components/ui/rich-text-editor";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
+import { Textarea } from "@/components/ui/textarea";
+import { getCountries } from "@/lib/countries";
+import {
+  generateConfirmationLink,
+  sendEventConfirmationEmail,
+} from "@/lib/email-service";
+import { db } from "@/lib/firebase";
+import type { Event, EventType, Photographer } from "@/lib/types";
+import { uploadFile } from "@/lib/upload-utils";
+import { cn } from "@/lib/utils";
+import { format } from "date-fns";
+import Autocomplete from "react-google-autocomplete";
+import {
+  addDoc,
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  orderBy,
+  query,
+  serverTimestamp,
+  updateDoc,
+} from "firebase/firestore";
+import {
+  Calendar,
+  FileImage,
+  Info,
+  MapPin,
+  MessageSquare,
+  Tag,
+  Users,
+  Trash2,
+} from "lucide-react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import {
   Command,
   CommandEmpty,
   CommandGroup,
   CommandInput,
   CommandItem,
-} from "@/components/ui/command"
-import { Check, ChevronsUpDown } from "lucide-react"
+} from "@/components/ui/command";
+import { Check, ChevronsUpDown } from "lucide-react";
 
 interface EnhancedEventFormProps {
-  eventId?: string
+  eventId?: string;
 }
 
 export function EnhancedEventForm({ eventId }: EnhancedEventFormProps) {
-  const router = useRouter()
-  const isEditing = !!eventId
+  const router = useRouter();
+  const isEditing = !!eventId;
 
-  const [loading, setLoading] = useState(false)
-  const [saving, setSaving] = useState(false)
-  const [error, setError] = useState("")
-  const [showPreview, setShowPreview] = useState(false)
-  const [eventTypes, setEventTypes] = useState<EventType[]>([])
-  const [photographers, setPhotographers] = useState<Photographer[]>([])
-  const [countries] = useState(getCountries())
+  const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+  const [showPreview, setShowPreview] = useState(false);
+  const [eventTypes, setEventTypes] = useState<EventType[]>([]);
+  const [photographers, setPhotographers] = useState<Photographer[]>([]);
+  const [countries] = useState(getCountries());
 
   const [formData, setFormData] = useState<Partial<Event>>({
     title: "",
@@ -81,26 +104,26 @@ export function EnhancedEventForm({ eventId }: EnhancedEventFormProps) {
     url: "",
     photographerIds: [],
     geoSnapshotEmbed: "",
-  })
+  });
 
-  const [imageFile, setImageFile] = useState<File | null>(null)
-  const [bestOfImageFiles, setBestOfImageFiles] = useState<File[]>([])
-  const [imagePreview, setImagePreview] = useState<string | null>(null)
-  const [bestOfImagePreviews, setBestOfImagePreviews] = useState<string[]>([])
-  const [selectedDate, setSelectedDate] = useState<Date>()
-  const [selectedEndDate, setSelectedEndDate] = useState<Date>()
-  const [tagInput, setTagInput] = useState("")
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [bestOfImageFiles, setBestOfImageFiles] = useState<File[]>([]);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [bestOfImagePreviews, setBestOfImagePreviews] = useState<string[]>([]);
+  const [selectedDate, setSelectedDate] = useState<Date>();
+  const [selectedEndDate, setSelectedEndDate] = useState<Date>();
+  const [tagInput, setTagInput] = useState("");
 
   // Fetch event data if editing
   useEffect(() => {
     const fetchEventData = async () => {
-      if (!eventId) return
+      if (!eventId) return;
 
-      setLoading(true)
+      setLoading(true);
       try {
-        const eventDoc = await getDoc(doc(db, "events", eventId))
+        const eventDoc = await getDoc(doc(db, "events", eventId));
         if (eventDoc.exists()) {
-          const eventData = eventDoc.data() as Event
+          const eventData = eventDoc.data() as Event;
           setFormData({
             title: eventData.title || "",
             description: eventData.description || "",
@@ -117,200 +140,223 @@ export function EnhancedEventForm({ eventId }: EnhancedEventFormProps) {
             imageUrl: eventData.imageUrl || "",
             bestOfImageUrls: eventData.bestOfImageUrls || [],
             geoSnapshotEmbed: eventData.geoSnapshotEmbed || "",
-          })
+          });
 
           if (eventData.imageUrl) {
-            setImagePreview(eventData.imageUrl)
+            setImagePreview(eventData.imageUrl);
           }
 
           if (eventData.bestOfImageUrls?.length) {
-            setBestOfImagePreviews(eventData.bestOfImageUrls)
+            setBestOfImagePreviews(eventData.bestOfImageUrls);
           }
 
           if (eventData.date) {
-            setSelectedDate(new Date(eventData.date))
+            setSelectedDate(new Date(eventData.date));
           }
 
           if (eventData.endDate) {
-            setSelectedEndDate(new Date(eventData.endDate))
+            setSelectedEndDate(new Date(eventData.endDate));
           }
         }
       } catch (error) {
-        console.error("Error fetching event:", error)
-        setError("Failed to load event data")
+        console.error("Error fetching event:", error);
+        setError("Failed to load event data");
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
-    fetchEventData()
-  }, [eventId])
+    fetchEventData();
+  }, [eventId]);
 
   // Fetch event types and photographers
   useEffect(() => {
     const fetchData = async () => {
       try {
         // Fetch event types
-        const eventTypesQuery = query(collection(db, "eventTypes"), orderBy("name"))
-        const eventTypesSnapshot = await getDocs(eventTypesQuery)
+        const eventTypesQuery = query(
+          collection(db, "eventTypes"),
+          orderBy("name")
+        );
+        const eventTypesSnapshot = await getDocs(eventTypesQuery);
         const eventTypesList = eventTypesSnapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
-        })) as EventType[]
-        setEventTypes(eventTypesList)
+        })) as EventType[];
+        setEventTypes(eventTypesList);
 
         // Fetch photographers
-        const photographersQuery = query(collection(db, "photographers"), orderBy("name"))
-        const photographersSnapshot = await getDocs(photographersQuery)
+        const photographersQuery = query(
+          collection(db, "photographers"),
+          orderBy("name")
+        );
+        const photographersSnapshot = await getDocs(photographersQuery);
         const photographersList = photographersSnapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
-        })) as Photographer[]
-        setPhotographers(photographersList)
+        })) as Photographer[];
+        setPhotographers(photographersList);
       } catch (error) {
-        console.error("Error fetching data:", error)
+        console.error("Error fetching data:", error);
       }
-    }
+    };
 
-    fetchData()
-  }, [])
+    fetchData();
+  }, []);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
-  }
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
   const handleSelectChange = (name: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [name]: value }))
-  }
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
   const handleDescriptionChange = (value: string) => {
-    setFormData((prev) => ({ ...prev, description: value }))
-  }
+    setFormData((prev) => ({ ...prev, description: value }));
+  };
 
   const handleDateSelect = (date: Date | undefined) => {
-    setSelectedDate(date)
+    setSelectedDate(date);
     if (date) {
-      setFormData((prev) => ({ ...prev, date: format(date, "yyyy-MM-dd") }))
+      setFormData((prev) => ({ ...prev, date: format(date, "yyyy-MM-dd") }));
     }
-  }
+  };
 
   const handleEndDateSelect = (date: Date | undefined) => {
-    setSelectedEndDate(date)
+    setSelectedEndDate(date);
     if (date) {
-      setFormData((prev) => ({ ...prev, endDate: format(date, "yyyy-MM-dd") }))
+      setFormData((prev) => ({ ...prev, endDate: format(date, "yyyy-MM-dd") }));
     }
-  }
+  };
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>, type: "image" | "bestOfImage") => {
+  const handleImageChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    type: "image" | "bestOfImage"
+  ) => {
     if (e.target.files && e.target.files[0]) {
-      const files = Array.from(e.target.files)
+      const files = Array.from(e.target.files);
       if (type === "image") {
-        const file = files[0]
-        setImageFile(file)
-        setImagePreview(URL.createObjectURL(file))
+        const file = files[0];
+        setImageFile(file);
+        setImagePreview(URL.createObjectURL(file));
       } else {
-        setBestOfImageFiles(prev => [...prev, ...files])
-        const newPreviews = files.map(file => URL.createObjectURL(file))
-        setBestOfImagePreviews(prev => [...prev, ...newPreviews])
+        setBestOfImageFiles((prev) => [...prev, ...files]);
+        const newPreviews = files.map((file) => URL.createObjectURL(file));
+        setBestOfImagePreviews((prev) => [...prev, ...newPreviews]);
       }
     }
-  }
+  };
 
-  const handlePhotographerToggle = (photographerId: string, checked: boolean) => {
+  const handlePhotographerToggle = (
+    photographerId: string,
+    checked: boolean
+  ) => {
     setFormData((prev) => ({
       ...prev,
       photographerIds: checked
         ? [...(prev.photographerIds || []), photographerId]
         : (prev.photographerIds || []).filter((id) => id !== photographerId),
-    }))
-  }
+    }));
+  };
 
   const handleAddTag = () => {
     if (tagInput.trim() && !formData.tags?.includes(tagInput.trim())) {
       setFormData((prev) => ({
         ...prev,
         tags: [...(prev.tags || []), tagInput.trim()],
-      }))
-      setTagInput("")
+      }));
+      setTagInput("");
     }
-  }
+  };
 
   const handleRemoveTag = (tagToRemove: string) => {
     setFormData((prev) => ({
       ...prev,
       tags: (prev.tags || []).filter((tag) => tag !== tagToRemove),
-    }))
-  }
+    }));
+  };
 
   const uploadImage = async (file: File, path: string): Promise<string> => {
-    return uploadFile(file, `events/${path}`)
-  }
+    return uploadFile(file, `events/${path}`);
+  };
 
   const handlePreview = () => {
-    setShowPreview(true)
-  }
+    setShowPreview(true);
+  };
 
   const handleRemoveBestOfImage = (index: number) => {
-    setBestOfImageFiles(prev => prev.filter((_, i) => i !== index))
-    setBestOfImagePreviews(prev => prev.filter((_, i) => i !== index))
-    setFormData(prev => ({
+    setBestOfImageFiles((prev) => prev.filter((_, i) => i !== index));
+    setBestOfImagePreviews((prev) => prev.filter((_, i) => i !== index));
+    setFormData((prev) => ({
       ...prev,
-      bestOfImageUrls: prev.bestOfImageUrls?.filter((_, i) => i !== index) || []
-    }))
-  }
+      bestOfImageUrls:
+        prev.bestOfImageUrls?.filter((_, i) => i !== index) || [],
+    }));
+  };
 
   const handleSubmit = async () => {
-    setSaving(true)
-    setError("")
+    setSaving(true);
+    setError("");
 
     try {
-      let imageUrl = formData.imageUrl
-      let bestOfImageUrls = formData.bestOfImageUrls || []
+      let imageUrl = formData.imageUrl;
+      let bestOfImageUrls = formData.bestOfImageUrls || [];
 
       // Upload main image if provided
       if (imageFile) {
-        const path = `${Date.now()}_${imageFile.name}`
-        imageUrl = await uploadImage(imageFile, path)
+        const path = `${Date.now()}_${imageFile.name}`;
+        imageUrl = await uploadImage(imageFile, path);
       }
 
       // Upload best of images if provided
       const uploadPromises = bestOfImageFiles.map(async (file) => {
-        const path = `best-of/${Date.now()}_${file.name}`
-        return uploadImage(file, path)
-      })
-      
-      const newBestOfImageUrls = await Promise.all(uploadPromises)
-      bestOfImageUrls = [...(formData.bestOfImageUrls || []), ...newBestOfImageUrls]
+        const path = `best-of/${Date.now()}_${file.name}`;
+        return uploadImage(file, path);
+      });
+
+      const newBestOfImageUrls = await Promise.all(uploadPromises);
+      bestOfImageUrls = [
+        ...(formData.bestOfImageUrls || []),
+        ...newBestOfImageUrls,
+      ];
 
       const eventData = {
         ...formData,
         imageUrl,
         bestOfImageUrls,
         updatedAt: serverTimestamp(),
-      }
+      };
 
-      let eventDocId = eventId
+      let eventDocId = eventId;
 
       if (isEditing) {
         // Update existing event
-        await updateDoc(doc(db, "events", eventId), eventData)
+        await updateDoc(doc(db, "events", eventId), eventData);
       } else {
         // Create new event
         const docRef = await addDoc(collection(db, "events"), {
           ...eventData,
           createdAt: serverTimestamp(),
-        })
-        eventDocId = docRef.id
+        });
+        eventDocId = docRef.id;
       }
 
       // Send confirmation emails to photographers
       if (formData.photographerIds && formData.photographerIds.length > 0) {
         for (const photographerId of formData.photographerIds) {
-          const photographer = photographers.find((p) => p.id === photographerId)
+          const photographer = photographers.find(
+            (p) => p.id === photographerId
+          );
           if (photographer) {
-            const confirmationLink = generateConfirmationLink(eventDocId!, photographerId)
-            
+            const confirmationLink = generateConfirmationLink(
+              eventDocId!,
+              photographerId
+            );
+
             await sendEventConfirmationEmail({
               to_email: photographer.email,
               to_name: photographer.name,
@@ -320,27 +366,27 @@ export function EnhancedEventForm({ eventId }: EnhancedEventFormProps) {
               event_description: formData.description || "",
               confirmation_link: confirmationLink,
               note_to_photographer: formData.noteToPhotographer,
-            })
+            });
           }
         }
       }
 
-      setShowPreview(false)
-      router.push("/admin/events")
+      setShowPreview(false);
+      router.push("/admin/events");
     } catch (error) {
-      console.error("Error saving event:", error)
-      setError("Failed to save event. Please try again.")
+      console.error("Error saving event:", error);
+      setError("Failed to save event. Please try again.");
     } finally {
-      setSaving(false)
+      setSaving(false);
     }
-  }
+  };
 
   if (loading) {
     return (
       <div className="flex justify-center p-8">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-mainNavyText"></div>
       </div>
-    )
+    );
   }
 
   return (
@@ -387,7 +433,9 @@ export function EnhancedEventForm({ eventId }: EnhancedEventFormProps) {
                   </Label>
                   <Select
                     value={formData.eventTypeId}
-                    onValueChange={(value) => handleSelectChange("eventTypeId", value)}
+                    onValueChange={(value) =>
+                      handleSelectChange("eventTypeId", value)
+                    }
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select event type" />
@@ -441,7 +489,9 @@ export function EnhancedEventForm({ eventId }: EnhancedEventFormProps) {
                           )}
                         >
                           <Calendar className="mr-2 h-4 w-4" />
-                          {selectedDate ? format(selectedDate, "PPP") : "Pick a date"}
+                          {selectedDate
+                            ? format(selectedDate, "PPP")
+                            : "Pick a date"}
                         </Button>
                       </PopoverTrigger>
                       <PopoverContent className="w-auto p-0">
@@ -467,7 +517,9 @@ export function EnhancedEventForm({ eventId }: EnhancedEventFormProps) {
                           )}
                         >
                           <Calendar className="mr-2 h-4 w-4" />
-                          {selectedEndDate ? format(selectedEndDate, "PPP") : "Pick a date"}
+                          {selectedEndDate
+                            ? format(selectedEndDate, "PPP")
+                            : "Pick a date"}
                         </Button>
                       </PopoverTrigger>
                       <PopoverContent className="w-auto p-0">
@@ -476,7 +528,9 @@ export function EnhancedEventForm({ eventId }: EnhancedEventFormProps) {
                           selected={selectedEndDate}
                           onSelect={handleEndDateSelect}
                           initialFocus
-                          disabled={(date) => selectedDate ? date < selectedDate : false}
+                          disabled={(date) =>
+                            selectedDate ? date < selectedDate : false
+                          }
                         />
                       </PopoverContent>
                     </Popover>
@@ -507,55 +561,58 @@ export function EnhancedEventForm({ eventId }: EnhancedEventFormProps) {
                     <Label htmlFor="location">
                       Location <span className="text-red-500">*</span>
                     </Label>
-                    <Input
+                    {/* <Input
                       id="location"
                       name="location"
                       value={formData.location}
                       onChange={handleInputChange}
                       placeholder="Enter location"
                       className="w-full"
-                    />
-                    {/* <Autocomplete
+                    /> */}
+                    <Autocomplete
                       apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}
                       onPlaceSelected={(place) => {
                         if (place.formatted_address) {
-                          setFormData((prev) => ({ 
-                            ...prev, 
-                            location: place.formatted_address 
-                          }))
-                          
+                          setFormData((prev) => ({
+                            ...prev,
+                            location: place.formatted_address,
+                          }));
+
                           // Auto-fill country if available
-                          const countryComponent = place.address_components?.find(
-                            (component: any) => component.types.includes('country')
-                          )
+                          const countryComponent =
+                            place.address_components?.find((component: any) =>
+                              component.types.includes("country")
+                            );
                           if (countryComponent) {
-                            const countryCode = countryComponent.short_name
-                            const country = countries.find(c => c.code === countryCode)
+                            const countryCode = countryComponent.short_name;
+                            const country = countries.find(
+                              (c) => c.code === countryCode
+                            );
                             if (country) {
-                              setFormData((prev) => ({ 
-                                ...prev, 
-                                country: country.code 
-                              }))
+                              setFormData((prev) => ({
+                                ...prev,
+                                country: country.code,
+                              }));
                             }
                           }
                         }
                       }}
                       options={{
-                        types: ['establishment', 'geocode'],
+                        types: ["establishment", "geocode"],
                         componentRestrictions: { country: [] }, // Allow all countries
                       }}
                       defaultValue={formData.location}
                       style={{
-                        width: '100%',
-                        padding: '8px 12px',
-                        border: '1px solid #d1d5db',
-                        borderRadius: '6px',
-                        fontSize: '14px',
-                        outline: 'none',
+                        width: "100%",
+                        padding: "8px 12px",
+                        border: "1px solid #d1d5db",
+                        borderRadius: "6px",
+                        fontSize: "14px",
+                        outline: "none",
                       }}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-mainNavyText focus:border-transparent"
                       placeholder="Search for a location..."
-                    /> */}
+                    />
                   </div>
 
                   <div className="space-y-2">
@@ -570,7 +627,9 @@ export function EnhancedEventForm({ eventId }: EnhancedEventFormProps) {
                           className="w-full justify-between"
                         >
                           {formData.country
-                            ? countries.find((country) => country.code === formData.country)?.name
+                            ? countries.find(
+                                (country) => country.code === formData.country
+                              )?.name
                             : "Select country..."}
                           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                         </Button>
@@ -585,13 +644,15 @@ export function EnhancedEventForm({ eventId }: EnhancedEventFormProps) {
                                 key={country.code}
                                 value={country.name}
                                 onSelect={() => {
-                                  handleSelectChange("country", country.code)
+                                  handleSelectChange("country", country.code);
                                 }}
                               >
                                 <Check
                                   className={cn(
                                     "mr-2 h-4 w-4",
-                                    formData.country === country.code ? "opacity-100" : "opacity-0"
+                                    formData.country === country.code
+                                      ? "opacity-100"
+                                      : "opacity-0"
                                   )}
                                 />
                                 {country.name}
@@ -698,7 +759,11 @@ export function EnhancedEventForm({ eventId }: EnhancedEventFormProps) {
                   </div>
                   <div className="flex flex-wrap gap-2">
                     {formData.tags?.map((tag) => (
-                      <Badge key={tag} variant="secondary" className="cursor-pointer">
+                      <Badge
+                        key={tag}
+                        variant="secondary"
+                        className="cursor-pointer"
+                      >
                         {tag}
                         <button
                           type="button"
@@ -722,12 +787,20 @@ export function EnhancedEventForm({ eventId }: EnhancedEventFormProps) {
 
                 <div className="space-y-2 max-h-60 overflow-y-auto">
                   {photographers.map((photographer) => (
-                    <div key={photographer.id} className="flex items-center space-x-2">
+                    <div
+                      key={photographer.id}
+                      className="flex items-center space-x-2"
+                    >
                       <Checkbox
                         id={photographer.id}
-                        checked={formData.photographerIds?.includes(photographer.id)}
+                        checked={formData.photographerIds?.includes(
+                          photographer.id
+                        )}
                         onCheckedChange={(checked) =>
-                          handlePhotographerToggle(photographer.id, checked as boolean)
+                          handlePhotographerToggle(
+                            photographer.id,
+                            checked as boolean
+                          )
                         }
                       />
                       <Label htmlFor={photographer.id} className="flex-1">
@@ -756,7 +829,9 @@ export function EnhancedEventForm({ eventId }: EnhancedEventFormProps) {
 
               {/* Geo Snapshot Embed */}
               <div className="space-y-2">
-                <Label htmlFor="geoSnapshotEmbed">Geo Snapshot Embed Code</Label>
+                <Label htmlFor="geoSnapshotEmbed">
+                  Geo Snapshot Embed Code
+                </Label>
                 <Textarea
                   id="geoSnapshotEmbed"
                   name="geoSnapshotEmbed"
@@ -829,18 +904,21 @@ export function EnhancedEventForm({ eventId }: EnhancedEventFormProps) {
                       />
                     </div>
                   )}
-                  {bestOfImagePreviews.length > 0 && bestOfImagePreviews.map((preview, index) => (
-                    <div key={index}>
-                      <p className="text-sm text-gray-600 mb-1">Best of Image {index + 1}</p>
-                      <Image
-                        src={preview}
-                        alt={`Best of preview ${index + 1}`}
-                        width={300}
-                        height={200}
-                        className="rounded-md object-cover"
-                      />
-                    </div>
-                  ))}
+                  {bestOfImagePreviews.length > 0 &&
+                    bestOfImagePreviews.map((preview, index) => (
+                      <div key={index}>
+                        <p className="text-sm text-gray-600 mb-1">
+                          Best of Image {index + 1}
+                        </p>
+                        <Image
+                          src={preview}
+                          alt={`Best of preview ${index + 1}`}
+                          width={300}
+                          height={200}
+                          className="rounded-md object-cover"
+                        />
+                      </div>
+                    ))}
                 </div>
               </div>
 
@@ -852,12 +930,19 @@ export function EnhancedEventForm({ eventId }: EnhancedEventFormProps) {
 
                 <div>
                   <h4 className="font-semibold">Event Type</h4>
-                  <p>{eventTypes.find((et) => et.id === formData.eventTypeId)?.name}</p>
+                  <p>
+                    {
+                      eventTypes.find((et) => et.id === formData.eventTypeId)
+                        ?.name
+                    }
+                  </p>
                 </div>
 
                 <div>
                   <h4 className="font-semibold">Date & Time</h4>
-                  <p>{formData.date} {formData.time && `at ${formData.time}`}</p>
+                  <p>
+                    {formData.date} {formData.time && `at ${formData.time}`}
+                  </p>
                 </div>
 
                 <div>
@@ -885,8 +970,10 @@ export function EnhancedEventForm({ eventId }: EnhancedEventFormProps) {
                   <h4 className="font-semibold">Assigned Photographers</h4>
                   <ul className="list-disc list-inside">
                     {formData.photographerIds?.map((id) => {
-                      const photographer = photographers.find((p) => p.id === id)
-                      return <li key={id}>{photographer?.name}</li>
+                      const photographer = photographers.find(
+                        (p) => p.id === id
+                      );
+                      return <li key={id}>{photographer?.name}</li>;
                     })}
                   </ul>
                 </div>
@@ -913,9 +1000,11 @@ export function EnhancedEventForm({ eventId }: EnhancedEventFormProps) {
             {formData.geoSnapshotEmbed && (
               <div>
                 <h4 className="font-semibold mb-2">Geo Snapshot Preview</h4>
-                <div 
+                <div
                   className="w-full"
-                  dangerouslySetInnerHTML={{ __html: formData.geoSnapshotEmbed }}
+                  dangerouslySetInnerHTML={{
+                    __html: formData.geoSnapshotEmbed,
+                  }}
                 />
               </div>
             )}
@@ -932,5 +1021,5 @@ export function EnhancedEventForm({ eventId }: EnhancedEventFormProps) {
         </DialogContent>
       </Dialog>
     </div>
-  )
-} 
+  );
+}
