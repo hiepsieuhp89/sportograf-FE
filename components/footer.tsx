@@ -84,79 +84,79 @@ export function Footer() {
             </h3>
             <div className="flex flex-wrap justify-center items-center gap-4 md:gap-6">
               {/* Visa */}
-              <div className="bg-white rounded-md p-2 h-10 flex items-center justify-center min-w-[60px]">
+              <div className="rounded-md p-2 h-10 flex items-center justify-center min-w-[60px] opacity-60">
                 <Image
                   src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg"
                   alt="Visa"
                   width={40}
                   height={24}
-                  className="h-6 w-auto object-contain"
+                  className="h-6 w-auto object-contain filter grayscale"
                 />
               </div>
               
               {/* Mastercard */}
-              <div className="bg-white rounded-md p-2 h-10 flex items-center justify-center min-w-[60px]">
+              <div className="rounded-md p-2 h-10 flex items-center justify-center min-w-[60px] opacity-60">
                 <Image
                   src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg"
                   alt="Mastercard"
                   width={40}
                   height={24}
-                  className="h-6 w-auto object-contain"
+                  className="h-6 w-auto object-contain filter grayscale"
                 />
               </div>
               
               {/* PayPal */}
-              <div className="bg-white rounded-md p-2 h-10 flex items-center justify-center min-w-[60px]">
+              <div className="rounded-md p-2 h-10 flex items-center justify-center min-w-[60px] opacity-60">
                 <Image
                   src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg"
                   alt="PayPal"
                   width={60}
                   height={24}
-                  className="h-6 w-auto object-contain"
+                  className="h-6 w-auto object-contain filter grayscale"
                 />
               </div>
               
               {/* American Express */}
-              <div className="bg-white rounded-md p-2 h-10 flex items-center justify-center min-w-[60px]">
+              <div className="rounded-md p-2 h-10 flex items-center justify-center min-w-[60px] opacity-60">
                 <Image
                   src="https://upload.wikimedia.org/wikipedia/commons/f/fa/American_Express_logo_%282018%29.svg"
                   alt="American Express"
                   width={40}
                   height={24}
-                  className="h-6 w-auto object-contain"
+                  className="h-6 w-auto object-contain filter grayscale"
                 />
               </div>
               
               {/* Apple Pay */}
-              <div className="bg-white rounded-md p-2 h-10 flex items-center justify-center min-w-[60px]">
+              <div className="rounded-md p-2 h-10 flex items-center justify-center min-w-[60px] opacity-60">
                 <Image
                   src="https://upload.wikimedia.org/wikipedia/commons/b/b0/Apple_Pay_logo.svg"
                   alt="Apple Pay"
                   width={50}
                   height={24}
-                  className="h-6 w-auto object-contain"
+                  className="h-6 w-auto object-contain filter grayscale"
                 />
               </div>
               
               {/* Google Pay */}
-              <div className="bg-white rounded-md p-2 h-10 flex items-center justify-center min-w-[60px]">
+              <div className="rounded-md p-2 h-10 flex items-center justify-center min-w-[60px] opacity-60">
                 <Image
                   src="https://upload.wikimedia.org/wikipedia/commons/f/f2/Google_Pay_Logo.svg"
                   alt="Google Pay"
                   width={50}
                   height={24}
-                  className="h-6 w-auto object-contain"
+                  className="h-6 w-auto object-contain filter grayscale"
                 />
               </div>
               
               {/* Stripe */}
-              <div className="bg-white rounded-md p-2 h-10 flex items-center justify-center min-w-[60px]">
+              <div className="rounded-md p-2 h-10 flex items-center justify-center min-w-[60px] opacity-60">
                 <Image
                   src="https://upload.wikimedia.org/wikipedia/commons/b/ba/Stripe_Logo%2C_revised_2016.svg"
                   alt="Stripe"
                   width={50}
                   height={24}
-                  className="h-6 w-auto object-contain"
+                  className="h-6 w-auto object-contain filter grayscale"
                 />
               </div>
             </div>

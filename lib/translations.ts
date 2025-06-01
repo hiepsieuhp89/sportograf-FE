@@ -121,6 +121,43 @@ type TranslationKeys =
   | "paymentMethods"
   | "securePayments"
   | "logout"
+  | "howCanWeHelpYou"
+  | "enterSearchTerm"
+  | "newSupportTicket"
+  | "knowledgeBase"
+  | "submitNewFAQ"
+  | "faqTitle"
+  | "faqQuestion"
+  | "faqCategory"
+  | "yourQuestion"
+  | "questionDetails"
+  | "submitQuestion"
+  | "thankYouForSubmission"
+  | "questionSubmittedSuccessfully"
+  | "manageFAQs"
+  | "pendingApproval"
+  | "approved"
+  | "rejected"
+  | "approve"
+  | "reject"
+  | "answer"
+  | "provideAnswer"
+  | "saveAnswer"
+  | "status"
+  | "actions"
+  | "noFAQsFound"
+  | "createFirstFAQ"
+  | "viewAll"
+  | "viewLess"
+  | "relatedArticles"
+  | "didYouFindItHelpful"
+  | "yes"
+  | "no"
+  | "authoredBy"
+  | "support"
+  | "articleNotFound"
+  | "backToFAQ"
+  | "solutionHome"
 
 type Translations = {
   [key in Language]: {
@@ -250,6 +287,43 @@ export const translations: Translations = {
     paymentMethods: "Payment Methods",
     securePayments: "Secure Payments",
     logout: "Logout",
+    howCanWeHelpYou: "How can we help you today?",
+    enterSearchTerm: "Enter your search term here...",
+    newSupportTicket: "New Support Ticket",
+    knowledgeBase: "Knowledge base",
+    submitNewFAQ: "Submit New FAQ",
+    faqTitle: "FAQ Title",
+    faqQuestion: "Your Question",
+    faqCategory: "Category",
+    yourQuestion: "Your Question",
+    questionDetails: "Please provide details about your question",
+    submitQuestion: "Submit Question",
+    thankYouForSubmission: "Thank you for your submission!",
+    questionSubmittedSuccessfully: "Your question has been submitted successfully and is pending review.",
+    manageFAQs: "Manage FAQs",
+    pendingApproval: "Pending Approval",
+    approved: "Approved",
+    rejected: "Rejected",
+    approve: "Approve",
+    reject: "Reject",
+    answer: "Answer",
+    provideAnswer: "Provide Answer",
+    saveAnswer: "Save Answer",
+    status: "Status",
+    actions: "Actions",
+    noFAQsFound: "No FAQs found.",
+    createFirstFAQ: "Create your first FAQ",
+    viewAll: "View all",
+    viewLess: "View less",
+    relatedArticles: "Related Articles",
+    didYouFindItHelpful: "Did you find it helpful?",
+    yes: "Yes",
+    no: "No",
+    authoredBy: "is the author of this solution article.",
+    support: "Support",
+    articleNotFound: "Article not found",
+    backToFAQ: "Back to FAQ",
+    solutionHome: "Solution home",
   },
   de: {
     home: "STARTSEITE",
@@ -372,6 +446,43 @@ export const translations: Translations = {
     paymentMethods: "Zahlungsmethoden",
     securePayments: "Sichere Zahlungen",
     logout: "Abmelden",
+    howCanWeHelpYou: "Wie können wir Ihnen heute helfen?",
+    enterSearchTerm: "Geben Sie hier Ihren Suchbegriff ein...",
+    newSupportTicket: "Neues Support-Ticket",
+    knowledgeBase: "Wissensdatenbank",
+    submitNewFAQ: "Neue FAQ einreichen",
+    faqTitle: "FAQ-Titel",
+    faqQuestion: "Ihre Frage",
+    faqCategory: "Kategorie",
+    yourQuestion: "Ihre Frage",
+    questionDetails: "Bitte geben Sie Details zu Ihrer Frage an",
+    submitQuestion: "Frage einreichen",
+    thankYouForSubmission: "Vielen Dank für Ihre Einreichung!",
+    questionSubmittedSuccessfully: "Ihre Frage wurde erfolgreich eingereicht und wartet auf Überprüfung.",
+    manageFAQs: "FAQs verwalten",
+    pendingApproval: "Genehmigung ausstehend",
+    approved: "Genehmigt",
+    rejected: "Abgelehnt",
+    approve: "Genehmigen",
+    reject: "Ablehnen",
+    answer: "Antwort",
+    provideAnswer: "Antwort geben",
+    saveAnswer: "Antwort speichern",
+    status: "Status",
+    actions: "Aktionen",
+    noFAQsFound: "Keine FAQs gefunden.",
+    createFirstFAQ: "Erstellen Sie Ihre erste FAQ",
+    viewAll: "Alle anzeigen",
+    viewLess: "Weniger anzeigen",
+    relatedArticles: "Verwandte Artikel",
+    didYouFindItHelpful: "War das hilfreich?",
+    yes: "Ja",
+    no: "Nein",
+    authoredBy: "ist der Autor dieses Lösungsartikels.",
+    support: "Support",
+    articleNotFound: "Artikel nicht gefunden",
+    backToFAQ: "Zurück zu FAQ",
+    solutionHome: "Lösungs-Startseite",
   },
   fr: {
     home: "ACCUEIL",
@@ -494,6 +605,43 @@ export const translations: Translations = {
     paymentMethods: "Méthodes de paiement",
     securePayments: "Paiements sécurisés",
     logout: "Déconnexion",
+    howCanWeHelpYou: "Comment pouvons-nous vous aider aujourd'hui?",
+    enterSearchTerm: "Entrez votre terme de recherche ici...",
+    newSupportTicket: "Nouveau ticket de support",
+    knowledgeBase: "Base de connaissances",
+    submitNewFAQ: "Soumettre une nouvelle FAQ",
+    faqTitle: "Titre FAQ",
+    faqQuestion: "Votre question",
+    faqCategory: "Catégorie",
+    yourQuestion: "Votre question",
+    questionDetails: "Veuillez fournir des détails sur votre question",
+    submitQuestion: "Soumettre la question",
+    thankYouForSubmission: "Merci pour votre soumission!",
+    questionSubmittedSuccessfully: "Votre question a été soumise avec succès et est en attente d'examen.",
+    manageFAQs: "Gérer les FAQs",
+    pendingApproval: "En attente d'approbation",
+    approved: "Approuvé",
+    rejected: "Rejeté",
+    approve: "Approuver",
+    reject: "Rejeter",
+    answer: "Réponse",
+    provideAnswer: "Fournir une réponse",
+    saveAnswer: "Sauvegarder la réponse",
+    status: "Statut",
+    actions: "Actions",
+    noFAQsFound: "Aucune FAQ trouvée.",
+    createFirstFAQ: "Créez votre première FAQ",
+    viewAll: "Voir tout",
+    viewLess: "Voir moins",
+    relatedArticles: "Articles connexes",
+    didYouFindItHelpful: "Avez-vous trouvé cela utile?",
+    yes: "Oui",
+    no: "Non",
+    authoredBy: "est l'auteur de cet article de solution.",
+    support: "Support",
+    articleNotFound: "Article non trouvé",
+    backToFAQ: "Retour à FAQ",
+    solutionHome: "Accueil des solutions",
   },
   es: {
     home: "INICIO",
@@ -616,5 +764,42 @@ export const translations: Translations = {
     paymentMethods: "Métodos de pago",
     securePayments: "Pagos seguros",
     logout: "Cerrar sesión",
+    howCanWeHelpYou: "¿Cómo podemos ayudarte hoy?",
+    enterSearchTerm: "Ingresa tu término de búsqueda aquí...",
+    newSupportTicket: "Nuevo ticket de soporte",
+    knowledgeBase: "Base de conocimientos",
+    submitNewFAQ: "Enviar nueva FAQ",
+    faqTitle: "Título FAQ",
+    faqQuestion: "Tu pregunta",
+    faqCategory: "Categoría",
+    yourQuestion: "Tu pregunta",
+    questionDetails: "Por favor proporciona detalles sobre tu pregunta",
+    submitQuestion: "Enviar pregunta",
+    thankYouForSubmission: "¡Gracias por tu envío!",
+    questionSubmittedSuccessfully: "Tu pregunta ha sido enviada exitosamente y está pendiente de revisión.",
+    manageFAQs: "Gestionar FAQs",
+    pendingApproval: "Pendiente de aprobación",
+    approved: "Aprobado",
+    rejected: "Rechazado",
+    approve: "Aprobar",
+    reject: "Rechazar",
+    answer: "Respuesta",
+    provideAnswer: "Proporcionar respuesta",
+    saveAnswer: "Guardar respuesta",
+    status: "Estado",
+    actions: "Acciones",
+    noFAQsFound: "No se encontraron FAQs.",
+    createFirstFAQ: "Crea tu primera FAQ",
+    viewAll: "Ver todo",
+    viewLess: "Ver menos",
+    relatedArticles: "Artículos relacionados",
+    didYouFindItHelpful: "¿Te resultó útil?",
+    yes: "Sí",
+    no: "No",
+    authoredBy: "es el autor de este artículo de solución.",
+    support: "Soporte",
+    articleNotFound: "Artículo no encontrado",
+    backToFAQ: "Volver a FAQ",
+    solutionHome: "Inicio de soluciones",
   },
 }

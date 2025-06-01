@@ -40,7 +40,7 @@ export interface Photographer {
 export interface User {
   uid: string
   email: string
-  role: "admin" | "photographer"
+  role: "admin" | "photographer" | "user"
   photographerId?: string
 }
 
@@ -69,4 +69,43 @@ export interface BannerImage {
   type: "center" | "parallax"
   startScroll?: number
   endScroll?: number
+}
+
+export interface FAQ {
+  id: string
+  title: string
+  question: string
+  answer?: string
+  category: string
+  status: "pending" | "approved" | "rejected"
+  submittedBy?: string
+  submitterEmail?: string
+  submitterName?: string
+  answeredBy?: string
+  translations?: {
+    [key in Language]?: {
+      title: string
+      question: string
+      answer?: string
+    }
+  }
+  relatedFAQs?: string[]
+  createdAt: string
+  updatedAt: string
+  approvedAt?: string
+}
+
+export interface FAQCategory {
+  id: string
+  name: string
+  description?: string
+  count: number
+  translations?: {
+    [key in Language]?: {
+      name: string
+      description?: string
+    }
+  }
+  createdAt: string
+  updatedAt: string
 }

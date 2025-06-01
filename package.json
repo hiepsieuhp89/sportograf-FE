@@ -54,6 +54,7 @@
     "embla-carousel-react": "8.5.1",
     "firebase": "latest",
     "framer-motion": "latest",
+    "google-translate-api-x": "^10.7.2",
     "input-otp": "1.4.1",
     "lenis": "^1.3.3",
     "lucide-react": "^0.454.0",

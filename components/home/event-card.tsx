@@ -49,7 +49,7 @@ export function EventCard({ event }: EventCardProps) {
 
       {/* Content */}
       <div className="p-4">
-        <div className="flex items-center text-xs text-gray-500 mb-2">
+        <div className="flex items-center text-sm text-gray-500 mb-2">
           <Calendar className="h-3 w-3 mr-1" />
           <span>{formatEventDate(event.date)}</span>
         </div>
