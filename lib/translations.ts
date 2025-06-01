@@ -171,6 +171,9 @@ type TranslationKeys =
   | "categoryJoinTeam"
   | "categoryPhotographer"
   | "categoryRecognition"
+  // Hero Quotes
+  | "heroQuote"
+  | "heroQuoteAuthor"
 
 type Translations = {
   [key in Language]: {
@@ -349,6 +352,8 @@ export const translations: Translations = {
     categoryJoinTeam: "Join the team",
     categoryPhotographer: "Photographer",
     categoryRecognition: "Recognition",
+    heroQuote: "Every moment in sport tells a story. We capture yours.",
+    heroQuoteAuthor: "Sportograf Team",
   },
   de: {
     home: "STARTSEITE",
@@ -520,6 +525,8 @@ export const translations: Translations = {
     categoryJoinTeam: "Dem Team beitreten",
     categoryPhotographer: "Fotograf",
     categoryRecognition: "Nummer- und Gesichtserkennung",
+    heroQuote: "Jeder Moment im Sport erzählt eine Geschichte. Wir halten deine fest.",
+    heroQuoteAuthor: "Sportograf Team",
   },
   fr: {
     home: "ACCUEIL",
@@ -691,6 +698,8 @@ export const translations: Translations = {
     categoryJoinTeam: "Rejoindre l'équipe",
     categoryPhotographer: "Photographe",
     categoryRecognition: "Reconnaissance de numéro et de visage",
+    heroQuote: "Chaque moment dans le sport raconte une histoire. Nous capturons la vôtre.",
+    heroQuoteAuthor: "Équipe Sportograf",
   },
   es: {
     home: "INICIO",
@@ -862,5 +871,7 @@ export const translations: Translations = {
     categoryJoinTeam: "Únete al equipo",
     categoryPhotographer: "Fotógrafo",
     categoryRecognition: "Reconocimiento de número y rostro",
+    heroQuote: "Cada momento en el deporte cuenta una historia. Capturamos la tuya.",
+    heroQuoteAuthor: "Equipo Sportograf",
   },
 }

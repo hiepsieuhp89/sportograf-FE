@@ -196,7 +196,7 @@ export default function FAQPage() {
                   placeholder={t("enterSearchTerm")}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full px-6 py-4 text-lg border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-12"
+                  className="w-full px-6 py-2 text-lg border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-12"
                 />
                 <Search className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-6 h-6" />
               </div>
@@ -314,11 +314,6 @@ export default function FAQPage() {
                   )}
                 </DialogContent>
               </Dialog>
-
-              <button className="inline-flex items-center px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors">
-                <Plus className="w-5 h-5 mr-2" />
-                {t("newSupportTicket")}
-              </button>
             </div>
           </div>
         </div>

@@ -9,11 +9,13 @@ import {
 import { useRef, useEffect, useState } from "react"
 import { collection, getDocs, query, orderBy, where } from "firebase/firestore"
 import { db } from "@/lib/firebase"
+import { useTranslations } from "@/hooks/use-translations"
 import type { BannerImage } from "@/lib/types"
 
 const SECTION_HEIGHT = 1500
 
 export const HeroImages = () => {
+  const { t } = useTranslations()
   const [banners, setBanners] = useState<BannerImage[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -57,9 +59,53 @@ export const HeroImages = () => {
         {centerBanner && <CenterImage imageUrl={centerBanner.imageUrl} />}
         {parallaxBanners.length > 0 && <ParallaxImages banners={parallaxBanners} />}
 
+        {/* Quote Overlay */}
+        <QuoteOverlay />
+
         <div className="absolute bottom-0 left-0 right-0 h-96 bg-gradient-to-b from-zinc-950/0 to-mainDarkBackgroundV1" />
       </div>
     </div>
+  )
+}
+
+const QuoteOverlay = () => {
+  const { t } = useTranslations()
+  const { scrollY } = useScroll()
+
+  const opacity = 1
+  const y = useTransform(scrollY, [0, 800], [0, -100])
+
+  return (
+    <motion.div
+      className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none"
+      style={{ opacity, y }}
+    >
+      <div className="text-center px-4 max-w-4xl mx-auto">
+        <motion.blockquote
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, delay: 0.5 }}
+          className="text-white text-2xl md:text-4xl lg:text-5xl font-light leading-relaxed mb-6"
+          style={{
+            textShadow: "2px 2px 8px rgba(0,0,0,0.7), 0 0 20px rgba(0,0,0,0.5)"
+          }}
+        >
+          "{t("heroQuote")}"
+        </motion.blockquote>
+        
+        <motion.cite
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, delay: 1 }}
+          className="text-white/90 text-lg md:text-xl font-medium not-italic"
+          style={{
+            textShadow: "1px 1px 4px rgba(0,0,0,0.7)"
+          }}
+        >
+          — {t("heroQuoteAuthor")}
+        </motion.cite>
+      </div>
+    </motion.div>
   )
 }
 
