@@ -2,14 +2,43 @@
 
 import { StaticPageLayout } from "@/components/static-page-layout"
 import { useTranslations } from "@/hooks/use-translations"
+import { useClientTranslation } from "@/hooks/use-client-translation"
+import { getApprovedFAQs, getFAQById } from "@/lib/faq-service"
+import type { FAQ } from "@/lib/types"
+import { ArrowLeft, ThumbsDown, ThumbsUp } from "lucide-react"
+import Image from "next/image"
 import Link from "next/link"
 import { useParams } from "next/navigation"
-import { ArrowLeft, ThumbsUp, ThumbsDown } from "lucide-react"
-import Image from "next/image"
-import { useState, useEffect } from "react"
-import { getFAQById, getApprovedFAQs } from "@/lib/faq-service"
-import { getTranslatedContent } from "@/lib/translation-utils"
-import type { FAQ } from "@/lib/types"
+import { useEffect, useState } from "react"
+
+// Component for related FAQ link with client-side translation
+function RelatedFAQLink({ faq, language }: { faq: FAQ; language: string }) {
+  const { translatedContent, isTranslating } = useClientTranslation(
+    faq.title,
+    faq.question,
+    faq.answer || '',
+    language as any
+  )
+
+  return (
+    <Link
+      href={`/faq/${faq.id}`}
+      className="flex items-start p-4 bg-white rounded-lg border border-gray-200 hover:border-blue-300 hover:shadow-sm transition-all group"
+    >
+      <span className="mr-3 mt-1 text-gray-400 group-hover:text-blue-600 transition-colors">📄</span>
+      <span className="text-gray-700 group-hover:text-blue-600 transition-colors text-sm leading-relaxed">
+        {isTranslating ? (
+          <span className="flex items-center">
+            <div className="animate-spin rounded-full h-3 w-3 border-t border-b border-gray-400 mr-2"></div>
+            {faq.title}
+          </span>
+        ) : (
+          translatedContent.title
+        )}
+      </span>
+    </Link>
+  )
+}
 
 export default function FAQArticlePage() {
   const { t, language } = useTranslations()
@@ -19,6 +48,14 @@ export default function FAQArticlePage() {
   const [relatedFAQs, setRelatedFAQs] = useState<FAQ[]>([])
   const [loading, setLoading] = useState(true)
   const [notFound, setNotFound] = useState(false)
+
+  // Client-side translation for the main FAQ
+  const { translatedContent, isTranslating } = useClientTranslation(
+    faq?.title || '',
+    faq?.question || '',
+    faq?.answer || '',
+    language as any
+  )
 
   useEffect(() => {
     const loadFAQ = async () => {
@@ -73,11 +110,6 @@ export default function FAQArticlePage() {
     )
   }
 
-  const translatedContent = getTranslatedContent(faq.translations, language)
-  const title = translatedContent?.title || faq.title
-  const question = translatedContent?.question || faq.question
-  const answer = translatedContent?.answer || faq.answer || ""
-
   return (
     <StaticPageLayout>
       <div className="bg-gray-50 min-h-screen">
@@ -89,13 +121,29 @@ export default function FAQArticlePage() {
               {t("solutionHome")}
             </Link>
 
-            {/* Article Content */}
+            {/* Article Content - Now with client-side translation */}
             <article className="mb-12">
               <h1 className="text-2xl md:text-3xl font-medium text-gray-900 mb-8 leading-tight">
-                {title}
+                {isTranslating ? (
+                  <span className="flex items-center">
+                    <div className="animate-spin rounded-full h-5 w-5 border-t border-b border-gray-400 mr-3"></div>
+                    {faq.title}
+                  </span>
+                ) : (
+                  translatedContent.title
+                )}
               </h1>
               <div className="prose max-w-none">
-                <p className="text-gray-700 leading-relaxed text-lg whitespace-pre-wrap">{answer}</p>
+                <p className="text-gray-700 leading-relaxed text-lg whitespace-pre-wrap">
+                  {isTranslating ? (
+                    <span className="flex items-center">
+                      <div className="animate-spin rounded-full h-4 w-4 border-t border-b border-gray-400 mr-2"></div>
+                      {faq.answer || ''}
+                    </span>
+                  ) : (
+                    translatedContent.answer
+                  )}
+                </p>
               </div>
             </article>
 
@@ -129,62 +177,99 @@ export default function FAQArticlePage() {
           <div className="max-w-4xl mx-auto px-4 py-12">
             <h2 className="text-2xl font-medium text-gray-900 mb-8">{t("relatedArticles")}</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {relatedFAQs.map((relatedFAQ) => {
-                const relatedTranslatedContent = getTranslatedContent(relatedFAQ.translations, language)
-                const relatedTitle = relatedTranslatedContent?.title || relatedFAQ.title
-                
-                return (
-                  <Link
-                    key={relatedFAQ.id}
-                    href={`/faq/${relatedFAQ.id}`}
-                    className="flex items-start p-4 bg-white rounded-lg border border-gray-200 hover:border-blue-300 hover:shadow-sm transition-all group"
-                  >
-                    <span className="mr-3 mt-1 text-gray-400 group-hover:text-blue-600 transition-colors">📄</span>
-                    <span className="text-gray-700 group-hover:text-blue-600 transition-colors text-sm leading-relaxed">
-                      {relatedTitle}
-                    </span>
-                  </Link>
-                )
-              })}
+              {relatedFAQs.map((relatedFAQ) => (
+                <RelatedFAQLink
+                  key={relatedFAQ.id}
+                  faq={relatedFAQ}
+                  language={language}
+                />
+              ))}
             </div>
           </div>
         )}
 
-        {/* Payment Methods Section */}
+        {/* Payment Methods Section - Updated to match footer */}
         <div className="bg-white border-t border-gray-200">
           <div className="max-w-4xl mx-auto px-4 py-12">
-            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-6 items-center">
-              <div className="flex justify-center opacity-60">
-                <Image src="/mastercard.svg" alt="Mastercard" width={60} height={40} className="h-8 w-auto filter grayscale" />
+            <h3 className="text-xl font-medium text-gray-800 mb-6 text-center">
+              {t("paymentMethods")} - {t("securePayments")}
+            </h3>
+            <div className="flex flex-wrap justify-center items-center gap-4 md:gap-6">
+              {/* Visa */}
+              <div className="rounded-md p-2 h-10 flex items-center justify-center min-w-[60px] opacity-60">
+                <Image
+                  src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg"
+                  alt="Visa"
+                  width={40}
+                  height={24}
+                  className="h-6 w-auto object-contain filter grayscale"
+                />
               </div>
-              <div className="flex justify-center opacity-60">
-                <Image src="/visa.svg" alt="Visa" width={60} height={40} className="h-8 w-auto filter grayscale" />
+              
+              {/* Mastercard */}
+              <div className="rounded-md p-2 h-10 flex items-center justify-center min-w-[60px] opacity-60">
+                <Image
+                  src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg"
+                  alt="Mastercard"
+                  width={40}
+                  height={24}
+                  className="h-6 w-auto object-contain filter grayscale"
+                />
               </div>
-              <div className="flex justify-center opacity-60">
-                <div className="bg-gray-100 px-3 py-2 rounded">
-                  <span className="text-gray-600 font-bold text-sm">Klarna.</span>
-                </div>
+              
+              {/* PayPal */}
+              <div className="rounded-md p-2 h-10 flex items-center justify-center min-w-[60px] opacity-60">
+                <Image
+                  src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg"
+                  alt="PayPal"
+                  width={60}
+                  height={24}
+                  className="h-6 w-auto object-contain filter grayscale"
+                />
               </div>
-              <div className="flex justify-center opacity-60">
-                <div className="bg-gray-600 text-white px-2 py-1 rounded text-xs font-bold">
-                  iDEAL
-                </div>
+              
+              {/* American Express */}
+              <div className="rounded-md p-2 h-10 flex items-center justify-center min-w-[60px] opacity-60">
+                <Image
+                  src="https://upload.wikimedia.org/wikipedia/commons/f/fa/American_Express_logo_%282018%29.svg"
+                  alt="American Express"
+                  width={40}
+                  height={24}
+                  className="h-6 w-auto object-contain filter grayscale"
+                />
               </div>
-              <div className="flex justify-center opacity-60">
-                <Image src="/paypal.svg" alt="PayPal" width={60} height={40} className="h-8 w-auto filter grayscale" />
+              
+              {/* Apple Pay */}
+              <div className="rounded-md p-2 h-10 flex items-center justify-center min-w-[60px] opacity-60">
+                <Image
+                  src="https://upload.wikimedia.org/wikipedia/commons/b/b0/Apple_Pay_logo.svg"
+                  alt="Apple Pay"
+                  width={50}
+                  height={24}
+                  className="h-6 w-auto object-contain filter grayscale"
+                />
               </div>
-              <div className="flex justify-center opacity-60">
-                <div className="bg-gray-400 text-black px-2 py-1 rounded text-xs font-bold">
-                  postepay
-                </div>
+              
+              {/* Google Pay */}
+              <div className="rounded-md p-2 h-10 flex items-center justify-center min-w-[60px] opacity-60">
+                <Image
+                  src="https://upload.wikimedia.org/wikipedia/commons/f/f2/Google_Pay_Logo.svg"
+                  alt="Google Pay"
+                  width={50}
+                  height={24}
+                  className="h-6 w-auto object-contain filter grayscale"
+                />
               </div>
-              <div className="flex justify-center opacity-60">
-                <Image src="/bank-transfer.svg" alt="Bank Transfer" width={60} height={40} className="h-8 w-auto filter grayscale" />
-              </div>
-              <div className="flex justify-center opacity-60">
-                <div className="bg-gray-500 text-white px-2 py-1 rounded text-xs font-bold">
-                  Alipay
-                </div>
+              
+              {/* Stripe */}
+              <div className="rounded-md p-2 h-10 flex items-center justify-center min-w-[60px] opacity-60">
+                <Image
+                  src="https://upload.wikimedia.org/wikipedia/commons/b/ba/Stripe_Logo%2C_revised_2016.svg"
+                  alt="Stripe"
+                  width={50}
+                  height={24}
+                  className="h-6 w-auto object-contain filter grayscale"
+                />
               </div>
             </div>
           </div>

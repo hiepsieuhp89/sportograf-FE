@@ -1,21 +1,20 @@
 "use client"
 
 import { StaticPageLayout } from "@/components/static-page-layout"
-import { useTranslations } from "@/hooks/use-translations"
-import Link from "next/link"
-import { useState, useEffect } from "react"
-import { Search, Plus, Send } from "lucide-react"
-import Image from "next/image"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { getApprovedFAQs, submitFAQ, initializeFAQs, groupFAQsByCategory } from "@/lib/faq-service"
-import { getTranslatedContent } from "@/lib/translation-utils"
+import { Textarea } from "@/components/ui/textarea"
+import { useTranslations } from "@/hooks/use-translations"
+import { useClientTranslation } from "@/hooks/use-client-translation"
+import { getApprovedFAQs, groupFAQsByCategory, initializeFAQs, submitFAQ } from "@/lib/faq-service"
 import type { FAQ } from "@/lib/types"
+import { Plus, Search, Send } from "lucide-react"
+import Image from "next/image"
+import Link from "next/link"
+import { useEffect, useState } from "react"
 
 const categories = [
   "Getting started",
@@ -31,6 +30,22 @@ const categories = [
   "Photographer",
   "Number - and Face recognition"
 ]
+
+// Component for individual FAQ item with client-side translation
+function FAQItem({ faq, language }: { faq: FAQ; language: string }) {
+  const { translatedContent, isTranslating } = useClientTranslation(
+    faq.title,
+    faq.question,
+    faq.answer || '',
+    language as any
+  )
+
+  return {
+    id: faq.id,
+    title: translatedContent.title,
+    isTranslating
+  }
+}
 
 export default function FAQPage() {
   const { t, language } = useTranslations()
@@ -72,24 +87,25 @@ export default function FAQPage() {
 
   const groupedFAQs = groupFAQsByCategory(faqs)
 
-  const filteredData = Object.entries(groupedFAQs).map(([categoryName, categoryFAQs]) => ({
-    title: categoryName,
-    count: categoryFAQs.length,
-    items: categoryFAQs.filter(faq => {
-      const translatedContent = getTranslatedContent(faq.translations, language)
-      const title = translatedContent?.title || faq.title
-      const question = translatedContent?.question || faq.question
-      
-      return title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-             question.toLowerCase().includes(searchTerm.toLowerCase())
-    }).map(faq => {
-      const translatedContent = getTranslatedContent(faq.translations, language)
-      return {
-        id: faq.id,
-        title: translatedContent?.title || faq.title
-      }
+  // Create filtered data with client-side translation
+  const filteredData = Object.entries(groupedFAQs).map(([categoryName, categoryFAQs]) => {
+    const filteredItems = categoryFAQs.filter(faq => {
+      // For search, use original English content for now (can be enhanced later)
+      return faq.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+             faq.question.toLowerCase().includes(searchTerm.toLowerCase())
     })
-  })).filter(category => 
+
+    return {
+      title: categoryName,
+      count: filteredItems.length,
+      items: filteredItems.map(faq => ({
+        id: faq.id,
+        originalTitle: faq.title,
+        originalQuestion: faq.question,
+        originalAnswer: faq.answer || ''
+      }))
+    }
+  }).filter(category => 
     searchTerm === "" || 
     category.items.length > 0 || 
     category.title.toLowerCase().includes(searchTerm.toLowerCase())
@@ -317,14 +333,12 @@ export default function FAQPage() {
                   {category.items.length > 0 ? (
                     <div className="space-y-3">
                       {category.items.slice(0, 5).map((item) => (
-                        <Link
+                        <TranslatedFAQLink
                           key={item.id}
-                          href={`/faq/${item.id}`}
-                          className="flex items-start text-gray-600 hover:text-blue-600 transition-colors group"
-                        >
-                          <span className="mr-3 mt-1 text-gray-400 group-hover:text-blue-600">📄</span>
-                          <span className="text-sm leading-relaxed">{item.title}</span>
-                        </Link>
+                          id={item.id}
+                          originalTitle={item.originalTitle}
+                          language={language}
+                        />
                       ))}
                       
                       {category.items.length > 5 && (
@@ -342,14 +356,12 @@ export default function FAQPage() {
                       {expandedCategories.includes(category.title) && category.items.length > 5 && (
                         <div className="space-y-3 pt-2">
                           {category.items.slice(5).map((item) => (
-                            <Link
+                            <TranslatedFAQLink
                               key={item.id}
-                              href={`/faq/${item.id}`}
-                              className="flex items-start text-gray-600 hover:text-blue-600 transition-colors group"
-                            >
-                              <span className="mr-3 mt-1 text-gray-400 group-hover:text-blue-600">📄</span>
-                              <span className="text-sm leading-relaxed">{item.title}</span>
-                            </Link>
+                              id={item.id}
+                              originalTitle={item.originalTitle}
+                              language={language}
+                            />
                           ))}
                         </div>
                       )}
@@ -362,46 +374,129 @@ export default function FAQPage() {
             ))}
           </div>
 
-          {/* Payment Methods Section */}
+          {/* Payment Methods Section - Updated to match footer */}
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
-            <h3 className="text-xl font-medium text-gray-800 mb-6">{t("paymentMethods")}</h3>
-            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-6 items-center">
-              <div className="flex justify-center opacity-60">
-                <Image src="/mastercard.svg" alt="Mastercard" width={60} height={40} className="h-8 w-auto filter grayscale" />
+            <h3 className="text-xl font-medium text-gray-800 mb-6 text-center">
+              {t("paymentMethods")} - {t("securePayments")}
+            </h3>
+            <div className="flex flex-wrap justify-center items-center gap-4 md:gap-6">
+              {/* Visa */}
+              <div className="rounded-md p-2 h-10 flex items-center justify-center min-w-[60px] opacity-60">
+                <Image
+                  src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg"
+                  alt="Visa"
+                  width={40}
+                  height={24}
+                  className="h-6 w-auto object-contain filter grayscale"
+                />
               </div>
-              <div className="flex justify-center opacity-60">
-                <Image src="/visa.svg" alt="Visa" width={60} height={40} className="h-8 w-auto filter grayscale" />
+              
+              {/* Mastercard */}
+              <div className="rounded-md p-2 h-10 flex items-center justify-center min-w-[60px] opacity-60">
+                <Image
+                  src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg"
+                  alt="Mastercard"
+                  width={40}
+                  height={24}
+                  className="h-6 w-auto object-contain filter grayscale"
+                />
               </div>
-              <div className="flex justify-center opacity-60">
-                <div className="bg-gray-100 px-3 py-2 rounded">
-                  <span className="text-gray-600 font-bold text-sm">Klarna.</span>
-                </div>
+              
+              {/* PayPal */}
+              <div className="rounded-md p-2 h-10 flex items-center justify-center min-w-[60px] opacity-60">
+                <Image
+                  src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg"
+                  alt="PayPal"
+                  width={60}
+                  height={24}
+                  className="h-6 w-auto object-contain filter grayscale"
+                />
               </div>
-              <div className="flex justify-center opacity-60">
-                <div className="bg-gray-600 text-white px-2 py-1 rounded text-xs font-bold">
-                  iDEAL
-                </div>
+              
+              {/* American Express */}
+              <div className="rounded-md p-2 h-10 flex items-center justify-center min-w-[60px] opacity-60">
+                <Image
+                  src="https://upload.wikimedia.org/wikipedia/commons/f/fa/American_Express_logo_%282018%29.svg"
+                  alt="American Express"
+                  width={40}
+                  height={24}
+                  className="h-6 w-auto object-contain filter grayscale"
+                />
               </div>
-              <div className="flex justify-center opacity-60">
-                <Image src="/paypal.svg" alt="PayPal" width={60} height={40} className="h-8 w-auto filter grayscale" />
+              
+              {/* Apple Pay */}
+              <div className="rounded-md p-2 h-10 flex items-center justify-center min-w-[60px] opacity-60">
+                <Image
+                  src="https://upload.wikimedia.org/wikipedia/commons/b/b0/Apple_Pay_logo.svg"
+                  alt="Apple Pay"
+                  width={50}
+                  height={24}
+                  className="h-6 w-auto object-contain filter grayscale"
+                />
               </div>
-              <div className="flex justify-center opacity-60">
-                <div className="bg-gray-400 text-black px-2 py-1 rounded text-xs font-bold">
-                  postepay
-                </div>
+              
+              {/* Google Pay */}
+              <div className="rounded-md p-2 h-10 flex items-center justify-center min-w-[60px] opacity-60">
+                <Image
+                  src="https://upload.wikimedia.org/wikipedia/commons/f/f2/Google_Pay_Logo.svg"
+                  alt="Google Pay"
+                  width={50}
+                  height={24}
+                  className="h-6 w-auto object-contain filter grayscale"
+                />
               </div>
-              <div className="flex justify-center opacity-60">
-                <Image src="/bank-transfer.svg" alt="Bank Transfer" width={60} height={40} className="h-8 w-auto filter grayscale" />
-              </div>
-              <div className="flex justify-center opacity-60">
-                <div className="bg-gray-500 text-white px-2 py-1 rounded text-xs font-bold">
-                  Alipay
-                </div>
+              
+              {/* Stripe */}
+              <div className="rounded-md p-2 h-10 flex items-center justify-center min-w-[60px] opacity-60">
+                <Image
+                  src="https://upload.wikimedia.org/wikipedia/commons/b/ba/Stripe_Logo%2C_revised_2016.svg"
+                  alt="Stripe"
+                  width={50}
+                  height={24}
+                  className="h-6 w-auto object-contain filter grayscale"
+                />
               </div>
             </div>
           </div>
         </div>
       </div>
     </StaticPageLayout>
+  )
+}
+
+// Component for FAQ link with client-side translation
+function TranslatedFAQLink({ 
+  id, 
+  originalTitle, 
+  language 
+}: { 
+  id: string
+  originalTitle: string
+  language: string 
+}) {
+  const { translatedContent, isTranslating } = useClientTranslation(
+    originalTitle,
+    '',
+    '',
+    language as any
+  )
+
+  return (
+    <Link
+      href={`/faq/${id}`}
+      className="flex items-start text-gray-600 hover:text-blue-600 transition-colors group"
+    >
+      <span className="mr-3 mt-1 text-gray-400 group-hover:text-blue-600">📄</span>
+      <span className="text-sm leading-relaxed">
+        {isTranslating ? (
+          <span className="flex items-center">
+            <div className="animate-spin rounded-full h-3 w-3 border-t border-b border-gray-400 mr-2"></div>
+            {originalTitle}
+          </span>
+        ) : (
+          translatedContent.title
+        )}
+      </span>
+    </Link>
   )
 } 

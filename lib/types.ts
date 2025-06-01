@@ -77,22 +77,15 @@ export interface FAQ {
   question: string
   answer?: string
   category: string
-  status: "pending" | "approved" | "rejected"
+  status: 'pending' | 'approved' | 'rejected'
   submittedBy?: string
   submitterEmail?: string
   submitterName?: string
   answeredBy?: string
-  translations?: {
-    [key in Language]?: {
-      title: string
-      question: string
-      answer?: string
-    }
-  }
+  approvedAt?: string
   relatedFAQs?: string[]
   createdAt: string
   updatedAt: string
-  approvedAt?: string
 }
 
 export interface FAQCategory {

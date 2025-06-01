@@ -12,11 +12,11 @@ import {
   getDoc
 } from 'firebase/firestore'
 import { db } from './firebase'
-import type { FAQ, Language } from './types'
-import { translateFAQContent } from './translation-utils'
+import type { FAQ } from './types'
 
-// Mock FAQ data for initial setup
+// Comprehensive mock FAQ data for initial setup
 const mockFAQData: Omit<FAQ, 'id' | 'createdAt' | 'updatedAt'>[] = [
+  // Getting started
   {
     title: "Who is Sportograf?",
     question: "Who is Sportograf?",
@@ -40,6 +40,19 @@ const mockFAQData: Omit<FAQ, 'id' | 'createdAt' | 'updatedAt'>[] = [
     relatedFAQs: []
   },
   {
+    title: "How it works",
+    question: "How does Sportograf work?",
+    answer: "Sportograf works by having professional photographers positioned at strategic points during your sporting event. They capture high-quality photos of all participants. After the event, our advanced facial recognition and number recognition technology helps you find your photos quickly. You can then purchase individual photos or a Foto-Flat containing all your photos.",
+    category: "Getting started",
+    status: "approved",
+    submittedBy: "system",
+    answeredBy: "admin",
+    approvedAt: new Date().toISOString(),
+    relatedFAQs: []
+  },
+
+  // Login
+  {
     title: "What is a Magic Link?",
     question: "What is a Magic Link?",
     answer: "A Magic Link is a secure, one-time login link that we send to your email address. Instead of using a traditional password, you simply click the link in your email to access your photos. This provides enhanced security and convenience.",
@@ -50,6 +63,155 @@ const mockFAQData: Omit<FAQ, 'id' | 'createdAt' | 'updatedAt'>[] = [
     approvedAt: new Date().toISOString(),
     relatedFAQs: []
   },
+  {
+    title: "My validation for an event has failed. What to do?",
+    question: "My validation for an event has failed. What to do?",
+    answer: "If your event validation has failed, please check that you've entered the correct event details and your registration information. If the problem persists, contact our support team with your event details and registration information, and we'll help you resolve the issue.",
+    category: "Login",
+    status: "approved",
+    submittedBy: "system",
+    answeredBy: "admin",
+    approvedAt: new Date().toISOString(),
+    relatedFAQs: []
+  },
+  {
+    title: "How long can I access my photos?",
+    question: "How long can I access my photos?",
+    answer: "Once you've purchased your photos, you have unlimited access to download them. We recommend downloading your photos as soon as possible and storing them safely. Your download links will remain active, but we suggest not relying solely on our servers for long-term storage.",
+    category: "Login",
+    status: "approved",
+    submittedBy: "system",
+    answeredBy: "admin",
+    approvedAt: new Date().toISOString(),
+    relatedFAQs: []
+  },
+  {
+    title: "How does the 2-Factor-Authentication (2FA) work?",
+    question: "How does the 2-Factor-Authentication (2FA) work?",
+    answer: "Our 2-Factor-Authentication adds an extra layer of security to your account. When enabled, you'll need to provide both your email and a verification code sent to your phone or email. This ensures that only you can access your photos, even if someone else has your email address.",
+    category: "Login",
+    status: "approved",
+    submittedBy: "system",
+    answeredBy: "admin",
+    approvedAt: new Date().toISOString(),
+    relatedFAQs: []
+  },
+
+  // Find your own photos
+  {
+    title: "Search by selfie/face recognition",
+    question: "How do I search by selfie/face recognition?",
+    answer: "Our advanced facial recognition technology allows you to find your photos by uploading a selfie. Simply upload a clear photo of yourself, and our system will automatically identify and show you all photos where you appear in the event.",
+    category: "Find your own photos",
+    status: "approved",
+    submittedBy: "system",
+    answeredBy: "admin",
+    approvedAt: new Date().toISOString(),
+    relatedFAQs: []
+  },
+  {
+    title: "How do I find and mark more photos of myself?",
+    question: "How do I find and mark more photos of myself?",
+    answer: "You can find more photos of yourself by using our facial recognition feature, searching by your race number, or browsing through the event gallery. Once you find additional photos of yourself, you can mark them to add to your collection.",
+    category: "Find your own photos",
+    status: "approved",
+    submittedBy: "system",
+    answeredBy: "admin",
+    approvedAt: new Date().toISOString(),
+    relatedFAQs: []
+  },
+  {
+    title: "Why can't I find pictures of myself?",
+    question: "Why can't I find pictures of myself?",
+    answer: "There could be several reasons: 1) The photos might not be uploaded yet, 2) You might be wearing sunglasses or a hat that affects facial recognition, 3) Your race number might not be visible, 4) You might need to try different search terms. Try using our manual search or contact support for assistance.",
+    category: "Find your own photos",
+    status: "approved",
+    submittedBy: "system",
+    answeredBy: "admin",
+    approvedAt: new Date().toISOString(),
+    relatedFAQs: []
+  },
+  {
+    title: "There are one or more photos of strangers in my Foto-Flat",
+    question: "There are one or more photos of strangers in my Foto-Flat",
+    answer: "If you've found photos of other people in your Foto-Flat, this might be due to similar race numbers or facial recognition errors. Please contact our support team with the specific photo details, and we'll review and correct your Foto-Flat.",
+    category: "Find your own photos",
+    status: "approved",
+    submittedBy: "system",
+    answeredBy: "admin",
+    approvedAt: new Date().toISOString(),
+    relatedFAQs: []
+  },
+  {
+    title: "Number of photos in the Foto-Flat",
+    question: "How many photos are included in the Foto-Flat?",
+    answer: "The number of photos in your Foto-Flat depends on how many photos our photographers captured of you during the event. Typically, this ranges from 10-50+ photos, depending on the event size, duration, and photographer coverage.",
+    category: "Find your own photos",
+    status: "approved",
+    submittedBy: "system",
+    answeredBy: "admin",
+    approvedAt: new Date().toISOString(),
+    relatedFAQs: []
+  },
+
+  // Order
+  {
+    title: "How do I order my Foto-Flat?",
+    question: "How do I order my Foto-Flat?",
+    answer: "To order your Foto-Flat, first find your photos using our search function or facial recognition. Once you've identified your photos, click on 'Order Foto-Flat' and follow the checkout process. You can pay using various payment methods including credit card, PayPal, or bank transfer.",
+    category: "Order",
+    status: "approved",
+    submittedBy: "system",
+    answeredBy: "admin",
+    approvedAt: new Date().toISOString(),
+    relatedFAQs: []
+  },
+  {
+    title: "I pre-ordered my Photo Package before the event",
+    question: "I pre-ordered my Photo Package before the event",
+    answer: "If you pre-ordered your photo package, you should have received a confirmation email with instructions on how to access your photos after the event. Use the magic link or access code provided in your confirmation email to view and download your photos.",
+    category: "Order",
+    status: "approved",
+    submittedBy: "system",
+    answeredBy: "admin",
+    approvedAt: new Date().toISOString(),
+    relatedFAQs: []
+  },
+  {
+    title: "Pre-ordered Photo Package - Spartan",
+    question: "How do I access my pre-ordered Spartan photo package?",
+    answer: "For Spartan events, use your race confirmation email or bib number to access your pre-ordered photos. If you can't find your access details, contact support with your Spartan registration information.",
+    category: "Order",
+    status: "approved",
+    submittedBy: "system",
+    answeredBy: "admin",
+    approvedAt: new Date().toISOString(),
+    relatedFAQs: []
+  },
+  {
+    title: "Pre-ordered Photo Package - HYROX",
+    question: "How do I access my pre-ordered HYROX photo package?",
+    answer: "For HYROX events, use your race confirmation email or bib number to access your pre-ordered photos. Check your email for the magic link sent after the event, or use your HYROX registration details to search for your photos.",
+    category: "Order",
+    status: "approved",
+    submittedBy: "system",
+    answeredBy: "admin",
+    approvedAt: new Date().toISOString(),
+    relatedFAQs: []
+  },
+  {
+    title: "Can I also order single photos?",
+    question: "Can I also order single photos?",
+    answer: "Yes, you can purchase individual photos instead of the full Foto-Flat. Simply select the specific photos you want and add them to your cart. However, the Foto-Flat usually offers better value if you want multiple photos.",
+    category: "Order",
+    status: "approved",
+    submittedBy: "system",
+    answeredBy: "admin",
+    approvedAt: new Date().toISOString(),
+    relatedFAQs: []
+  },
+
+  // Payment
   {
     title: "What payment methods are available?",
     question: "What payment methods are available?",
@@ -62,10 +224,141 @@ const mockFAQData: Omit<FAQ, 'id' | 'createdAt' | 'updatedAt'>[] = [
     relatedFAQs: []
   },
   {
-    title: "How do I order my Foto-Flat?",
-    question: "How do I order my Foto-Flat?",
-    answer: "To order your Foto-Flat, first find your photos using our search function or facial recognition. Once you've identified your photos, click on 'Order Foto-Flat' and follow the checkout process. You can pay using various payment methods including credit card, PayPal, or bank transfer.",
-    category: "Order",
+    title: "I would like to pay by bank transfer. How can I do?",
+    question: "I would like to pay by bank transfer. How can I do?",
+    answer: "You can pay by bank transfer during the checkout process. Select 'Bank Transfer' as your payment method and you will receive our bank details to complete the payment. Please include your order number in the payment reference.",
+    category: "Payment",
+    status: "approved",
+    submittedBy: "system",
+    answeredBy: "admin",
+    approvedAt: new Date().toISOString(),
+    relatedFAQs: []
+  },
+  {
+    title: "I paid twice. What can I do?",
+    question: "I paid twice. What can I do?",
+    answer: "If you accidentally made a duplicate payment, please contact our support team immediately with your order details and payment confirmation. We'll process a refund for the duplicate payment as quickly as possible.",
+    category: "Payment",
+    status: "approved",
+    submittedBy: "system",
+    answeredBy: "admin",
+    approvedAt: new Date().toISOString(),
+    relatedFAQs: []
+  },
+  {
+    title: "Where do I find the invoice for my purchases?",
+    question: "Where do I find the invoice for my purchases?",
+    answer: "Your invoice is automatically sent to your email address after successful payment. You can also find it in your account under 'My Orders' or 'Purchase History'. If you can't locate it, contact support with your order number.",
+    category: "Payment",
+    status: "approved",
+    submittedBy: "system",
+    answeredBy: "admin",
+    approvedAt: new Date().toISOString(),
+    relatedFAQs: []
+  },
+  {
+    title: "Where can I find your bank details?",
+    question: "Where can I find your bank details?",
+    answer: "Our bank details are provided during the checkout process when you select bank transfer as your payment method. You'll also receive them in your order confirmation email. For security reasons, we don't publish our bank details publicly.",
+    category: "Payment",
+    status: "approved",
+    submittedBy: "system",
+    answeredBy: "admin",
+    approvedAt: new Date().toISOString(),
+    relatedFAQs: []
+  },
+
+  // Download
+  {
+    title: "Where is my order?",
+    question: "Where is my order?",
+    answer: "You can check your order status by logging into your account and visiting the 'My Orders' section. You will also receive email notifications about your order status. Once your photos are ready for download, you'll receive a download link via email.",
+    category: "Download",
+    status: "approved",
+    submittedBy: "system",
+    answeredBy: "admin",
+    approvedAt: new Date().toISOString(),
+    relatedFAQs: []
+  },
+  {
+    title: "ZIP download",
+    question: "How does the ZIP download work?",
+    answer: "Once your order is processed, you'll receive a download link that allows you to download all your photos in a single ZIP file. This makes it easy to get all your photos at once. The ZIP file contains high-resolution versions of all your purchased photos.",
+    category: "Download",
+    status: "approved",
+    submittedBy: "system",
+    answeredBy: "admin",
+    approvedAt: new Date().toISOString(),
+    relatedFAQs: []
+  },
+  {
+    title: "Your Download Area",
+    question: "How do I access my download area?",
+    answer: "Your download area can be accessed through the link in your purchase confirmation email or by logging into your account and going to 'My Downloads'. Here you'll find all your purchased photos available for download.",
+    category: "Download",
+    status: "approved",
+    submittedBy: "system",
+    answeredBy: "admin",
+    approvedAt: new Date().toISOString(),
+    relatedFAQs: []
+  },
+
+  // FAQ
+  {
+    title: "I have read the FAQ but did not find an answer to my question",
+    question: "I have read the FAQ but did not find an answer to my question",
+    answer: "If you couldn't find the answer to your question in our FAQ, please contact our support team directly. You can use our contact form or send an email to support@sportograf.com. We're here to help and will respond as quickly as possible.",
+    category: "FAQ",
+    status: "approved",
+    submittedBy: "system",
+    answeredBy: "admin",
+    approvedAt: new Date().toISOString(),
+    relatedFAQs: []
+  },
+
+  // Press
+  {
+    title: "Can I publish photos I have bought on social media?",
+    question: "Can I publish photos I have bought on social media?",
+    answer: "Yes, you can publish photos you've purchased on your personal social media accounts. However, please ensure you credit Sportograf when sharing. Commercial use or redistribution requires additional licensing - please contact us for commercial usage rights.",
+    category: "Press",
+    status: "approved",
+    submittedBy: "system",
+    answeredBy: "admin",
+    approvedAt: new Date().toISOString(),
+    relatedFAQs: []
+  },
+  {
+    title: "Did I acquire the rights to further use with the purchase?",
+    question: "Did I acquire the rights to further use with the purchase?",
+    answer: "With your purchase, you acquire personal usage rights for the photos. This includes personal social media sharing, printing for personal use, and sharing with family and friends. Commercial usage, redistribution, or resale requires additional licensing agreements.",
+    category: "Press",
+    status: "approved",
+    submittedBy: "system",
+    answeredBy: "admin",
+    approvedAt: new Date().toISOString(),
+    relatedFAQs: []
+  },
+
+  // Photographer
+  {
+    title: "How to become a Sportografer?",
+    question: "How to become a Sportografer?",
+    answer: "To become a Sportograf photographer, you need professional photography experience, especially in sports photography. We look for photographers who can work in challenging conditions and deliver high-quality results. Apply through our careers page with your portfolio and experience details.",
+    category: "Photographer",
+    status: "approved",
+    submittedBy: "system",
+    answeredBy: "admin",
+    approvedAt: new Date().toISOString(),
+    relatedFAQs: []
+  },
+
+  // Number - and Face recognition
+  {
+    title: "How does your recognition work?",
+    question: "How does your recognition work?",
+    answer: "Our recognition system uses advanced AI technology to identify faces and race numbers in photos. For face recognition, upload a clear selfie and our system will find photos where you appear. For number recognition, we automatically detect race bibs and numbers to help you find your photos quickly.",
+    category: "Number - and Face recognition",
     status: "approved",
     submittedBy: "system",
     answeredBy: "admin",
@@ -81,27 +374,26 @@ export async function initializeFAQs(): Promise<void> {
     const faqsSnapshot = await getDocs(faqsQuery)
     
     if (faqsSnapshot.empty) {
-      console.log("No FAQs found, initializing with mock data...")
+      console.log("No FAQs found, initializing with comprehensive mock data...")
       
-      // Add mock FAQs
+      // Add mock FAQs without translations (client-side translation)
       for (const faqData of mockFAQData) {
-        // Generate translations for each FAQ
-        const translations = await translateFAQContent(
-          faqData.title,
-          faqData.question,
-          faqData.answer || '',
-          'en'
-        )
-        
-        await addDoc(collection(db, "faqs"), {
-          ...faqData,
-          translations,
-          createdAt: serverTimestamp(),
-          updatedAt: serverTimestamp()
-        })
+        try {
+          await addDoc(collection(db, "faqs"), {
+            ...faqData,
+            createdAt: serverTimestamp(),
+            updatedAt: serverTimestamp()
+          })
+          
+          console.log(`Added FAQ: ${faqData.title}`)
+        } catch (error) {
+          console.error(`Error adding FAQ "${faqData.title}":`, error)
+        }
       }
       
-      console.log("Mock FAQs initialized successfully")
+      console.log("Comprehensive FAQ mock data initialized successfully")
+    } else {
+      console.log("FAQs already exist, skipping initialization")
     }
   } catch (error) {
     console.error("Error initializing FAQs:", error)
@@ -116,18 +408,9 @@ export async function submitFAQ(faqData: {
   submitterName?: string
 }): Promise<string> {
   try {
-    // Generate translations
-    const translations = await translateFAQContent(
-      faqData.title,
-      faqData.question,
-      '',
-      'en'
-    )
-    
     const docRef = await addDoc(collection(db, "faqs"), {
       ...faqData,
       status: "pending" as const,
-      translations,
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp()
     })
@@ -218,24 +501,9 @@ export async function updateFAQAnswer(
   answeredBy: string
 ): Promise<void> {
   try {
-    // Get current FAQ to update translations
-    const faq = await getFAQById(id)
-    if (!faq) throw new Error("FAQ not found")
-    
-    // Generate translations for the answer
-    const updatedTranslations = { ...faq.translations }
-    
-    // Update translations with new answer
-    for (const lang of ['en', 'de', 'fr', 'es'] as Language[]) {
-      if (updatedTranslations[lang]) {
-        updatedTranslations[lang].answer = answer // For now, use same answer for all languages
-      }
-    }
-    
     await updateDoc(doc(db, "faqs", id), {
       answer,
       answeredBy,
-      translations: updatedTranslations,
       updatedAt: serverTimestamp()
     })
   } catch (error) {
