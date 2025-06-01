@@ -5,6 +5,7 @@ import Image from "next/image"
 import { motion, useScroll, useTransform } from "framer-motion"
 import { useInView } from "react-intersection-observer"
 import { useState, useEffect } from "react"
+import { useTranslations } from "@/hooks/use-translations"
 
 // Loading skeleton component
 const Skeleton = ({ className }: { className?: string }) => (
@@ -80,6 +81,7 @@ const ImageWithSkeleton = ({ src, alt, className, width, height }: {
 
 export default function AboutUsPage() {
   const { scrollYProgress } = useScroll()
+  const { t } = useTranslations()
   
   // Parallax transforms
   const heroY = useTransform(scrollYProgress, [0, 0.3], [0, -100])
@@ -112,7 +114,7 @@ export default function AboutUsPage() {
               whileHover={{ scale: 1.05, rotateY: 5 }}
               transition={{ type: "spring", stiffness: 300 }}
             >
-              About Sportograf
+              {t("aboutSportograf")}
             </motion.h1>
             <motion.p 
               className="text-lg md:text-xl lg:text-2xl text-mainBackgroundV1/90 max-w-3xl mx-auto leading-relaxed"
@@ -120,7 +122,7 @@ export default function AboutUsPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3, duration: 0.8 }}
             >
-              Sportograf: Our name says everything about us. We are sports enthusiasts who love to take the best possible photos for each participant.
+              {t("aboutSportografDescription")}
             </motion.p>
           </motion.div>
           
@@ -203,9 +205,9 @@ export default function AboutUsPage() {
                   style={{ transformStyle: "preserve-3d" }}
                   className="border-mainBackgroundV1/20"
                 >
-                  <h2 className="text-3xl font-bold text-mainDarkBackgroundV1 mb-6">Our Story</h2>
+                  <h2 className="text-3xl font-bold text-mainDarkBackgroundV1 mb-6">{t("ourStory")}</h2>
                   <p className="text-lg text-gray-700 leading-relaxed">
-                    Our story began when Tom Janas and Guido Holz - frustrated by photos they were supposed to order as paper prints at a high price during bike races - had the idea to create the world's first purely digital photo service. Said, done. In December 2005 they programmed the first version of the website during their exchange semester in Spain and Italy. The first photo sale was euphorically toasted with a beer and so things took their course.
+                    {t("ourStoryDescription")}
                   </p>
                 </motion.div>
               </motion.div>
@@ -230,10 +232,10 @@ export default function AboutUsPage() {
               viewport={{ once: true }}
             >
               {[
-                { number: 550, label: "events worldwide" },
-                { number: 500, label: "freelance photographers" },
-                { number: 10, label: "mio. photographed athletes", suffix: " mio." },
-                { number: 50, label: "mio. images per year", suffix: " mio." }
+                { number: 550, label: t("eventsWorldwide") },
+                { number: 500, label: t("freelancePhotographers") },
+                { number: 10, label: t("photographedAthletes"), suffix: " mio." },
+                { number: 50, label: t("imagesPerYear"), suffix: " mio." }
               ].map((stat, index) => (
                 <motion.div
                   key={index}
@@ -273,7 +275,7 @@ export default function AboutUsPage() {
                 whileHover={{ scale: 1.02 }}
                 transition={{ type: "spring", stiffness: 300 }}
               >
-                In order to take the best possible photos, we get up at 4 o'clock in the morning and arrive at the event site on time for the sunrise, we lie in the mud during an obstacle course race, or stand on a mountain pass road in the Alps in the pouring rain and freezing snow. We are sports(wo)men ourselves and know both perspectives. We know which photos an athlete desires!
+                {t("aboutUsCommitment")}
               </motion.p>
             </motion.div>
 
@@ -359,24 +361,24 @@ export default function AboutUsPage() {
               transition={{ duration: 0.8 }}
               viewport={{ once: true }}
             >
-              What Makes Us Different
+              {t("whatMakesUsDifferent")}
             </motion.h2>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
               {[
                 {
-                  title: "Professional Quality",
-                  description: "Our photographers are professionals with years of experience in sports photography, ensuring the highest quality images for every participant.",
+                  title: t("professionalQuality"),
+                  description: t("professionalQualityDescription"),
                   icon: "📸"
                 },
                 {
-                  title: "Complete Coverage",
-                  description: "We position photographers at strategic locations throughout the course to capture multiple shots of each participant.",
+                  title: t("completeCoverage"),
+                  description: t("completeCoverageDescription"),
                   icon: "🎯"
                 },
                 {
-                  title: "Advanced Technology",
-                  description: "Our advanced facial recognition technology makes it easy for participants to find their photos quickly after the event.",
+                  title: t("advancedTechnology"),
+                  description: t("advancedTechnologyDescription"),
                   icon: "🤖"
                 }
               ].map((feature, index) => (
