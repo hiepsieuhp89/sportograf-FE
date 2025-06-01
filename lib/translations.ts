@@ -180,6 +180,61 @@ type TranslationKeys =
   | "noEventsFound"
   | "clearSearch"
   | "forSearchTerm"
+  // Profile Page
+  | "editProfile"
+  | "chooseImage"
+  | "emailCannotBeChanged"
+  | "tellUsAboutYourself"
+  | "saveChanges"
+  | "saving"
+  | "uploading"
+  | "profileUpdatedSuccessfully"
+  | "selectedFile"
+  | "imageSizeError"
+  | "imageTypeError"
+  | "uploadError"
+  | "updateError"
+  | "imageUploadError"
+  | "profileUpdateError"
+  | "magicLinkSent"
+  | "checkEmailToComplete"
+  | "magicLinkSentTo"
+  | "sending"
+  | "completingSignIn"
+  | "verifyingLogin"
+  | "loginSuccessful"
+  | "redirecting"
+  | "returnToLogin"
+  | "emailRequired"
+  | "invalidMagicLink"
+  | "expiredMagicLink"
+  | "failedToSendMagicLink"
+  | "failedToCompleteSignIn"
+  | "dataProtectionInfo"
+  // Newsletter Subscription
+  | "subscribeToNewsletter"
+  | "unsubscribeFromNewsletter"
+  | "subscriptionSuccessful"
+  | "unsubscriptionSuccessful"
+  | "alreadySubscribed"
+  | "notSubscribed"
+  | "subscriptionError"
+  | "unsubscriptionError"
+  | "manageSubscription"
+  | "subscriptionStatus"
+  | "subscribed"
+  | "unsubscribed"
+  | "subscribing"
+  | "unsubscribing"
+  | "newEventNotification"
+  | "newEventAvailable"
+  | "checkOutEvent"
+  | "unsubscribeLink"
+  | "magicLinkExplanation"
+  | "magicLinkBenefits"
+  | "noPasswordNeeded"
+  | "secureLogin"
+  | "oneClickAccess"
 
 type Translations = {
   [key in Language]: {
@@ -365,6 +420,59 @@ export const translations: Translations = {
     noEventsFound: "No events found",
     clearSearch: "Clear search",
     forSearchTerm: "For search term",
+    editProfile: "Edit Profile",
+    chooseImage: "Choose Image",
+    emailCannotBeChanged: "Email cannot be changed",
+    tellUsAboutYourself: "Tell us about yourself",
+    saveChanges: "Save Changes",
+    saving: "Saving",
+    uploading: "Uploading",
+    profileUpdatedSuccessfully: "Profile updated successfully",
+    selectedFile: "Selected File",
+    imageSizeError: "Image size error",
+    imageTypeError: "Image type error",
+    uploadError: "Upload error",
+    updateError: "Update error",
+    imageUploadError: "Failed to upload profile image. Please try again.",
+    profileUpdateError: "Failed to update profile",
+    magicLinkSent: "Magic link sent!",
+    checkEmailToComplete: "Check your email to complete login.",
+    magicLinkSentTo: "We've sent a login link to",
+    sending: "Sending...",
+    completingSignIn: "Completing Sign In",
+    verifyingLogin: "Verifying your login...",
+    loginSuccessful: "Login successful! Redirecting...",
+    redirecting: "Redirecting...",
+    returnToLogin: "Return to login",
+    emailRequired: "Email is required to complete sign in",
+    invalidMagicLink: "Invalid magic link. Please ensure you're using the link from your email.",
+    expiredMagicLink: "This login link has expired or already been used. Please request a new one.",
+    failedToSendMagicLink: "Failed to send magic link. Please try again.",
+    failedToCompleteSignIn: "Failed to complete sign in. Please try requesting a new login link.",
+    dataProtectionInfo: "For more information on data protection, please see our",
+    subscribeToNewsletter: "Subscribe to Newsletter",
+    unsubscribeFromNewsletter: "Unsubscribe from Newsletter",
+    subscriptionSuccessful: "Successfully subscribed to newsletter!",
+    unsubscriptionSuccessful: "Successfully unsubscribed from newsletter.",
+    alreadySubscribed: "You are already subscribed to our newsletter.",
+    notSubscribed: "You are not subscribed to our newsletter.",
+    subscriptionError: "Failed to subscribe. Please try again.",
+    unsubscriptionError: "Failed to unsubscribe. Please try again.",
+    manageSubscription: "Manage Subscription",
+    subscriptionStatus: "Subscription Status",
+    subscribed: "Subscribed",
+    unsubscribed: "Unsubscribed",
+    subscribing: "Subscribing...",
+    unsubscribing: "Unsubscribing...",
+    newEventNotification: "New Event Notification",
+    newEventAvailable: "A new event is now available!",
+    checkOutEvent: "Check out the event",
+    unsubscribeLink: "Unsubscribe from these notifications",
+    magicLinkExplanation: "What is a Magic Link?",
+    magicLinkBenefits: "Magic links provide a secure, password-free way to access your account:",
+    noPasswordNeeded: "No password needed",
+    secureLogin: "Secure and encrypted",
+    oneClickAccess: "One-click access from your email",
   },
   de: {
     home: "STARTSEITE",
@@ -543,6 +651,59 @@ export const translations: Translations = {
     noEventsFound: "Keine Events gefunden",
     clearSearch: "Suche löschen",
     forSearchTerm: "Für Suchbegriff",
+    editProfile: "Profil bearbeiten",
+    chooseImage: "Bild auswählen",
+    emailCannotBeChanged: "E-Mail kann nicht geändert werden",
+    tellUsAboutYourself: "Erzählen Sie uns von Ihrem Leben",
+    saveChanges: "Änderungen speichern",
+    saving: "Speichern",
+    uploading: "Hochladen",
+    profileUpdatedSuccessfully: "Profil erfolgreich aktualisiert",
+    selectedFile: "Ausgewähltes Datei",
+    imageSizeError: "Bildgrößenfehler",
+    imageTypeError: "Bildtypfehler",
+    uploadError: "Hochladefehler",
+    updateError: "Aktualisierungsfehler",
+    imageUploadError: "Fehler beim Hochladen des Profilbildes. Bitte versuchen Sie es erneut.",
+    profileUpdateError: "Fehler beim Aktualisieren des Profils",
+    magicLinkSent: "Magic Link gesendet!",
+    checkEmailToComplete: "Überprüfen Sie Ihre E-Mail, um die Anmeldung abzuschließen.",
+    magicLinkSentTo: "Wir haben einen Anmelde-Link an",
+    sending: "Senden...",
+    completingSignIn: "Anmeldung wird abgeschlossen",
+    verifyingLogin: "Anmeldung wird überprüft...",
+    loginSuccessful: "Anmeldung erfolgreich! Weiterleitung...",
+    redirecting: "Weiterleitung...",
+    returnToLogin: "Zurück zur Anmeldung",
+    emailRequired: "E-Mail ist erforderlich, um die Anmeldung abzuschließen",
+    invalidMagicLink: "Ungültiger Magic Link. Stellen Sie sicher, dass Sie den Link aus Ihrer E-Mail verwenden.",
+    expiredMagicLink: "Dieser Anmelde-Link ist abgelaufen oder wurde bereits verwendet. Bitte fordern Sie einen neuen an.",
+    failedToSendMagicLink: "Fehler beim Senden des Magic Links. Bitte versuchen Sie es erneut.",
+    failedToCompleteSignIn: "Fehler beim Abschließen der Anmeldung. Bitte versuchen Sie, einen neuen Anmelde-Link anzufordern.",
+    dataProtectionInfo: "Weitere Informationen zum Datenschutz finden Sie in unserer",
+    subscribeToNewsletter: "Newsletter abonnieren",
+    unsubscribeFromNewsletter: "Newsletter abbestellen",
+    subscriptionSuccessful: "Newsletter erfolgreich abonniert!",
+    unsubscriptionSuccessful: "Newsletter erfolgreich abbestellt.",
+    alreadySubscribed: "Sie haben unseren Newsletter bereits abonniert.",
+    notSubscribed: "Sie haben unseren Newsletter nicht abonniert.",
+    subscriptionError: "Abonnement fehlgeschlagen. Bitte versuchen Sie es erneut.",
+    unsubscriptionError: "Abbestellung fehlgeschlagen. Bitte versuchen Sie es erneut.",
+    manageSubscription: "Abonnement verwalten",
+    subscriptionStatus: "Abonnement-Status",
+    subscribed: "Abonniert",
+    unsubscribed: "Abbestellt",
+    subscribing: "Abonnieren...",
+    unsubscribing: "Abbestellen...",
+    newEventNotification: "Neue Event-Benachrichtigung",
+    newEventAvailable: "Ein neues Event ist jetzt verfügbar!",
+    checkOutEvent: "Event ansehen",
+    unsubscribeLink: "Von diesen Benachrichtigungen abmelden",
+    magicLinkExplanation: "Was ist ein Magic Link?",
+    magicLinkBenefits: "Magic Links bieten einen sicheren, passwortfreien Zugang zu Ihrem Konto:",
+    noPasswordNeeded: "Kein Passwort erforderlich",
+    secureLogin: "Sicher und verschlüsselt",
+    oneClickAccess: "Ein-Klick-Zugang aus Ihrer E-Mail",
   },
   fr: {
     home: "ACCUEIL",
@@ -649,7 +810,7 @@ export const translations: Translations = {
     germany: "Allemagne",
     localCourt: "Tribunal local d'Aix-la-Chapelle, HRB 24642",
     salesTaxId: "Numéro d'identification TVA: DE341002439",
-    onlineDisputeResolution: "Sur la base du règlement (UE) n° 524/2013 sur le règlement en ligne des litiges de consommation, la Commission européenne lance une plateforme de règlement en ligne des litiges le 15/02/2016 sous l'URL http://ec.europa.eu/odr.",
+    onlineDisputeResolution: "Sur la base du règlement (UE) n° 524/2013 sur le règlement en línea des litiges de consommation, la Comisión Europea lanza una plataforma para resolución de disputas en línea el 15/02/2016 bajo la URL http://ec.europa.eu/odr.",
     consumerDisputes: "Les consommateurs ont alors la possibilité d'utiliser cette plateforme pour le règlement des litiges concernant notre offre en línea.",
     eventDate: "Date",
     eventTime: "Heure",
@@ -663,7 +824,7 @@ export const translations: Translations = {
     getNotificationWhenReady: "Recevez une notification dès que vos photos sont en ligne.",
     notifyMe: "Me notifier",
     paymentMethods: "Méthodes de paiement",
-    securePayments: "Paiements sécurisés",
+    securePayments: "Pagements sécurisés",
     logout: "Déconnexion",
     howCanWeHelpYou: "Comment pouvons-nous vous aider aujourd'hui?",
     enterSearchTerm: "Entrez votre terme de recherche ici...",
@@ -720,7 +881,60 @@ export const translations: Translations = {
     eventFound: "Événement trouvé",
     noEventsFound: "Aucun événement trouvé",
     clearSearch: "Effacer la recherche",
-    forSearchTerm: "Pour le terme de recherche",
+    forSearchTerm: "Für Suchbegriff",
+    editProfile: "Modifier le profil",
+    chooseImage: "Choisir une image",
+    emailCannotBeChanged: "L'email ne peut pas être modifié",
+    tellUsAboutYourself: "Parlez-nous de votre vie",
+    saveChanges: "Enregistrer les modifications",
+    saving: "Enregistrement",
+    uploading: "Téléchargement",
+    profileUpdatedSuccessfully: "Profil mis à jour avec succès",
+    selectedFile: "Fichier sélectionné",
+    imageSizeError: "Erreur de taille d'image",
+    imageTypeError: "Erreur de type d'image",
+    uploadError: "Erreur de téléchargement",
+    updateError: "Erreur de mise à jour",
+    imageUploadError: "Échec du téléchargement de l'image de profil. Veuillez réessayer.",
+    profileUpdateError: "Échec de la mise à jour du profil",
+    magicLinkSent: "Lien magique envoyé!",
+    checkEmailToComplete: "Vérifiez votre email pour terminer la connexion.",
+    magicLinkSentTo: "Nous avons envoyé un lien de connexion à",
+    sending: "Envoi...",
+    completingSignIn: "Finalisation de la connexion",
+    verifyingLogin: "Vérification de la connexion...",
+    loginSuccessful: "Connexion réussie! Redirection...",
+    redirecting: "Redirection...",
+    returnToLogin: "Retour à la connexion",
+    emailRequired: "Email requis pour terminer la connexion",
+    invalidMagicLink: "Lien magique invalide. Assurez-vous d'utiliser le lien de votre email.",
+    expiredMagicLink: "Ce lien de connexion a expiré ou a déjà été usado. Veuillez en demander un nouveau.",
+    failedToSendMagicLink: "Échec de l'envoi du lien magique. Veuillez réessayer.",
+    failedToCompleteSignIn: "Échec de la finalisation de la connexion. Veuillez essayer de demander un nouveau lien de connexion.",
+    dataProtectionInfo: "Pour plus d'informations sur la protection des données, veuillez consulter notre",
+    subscribeToNewsletter: "S'abonner à la newsletter",
+    unsubscribeFromNewsletter: "Se désabonner de la newsletter",
+    subscriptionSuccessful: "Abonnement à la newsletter réussi!",
+    unsubscriptionSuccessful: "Désabonnement de la newsletter réussi.",
+    alreadySubscribed: "Vous êtes déjà abonné à notre newsletter.",
+    notSubscribed: "Vous n'êtes pas abonné à notre newsletter.",
+    subscriptionError: "Échec de l'abonnement. Veuillez réessayer.",
+    unsubscriptionError: "Échec du désabonnement. Veuillez réessayer.",
+    manageSubscription: "Gérer l'abonnement",
+    subscriptionStatus: "Statut de l'abonnement",
+    subscribed: "Abonné",
+    unsubscribed: "Désabonné",
+    subscribing: "Abonnement en cours...",
+    unsubscribing: "Désabonnement en cours...",
+    newEventNotification: "Notification de nouvel événement",
+    newEventAvailable: "Un nouvel événement est maintenant disponible!",
+    checkOutEvent: "Découvrir l'événement",
+    unsubscribeLink: "Se désabonner de ces notifications",
+    magicLinkExplanation: "Qu'est-ce qu'un lien magique?",
+    magicLinkBenefits: "Les liens magiques offrent un accès sécurisé et sans mot de passe à votre compte:",
+    noPasswordNeeded: "Aucun mot de passe requis",
+    secureLogin: "Sécurisé et crypté",
+    oneClickAccess: "Accès en un clic depuis votre email",
   },
   es: {
     home: "INICIO",
@@ -899,5 +1113,58 @@ export const translations: Translations = {
     noEventsFound: "No se encontraron eventos",
     clearSearch: "Limpiar búsqueda",
     forSearchTerm: "Para el término de búsqueda",
+    editProfile: "Editar perfil",
+    chooseImage: "Elegir imagen",
+    emailCannotBeChanged: "El correo electrónico no se puede cambiar",
+    tellUsAboutYourself: "Cuéntanos de tu vida",
+    saveChanges: "Guardar cambios",
+    saving: "Guardando",
+    uploading: "Cargando",
+    profileUpdatedSuccessfully: "Perfil actualizado exitosamente",
+    selectedFile: "Archivo seleccionado",
+    imageSizeError: "Error de tamaño de imagen",
+    imageTypeError: "Error de tipo de imagen",
+    uploadError: "Error de carga",
+    updateError: "Error de actualización",
+    imageUploadError: "Échec du téléchargement de l'image de profil. Veuillez réessayer.",
+    profileUpdateError: "Échec de la mise à jour du profil",
+    magicLinkSent: "¡Enlace mágico enviado!",
+    checkEmailToComplete: "Revisa tu email para completar el inicio de sesión.",
+    magicLinkSentTo: "Hemos enviado un enlace de inicio de sesión a",
+    sending: "Enviando...",
+    completingSignIn: "Completando inicio de sesión",
+    verifyingLogin: "Vérification de la connexion...",
+    loginSuccessful: "Connexion réussie! Redirigiendo...",
+    redirecting: "Redirigiendo...",
+    returnToLogin: "Volver al inicio de sesión",
+    emailRequired: "Email requisito pour terminer la connexion",
+    invalidMagicLink: "Enlace mágico inválido. Asegúrate de usar el enlace de tu email.",
+    expiredMagicLink: "Ce lien de connexion a expiré ou a déjà été usado. Por favor solicita uno nuevo.",
+    failedToSendMagicLink: "Error al enviar el enlace mágico. Por favor, inténtalo de nuevo.",
+    failedToCompleteSignIn: "Error al completar el inicio de sesión. Por favor, solicita un nuevo enlace de inicio de sesión.",
+    dataProtectionInfo: "Para más información sobre protección de datos, consulte nuestra",
+    subscribeToNewsletter: "Suscribirse al boletín",
+    unsubscribeFromNewsletter: "Cancelar suscripción al boletín",
+    subscriptionSuccessful: "¡Suscripción al boletín exitosa!",
+    unsubscriptionSuccessful: "Cancelación de suscripción exitosa.",
+    alreadySubscribed: "Ya estás suscrito a nuestro boletín.",
+    notSubscribed: "No estás suscrito a nuestro boletín.",
+    subscriptionError: "Error al suscribirse. Por favor, inténtalo de nuevo.",
+    unsubscriptionError: "Error al cancelar suscripción. Por favor, inténtalo de nuevo.",
+    manageSubscription: "Gestionar suscripción",
+    subscriptionStatus: "Estado de suscripción",
+    subscribed: "Suscrito",
+    unsubscribed: "No suscrito",
+    subscribing: "Suscribiendo...",
+    unsubscribing: "Cancelando suscripción...",
+    newEventNotification: "Notificación de nuevo evento",
+    newEventAvailable: "¡Un nuevo evento está ahora disponible!",
+    checkOutEvent: "Ver evento",
+    unsubscribeLink: "Cancelar suscripción a estas notificaciones",
+    magicLinkExplanation: "¿Qué es un enlace mágico?",
+    magicLinkBenefits: "Los enlaces mágicos ofrecen acceso seguro y sin contraseña a tu cuenta:",
+    noPasswordNeeded: "No se requiere contraseña",
+    secureLogin: "Seguro y encriptado",
+    oneClickAccess: "Acceso con un clic desde tu email",
   },
 }

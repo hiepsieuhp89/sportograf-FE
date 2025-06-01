@@ -343,6 +343,27 @@ export function EnhancedEventForm({ eventId }: EnhancedEventFormProps) {
           createdAt: serverTimestamp(),
         });
         eventDocId = docRef.id;
+
+        // Send newsletter notifications for new events
+        try {
+          await fetch('/api/newsletter/notify', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              eventTitle: formData.title || '',
+              eventDate: formData.date || '',
+              eventLocation: formData.location || '',
+              eventDescription: formData.description || '',
+              eventId: eventDocId,
+              eventImage: imageUrl || ''
+            }),
+          });
+        } catch (notificationError) {
+          console.warn('Failed to send newsletter notifications:', notificationError);
+          // Don't fail the event creation if newsletter notification fails
+        }
       }
 
       // Send confirmation emails to photographers

@@ -76,7 +76,7 @@ export function Header() {
               <ButtonShapeTabs tabs={getExtraTabs()} />
               {userData && (
                 <DropdownMenu>
-                  <DropdownMenuTrigger className="flex items-center space-x-2 px-3 py-2 rounded-md hover:bg-gray-700 transition-colors">
+                  <DropdownMenuTrigger className="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-white/10 transition-colors backdrop-blur-sm border border-white/20">
                     <div className="flex items-center space-x-2">
                       {userData.profileImageUrl ? (
                         <Image
@@ -84,27 +84,29 @@ export function Header() {
                           alt="Profile"
                           width={32}
                           height={32}
-                          className="rounded-full"
+                          className="rounded-full border-2 border-white/30"
                         />
                       ) : (
-                        <User className="h-5 w-5" />
+                        <div className="w-8 h-8 rounded-full bg-mainActiveV1 flex items-center justify-center">
+                          <User className="h-4 w-4 text-white" />
+                        </div>
                       )}
-                      <span className="max-w-[150px] truncate">
+                      <span className="max-w-[150px] truncate text-white font-medium">
                         {userData.name || userData.email}
                       </span>
                     </div>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-56">
-                    <DropdownMenuItem>
-                      <Link href="/profile" className="flex items-center space-x-2 w-full">
+                  <DropdownMenuContent align="end" className="w-56 bg-white/95 backdrop-blur-md border border-white/20 shadow-xl">
+                    <DropdownMenuItem className="hover:bg-mainActiveV1/10 focus:bg-mainActiveV1/10">
+                      <Link href="/profile" className="flex items-center space-x-2 w-full text-gray-800">
                         <User className="h-4 w-4" />
-                        <span>Edit Profile</span>
+                        <span>{t("editProfile")}</span>
                       </Link>
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={handleLogout}>
+                    <DropdownMenuItem onClick={handleLogout} className="hover:bg-red-50 focus:bg-red-50">
                       <div className="flex items-center space-x-2 text-red-600 w-full">
                         <LogOut className="h-4 w-4" />
-                        <span>Logout</span>
+                        <span>{t("logout")}</span>
                       </div>
                     </DropdownMenuItem>
                   </DropdownMenuContent>

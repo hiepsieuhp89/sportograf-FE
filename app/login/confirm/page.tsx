@@ -5,10 +5,12 @@ import { useRouter } from "next/navigation"
 import { isSignInWithEmailLink, signInWithEmailLink } from "firebase/auth"
 import { useFirebase } from "@/components/firebase-provider"
 import { StaticPageLayout } from "@/components/static-page-layout"
+import { useTranslations } from "@/hooks/use-translations"
 
 export default function ConfirmLoginPage() {
   const router = useRouter()
   const { auth } = useFirebase()
+  const { t } = useTranslations()
   const [error, setError] = useState<string>("")
   const [loading, setLoading] = useState(true)
 
@@ -37,7 +39,7 @@ export default function ConfirmLoginPage() {
           }
 
           if (!email) {
-            throw new Error("Email is required to complete sign in")
+            throw new Error(t("emailRequired"))
           }
 
           try {
@@ -59,16 +61,16 @@ export default function ConfirmLoginPage() {
           } catch (signInError: any) {
             console.error("Specific sign in error:", signInError)
             if (signInError.code === 'auth/invalid-action-code') {
-              throw new Error("This login link has expired or already been used. Please request a new one.")
+              throw new Error(t("expiredMagicLink"))
             }
             throw signInError
           }
         } else {
-          throw new Error("Invalid magic link. Please ensure you're using the link from your email.")
+          throw new Error(t("invalidMagicLink"))
         }
       } catch (error: any) {
         console.error("Error signing in with email link:", error)
-        setError(error.message || "Failed to complete sign in. Please try requesting a new login link.")
+        setError(error.message || t("failedToCompleteSignIn"))
       } finally {
         setLoading(false)
       }
@@ -78,36 +80,40 @@ export default function ConfirmLoginPage() {
     if (auth) {
       handleEmailLink()
     }
-  }, [auth, router])
+  }, [auth, router, t])
 
   return (
     <StaticPageLayout>
-      <div className="max-w-md mx-auto px-4 py-12">
-        <div className="bg-mainBackgroundV1 p-8 rounded-lg shadow-sm">
-          <h1 className="text-2xl font-bold mb-6 text-center">Completing Sign In</h1>
+      <div className="relative">
+        <div className="absolute inset-0 bg-gradient-to-br from-mainDarkBackgroundV1/90 via-mainDarkBackgroundV1/80 to-black/70"></div>
+        
+        <div className="relative max-w-md mx-auto px-4 py-12" style={{ minHeight: "calc(100vh - 64px)" }}>
+          <div className="bg-white/10 backdrop-blur-md p-8 rounded-xl shadow-2xl border border-white/20">
+            <h1 className="text-2xl font-bold mb-6 text-center text-white drop-shadow-lg">{t("completingSignIn")}</h1>
 
-          {loading ? (
-            <div className="text-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-mainNavyText mx-auto mb-4"></div>
-              <p>Verifying your login...</p>
-            </div>
-          ) : error ? (
-            <div className="text-center">
-              <div className="mb-4 p-4 bg-red-100 text-red-700 rounded-sm">{error}</div>
-              <button
-                onClick={() => router.push("/login")}
-                className="text-mainNavyText hover:underline"
-              >
-                Return to login
-              </button>
-            </div>
-          ) : (
-            <div className="text-center">
-              <div className="mb-4 p-4 bg-green-100 text-green-700 rounded-sm">
-                Login successful! Redirecting...
+            {loading ? (
+              <div className="text-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-mainActiveV1 mx-auto mb-4"></div>
+                <p className="text-white/80">{t("verifyingLogin")}</p>
               </div>
-            </div>
-          )}
+            ) : error ? (
+              <div className="text-center">
+                <div className="mb-4 p-4 bg-red-500/20 text-red-200 rounded-lg border border-red-500/30 backdrop-blur-sm">{error}</div>
+                <button
+                  onClick={() => router.push("/login")}
+                  className="text-mainActiveV1 hover:text-mainActiveV1/80 transition-colors font-medium"
+                >
+                  {t("returnToLogin")}
+                </button>
+              </div>
+            ) : (
+              <div className="text-center">
+                <div className="mb-4 p-4 bg-green-500/20 text-green-200 rounded-lg border border-green-500/30 backdrop-blur-sm">
+                  {t("loginSuccessful")}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </StaticPageLayout>

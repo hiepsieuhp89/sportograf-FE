@@ -17,11 +17,41 @@ export default function LoginPage() {
   const [success, setSuccess] = useState(false)
   const [error, setError] = useState("")
   const [isClient, setIsClient] = useState(false)
+  const [showMagicLinkExplanation, setShowMagicLinkExplanation] = useState(false)
+  const [subscribeToNewsletter, setSubscribeToNewsletter] = useState(false)
+  const [subscribing, setSubscribing] = useState(false)
 
   // Check if we're on the client side
   useEffect(() => {
     setIsClient(true)
   }, [])
+
+  const handleNewsletterSubscription = async (email: string) => {
+    if (!subscribeToNewsletter) return
+
+    setSubscribing(true)
+    try {
+      const response = await fetch('/api/newsletter/subscribe', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email,
+          language: 'en' // You can get this from your language context
+        }),
+      })
+
+      const result = await response.json()
+      if (!result.success && result.message !== 'alreadySubscribed') {
+        console.warn('Newsletter subscription failed:', result.message)
+      }
+    } catch (error) {
+      console.error('Newsletter subscription error:', error)
+    } finally {
+      setSubscribing(false)
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -56,10 +86,13 @@ export default function LoginPage() {
       // Save email to localStorage for confirmation page
       window.localStorage.setItem("emailForSignIn", email)
 
+      // Handle newsletter subscription
+      await handleNewsletterSubscription(email)
+
       setSuccess(true)
     } catch (error: any) {
       console.error("Error sending magic link:", error)
-      setError(error.message || "Failed to send magic link. Please try again.")
+      setError(error.message || t("failedToSendMagicLink"))
     } finally {
       setLoading(false)
     }
@@ -67,58 +100,97 @@ export default function LoginPage() {
 
   return (
     <StaticPageLayout>
-      <div className="max-w-md mx-auto px-4 py-12">
-        <div className="bg-mainBackgroundV1 p-8 rounded-lg shadow-sm">
-          <h1 className="text-2xl font-bold mb-6 text-center">{t("signupLogin")}</h1>
+      <div className="relative">
+        <div className="absolute inset-0 bg-gradient-to-br from-mainDarkBackgroundV1/90 via-mainDarkBackgroundV1/80 to-black/70"></div>
+        
+        <div className="relative max-w-md mx-auto px-4 py-12" style={{ minHeight: "calc(100vh - 64px)" }}>
+          <div className="bg-white/10 backdrop-blur-md p-8 rounded-xl shadow-2xl border border-white/20">
+            <h1 className="text-2xl font-bold mb-6 text-center text-white drop-shadow-lg">{t("signupLogin")}</h1>
 
-          {success ? (
-            <div className="text-center">
-              <div className="mb-4 p-4 bg-green-100 text-green-700 rounded-sm">
-                Magic link sent! Check your email to complete login.
+            {success ? (
+              <div className="text-center">
+                <div className="mb-4 p-4 bg-green-500/20 text-green-200 rounded-lg border border-green-500/30 backdrop-blur-sm">
+                  {t("magicLinkSent")} {t("checkEmailToComplete")}
+                </div>
+                <p className="text-white/80">{t("magicLinkSentTo")} {email}.</p>
+                {subscribeToNewsletter && (
+                  <p className="text-white/60 text-sm mt-2">
+                    {subscribing ? t("subscribing") : t("subscriptionSuccessful")}
+                  </p>
+                )}
               </div>
-              <p className="text-gray-600">We've sent a login link to {email}.</p>
-            </div>
-          ) : (
-            <>
-              {error && <div className="mb-4 p-4 bg-red-100 text-red-700 rounded-sm">{error}</div>}
+            ) : (
+              <>
+                {error && <div className="mb-4 p-4 bg-red-500/20 text-red-200 rounded-lg border border-red-500/30 backdrop-blur-sm">{error}</div>}
 
-              <form onSubmit={handleSubmit}>
-                <div className="mb-6">
-                  <label htmlFor="email" className="block text-xs text-gray-500 mb-2">
-                    {t("enterYourEmail")}
-                  </label>
-                  <input
-                    id="email"
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-none focus:outline-none focus:ring-2 focus:ring-mainNavyText"
-                    required
-                  />
+                <form onSubmit={handleSubmit}>
+                  <div className="mb-6">
+                    <label htmlFor="email" className="block text-xs text-white/80 mb-2 font-medium">
+                      {t("enterYourEmail")}
+                    </label>
+                    <input
+                      id="email"
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="w-full px-4 py-3 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-mainActiveV1 focus:border-transparent bg-white/10 backdrop-blur-sm text-white placeholder-white/50"
+                      required
+                    />
+                  </div>
+
+                  {/* Newsletter Subscription Checkbox */}
+                  <div className="mb-6">
+                    <label className="flex items-center text-white/80 text-sm">
+                      <input
+                        type="checkbox"
+                        checked={subscribeToNewsletter}
+                        onChange={(e) => setSubscribeToNewsletter(e.target.checked)}
+                        className="mr-3 rounded border-white/20 bg-white/10 text-mainActiveV1 focus:ring-mainActiveV1 focus:ring-offset-0"
+                      />
+                      {t("subscribeToNewsletter")}
+                    </label>
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={loading || !isClient}
+                    className="w-full bg-mainActiveV1 text-black py-3 rounded-lg hover:bg-mainActiveV1/80 transition-colors disabled:bg-mainActiveV1/50 shadow-lg backdrop-blur-sm font-medium"
+                  >
+                    {loading ? t("sending") : t("sendMagicLink")}
+                  </button>
+                </form>
+
+                {/* Magic Link Explanation Section */}
+                <div className="mt-4 text-center">
+                  <button 
+                    onClick={() => setShowMagicLinkExplanation(!showMagicLinkExplanation)}
+                    className="text-sm text-white/80 hover:text-white transition-colors"
+                  >
+                    {t("magicLinkExplanation")}
+                  </button>
                 </div>
 
-                <button
-                  type="submit"
-                  disabled={loading || !isClient}
-                  className="w-full bg-mainNavyText text-mainBackgroundV1 py-3 rounded-none hover:bg-blue-700 transition-colors disabled:bg-blue-300"
-                >
-                  {loading ? "Sending..." : t("sendMagicLink")}
-                </button>
-              </form>
+                {showMagicLinkExplanation && (
+                  <div className="mt-4 p-4 bg-white/5 backdrop-blur-sm rounded-lg border border-white/10">
+                    <h3 className="text-white font-medium mb-2">{t("magicLinkBenefits")}</h3>
+                    <ul className="text-white/80 text-sm space-y-1">
+                      <li>• {t("noPasswordNeeded")}</li>
+                      <li>• {t("secureLogin")}</li>
+                      <li>• {t("oneClickAccess")}</li>
+                    </ul>
+                  </div>
+                )}
 
-              <div className="mt-4 text-center">
-                <button className="text-sm text-mainNavyText hover:underline">{t("whatIsAMagicLink")}</button>
-              </div>
-
-              <div className="mt-8 text-center text-xs text-gray-500">
-                For more information on data protection, please see our{" "}
-                <a href="/privacy" className="text-mainNavyText hover:underline">
-                  {t("privacyPolicy")}
-                </a>
-                .
-              </div>
-            </>
-          )}
+                <div className="mt-8 text-center text-xs text-white/60">
+                  {t("dataProtectionInfo")}{" "}
+                  <a href="/privacy" className="text-mainActiveV1 hover:text-mainActiveV1/80 transition-colors">
+                    {t("privacyPolicy")}
+                  </a>
+                  .
+                </div>
+              </>
+            )}
+          </div>
         </div>
       </div>
     </StaticPageLayout>
