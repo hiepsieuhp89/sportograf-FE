@@ -19,7 +19,7 @@ export async function translateText(text: string, targetLanguage: Language): Pro
     })
 
     if (!response.ok) {
-      throw new Error(`Translation API error: ${response.status}`)
+      throw new Error(`Translation API error: ${response}`)
     }
 
     const data = await response.json()

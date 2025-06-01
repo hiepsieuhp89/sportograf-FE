@@ -11,31 +11,31 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Use google-translate-api-x with proxy support
-    const { translate } = await import('google-translate-api-x')
+    // Use a simple fetch-based approach to Google Translate
+    const translateUrl = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=${targetLanguage}&dt=t&q=${encodeURIComponent(text)}`
     
-    const result = await translate(text, {
-      from: 'en',
-      to: targetLanguage,
-      requestOptions: {
-        // Add headers to avoid detection
-        headers: {
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-          'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-          'Accept-Language': 'en-US,en;q=0.5',
-          'Accept-Encoding': 'gzip, deflate',
-          'DNT': '1',
-          'Connection': 'keep-alive',
-          'Upgrade-Insecure-Requests': '1',
-        }
+    const response = await fetch(translateUrl, {
+      method: 'GET',
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
       }
     })
 
-    // Handle the result properly - it could be a single result or array
-    const translatedText = Array.isArray(result) ? result[0]?.text : result.text
+    if (!response.ok) {
+      throw new Error(`Google Translate API error: ${response.status}`)
+    }
+
+    const data = await response.json()
+    
+    // Google Translate returns an array structure: [[[translated_text, original_text, null, null, 0]], null, "en"]
+    let translatedText = text // fallback
+    
+    if (data && Array.isArray(data) && data[0] && Array.isArray(data[0])) {
+      translatedText = data[0].map((item: any) => item[0]).join('')
+    }
 
     return NextResponse.json({
-      translatedText: translatedText || text,
+      translatedText,
       originalText: text,
       targetLanguage
     })
