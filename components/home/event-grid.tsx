@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { collection, getDocs, query, orderBy, limit } from "firebase/firestore"
 import { db } from "@/lib/firebase"
+import { useRouter } from "next/navigation"
 import type { Event } from "@/lib/types"
 import { useTranslations } from "@/hooks/use-translations"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -13,6 +14,7 @@ export function EventGrid() {
   const [loading, setLoading] = useState(true)
   const { t } = useTranslations()
   const { events, setEvents } = useEventStore()
+  const router = useRouter()
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -69,7 +71,10 @@ export function EventGrid() {
         ))}
       </div>
       <div className="mt-8 text-center px-4">
-        <button className="w-full sm:w-auto bg-mainActiveV1 text-sm font-montserrat font-medium h-10 uppercase hover:bg-gray-300 text-gray-800 py-2 px-6 rounded-none transition-colors">
+        <button 
+          onClick={() => router.push('/events')}
+          className="w-full sm:w-auto bg-mainActiveV1 text-sm font-montserrat font-medium h-10 uppercase hover:bg-gray-300 text-gray-800 py-2 px-6 rounded-none transition-colors"
+        >
           {t("loadMore")}
         </button>
       </div>

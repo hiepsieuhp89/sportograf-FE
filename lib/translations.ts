@@ -174,6 +174,12 @@ type TranslationKeys =
   // Hero Quotes
   | "heroQuote"
   | "heroQuoteAuthor"
+  // Events Page
+  | "eventsFound"
+  | "eventFound"
+  | "noEventsFound"
+  | "clearSearch"
+  | "forSearchTerm"
 
 type Translations = {
   [key in Language]: {
@@ -354,6 +360,11 @@ export const translations: Translations = {
     categoryRecognition: "Recognition",
     heroQuote: "Every moment in sport tells a story. We capture yours.",
     heroQuoteAuthor: "Sportograf Team",
+    eventsFound: "Events found",
+    eventFound: "Event found",
+    noEventsFound: "No events found",
+    clearSearch: "Clear search",
+    forSearchTerm: "For search term",
   },
   de: {
     home: "STARTSEITE",
@@ -527,6 +538,11 @@ export const translations: Translations = {
     categoryRecognition: "Nummer- und Gesichtserkennung",
     heroQuote: "Jeder Moment im Sport erzählt eine Geschichte. Wir halten deine fest.",
     heroQuoteAuthor: "Sportograf Team",
+    eventsFound: "Events gefunden",
+    eventFound: "Event gefunden",
+    noEventsFound: "Keine Events gefunden",
+    clearSearch: "Suche löschen",
+    forSearchTerm: "Für Suchbegriff",
   },
   fr: {
     home: "ACCUEIL",
@@ -700,6 +716,11 @@ export const translations: Translations = {
     categoryRecognition: "Reconnaissance de numéro et de visage",
     heroQuote: "Chaque moment dans le sport raconte une histoire. Nous capturons la vôtre.",
     heroQuoteAuthor: "Équipe Sportograf",
+    eventsFound: "Événements trouvés",
+    eventFound: "Événement trouvé",
+    noEventsFound: "Aucun événement trouvé",
+    clearSearch: "Effacer la recherche",
+    forSearchTerm: "Pour le terme de recherche",
   },
   es: {
     home: "INICIO",
@@ -873,5 +894,10 @@ export const translations: Translations = {
     categoryRecognition: "Reconocimiento de número y rostro",
     heroQuote: "Cada momento en el deporte cuenta una historia. Capturamos la tuya.",
     heroQuoteAuthor: "Equipo Sportograf",
+    eventsFound: "Eventos encontrados",
+    eventFound: "Evento encontrado",
+    noEventsFound: "No se encontraron eventos",
+    clearSearch: "Limpiar búsqueda",
+    forSearchTerm: "Para el término de búsqueda",
   },
 }
