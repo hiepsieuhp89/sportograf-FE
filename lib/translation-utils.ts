@@ -1,5 +1,26 @@
 import type { Language } from './types'
 
+// Category mapping for translation
+export const categoryTranslationMap: { [key: string]: string } = {
+  "Getting started": "categoryGettingStarted",
+  "Login": "categoryLogin", 
+  "Find your own photos": "categoryFindYourPhotos",
+  "Order": "categoryOrder",
+  "Payment": "categoryPayment",
+  "Download": "categoryDownload",
+  "FAQ": "categoryFAQ",
+  "Use of the photos, copyright, press": "categoryPhotosRights",
+  "Press": "categoryPress",
+  "Join the team": "categoryJoinTeam",
+  "Photographer": "categoryPhotographer",
+  "Number - and Face recognition": "categoryRecognition"
+}
+
+// Function to get translation key for category
+export function getCategoryTranslationKey(categoryName: string): string {
+  return categoryTranslationMap[categoryName] || categoryName
+}
+
 // Translation function using Next.js API route
 export async function translateText(text: string, targetLanguage: Language): Promise<string> {
   if (targetLanguage === 'en') {
@@ -19,7 +40,7 @@ export async function translateText(text: string, targetLanguage: Language): Pro
     })
 
     if (!response.ok) {
-      throw new Error(`Translation API error: ${response}`)
+      throw new Error(`Translation API error: ${response.status}`)
     }
 
     const data = await response.json()

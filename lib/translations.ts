@@ -158,6 +158,19 @@ type TranslationKeys =
   | "articleNotFound"
   | "backToFAQ"
   | "solutionHome"
+  // FAQ Categories
+  | "categoryGettingStarted"
+  | "categoryLogin"
+  | "categoryFindYourPhotos"
+  | "categoryOrder"
+  | "categoryPayment"
+  | "categoryDownload"
+  | "categoryFAQ"
+  | "categoryPhotosRights"
+  | "categoryPress"
+  | "categoryJoinTeam"
+  | "categoryPhotographer"
+  | "categoryRecognition"
 
 type Translations = {
   [key in Language]: {
@@ -324,6 +337,18 @@ export const translations: Translations = {
     articleNotFound: "Article not found",
     backToFAQ: "Back to FAQ",
     solutionHome: "Solution home",
+    categoryGettingStarted: "Getting started",
+    categoryLogin: "Login",
+    categoryFindYourPhotos: "Find your own photos",
+    categoryOrder: "Order",
+    categoryPayment: "Payment",
+    categoryDownload: "Download",
+    categoryFAQ: "FAQ",
+    categoryPhotosRights: "Photos Rights",
+    categoryPress: "Press",
+    categoryJoinTeam: "Join the team",
+    categoryPhotographer: "Photographer",
+    categoryRecognition: "Recognition",
   },
   de: {
     home: "STARTSEITE",
@@ -483,6 +508,18 @@ export const translations: Translations = {
     articleNotFound: "Artikel nicht gefunden",
     backToFAQ: "Zurück zu FAQ",
     solutionHome: "Lösungs-Startseite",
+    categoryGettingStarted: "Erste Schritte",
+    categoryLogin: "Anmeldung",
+    categoryFindYourPhotos: "Finden Sie Ihre eigenen Fotos",
+    categoryOrder: "Bestellung",
+    categoryPayment: "Zahlung",
+    categoryDownload: "Download",
+    categoryFAQ: "FAQ",
+    categoryPhotosRights: "Nutzung der Fotos, Urheberrecht, Presse",
+    categoryPress: "Presse",
+    categoryJoinTeam: "Dem Team beitreten",
+    categoryPhotographer: "Fotograf",
+    categoryRecognition: "Nummer- und Gesichtserkennung",
   },
   fr: {
     home: "ACCUEIL",
@@ -642,6 +679,18 @@ export const translations: Translations = {
     articleNotFound: "Article non trouvé",
     backToFAQ: "Retour à FAQ",
     solutionHome: "Accueil des solutions",
+    categoryGettingStarted: "Commencer",
+    categoryLogin: "Connexion",
+    categoryFindYourPhotos: "Trouvez vos propres photos",
+    categoryOrder: "Commande",
+    categoryPayment: "Paiement",
+    categoryDownload: "Téléchargement",
+    categoryFAQ: "FAQ",
+    categoryPhotosRights: "Utilisation des photos, droits d'auteur, presse",
+    categoryPress: "Presse",
+    categoryJoinTeam: "Rejoindre l'équipe",
+    categoryPhotographer: "Photographe",
+    categoryRecognition: "Reconnaissance de numéro et de visage",
   },
   es: {
     home: "INICIO",
@@ -663,7 +712,7 @@ export const translations: Translations = {
     privacyPolicy: "política de privacidad",
     joinTheNewsletter: "ÚNETE AL BOLETÍN DE SPORTOGRAF",
     subscribe: "Suscribirse",
-    presaleEvent: "EVENTO DE PREVENTA",
+    presaleEvent: "EVENTO DE PRÉVENTA",
     yourPrivacyMatters: "TU PRIVACIDAD IMPORTA",
     offer: "OFERTA",
     otherProducts: "OTROS PRODUCTOS",
@@ -801,5 +850,17 @@ export const translations: Translations = {
     articleNotFound: "Artículo no encontrado",
     backToFAQ: "Volver a FAQ",
     solutionHome: "Inicio de soluciones",
+    categoryGettingStarted: "Primeros pasos",
+    categoryLogin: "Iniciar sesión",
+    categoryFindYourPhotos: "Encuentra tus propias fotos",
+    categoryOrder: "Pedido",
+    categoryPayment: "Pago",
+    categoryDownload: "Descarga",
+    categoryFAQ: "FAQ",
+    categoryPhotosRights: "Uso de las fotos, derechos de autor, prensa",
+    categoryPress: "Prensa",
+    categoryJoinTeam: "Únete al equipo",
+    categoryPhotographer: "Fotógrafo",
+    categoryRecognition: "Reconocimiento de número y rostro",
   },
 }

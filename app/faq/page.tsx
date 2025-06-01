@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { useTranslations } from "@/hooks/use-translations"
 import { useClientTranslation } from "@/hooks/use-client-translation"
 import { getApprovedFAQs, groupFAQsByCategory, initializeFAQs, submitFAQ } from "@/lib/faq-service"
+import { getCategoryTranslationKey } from "@/lib/translation-utils"
 import type { FAQ } from "@/lib/types"
 import { Plus, Search, Send } from "lucide-react"
 import Image from "next/image"
@@ -95,8 +96,13 @@ export default function FAQPage() {
              faq.question.toLowerCase().includes(searchTerm.toLowerCase())
     })
 
+    // Get translated category name
+    const categoryTranslationKey = getCategoryTranslationKey(categoryName)
+    const translatedCategoryName = t(categoryTranslationKey as any) || categoryName
+
     return {
-      title: categoryName,
+      title: translatedCategoryName,
+      originalTitle: categoryName, // Keep original for filtering
       count: filteredItems.length,
       items: filteredItems.map(faq => ({
         id: faq.id,
@@ -108,7 +114,8 @@ export default function FAQPage() {
   }).filter(category => 
     searchTerm === "" || 
     category.items.length > 0 || 
-    category.title.toLowerCase().includes(searchTerm.toLowerCase())
+    category.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    category.originalTitle.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
   const toggleCategory = (categoryTitle: string) => {
@@ -240,11 +247,15 @@ export default function FAQPage() {
                             <SelectValue placeholder={t("faqCategory")} />
                           </SelectTrigger>
                           <SelectContent>
-                            {categories.map((category) => (
-                              <SelectItem key={category} value={category}>
-                                {category}
-                              </SelectItem>
-                            ))}
+                            {categories.map((category) => {
+                              const categoryTranslationKey = getCategoryTranslationKey(category)
+                              const translatedCategory = t(categoryTranslationKey as any) || category
+                              return (
+                                <SelectItem key={category} value={category}>
+                                  {translatedCategory}
+                                </SelectItem>
+                              )
+                            })}
                           </SelectContent>
                         </Select>
                       </div>
@@ -319,7 +330,7 @@ export default function FAQPage() {
           {/* FAQ Categories Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
             {filteredData.map((category) => (
-              <div key={category.title} className="bg-white rounded-lg shadow-sm border border-gray-200">
+              <div key={category.originalTitle} className="bg-white rounded-lg shadow-sm border border-gray-200">
                 <div className="p-6">
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="text-xl font-medium text-gray-800">
