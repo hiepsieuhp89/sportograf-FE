@@ -1,71 +1,97 @@
 "use client"
 
-import { useContext, useState } from "react"
+import { useContext, useState, useEffect, useRef } from "react"
 import { LanguageContext } from "./language-provider"
 import { ChevronDown } from "lucide-react"
+import type { Language } from "@/lib/types"
+
+const languages = [
+  { code: "en" as Language, name: "English", flag: "🇬🇧" },
+  { code: "de" as Language, name: "Deutsch", flag: "🇩🇪" },
+  { code: "fr" as Language, name: "Français", flag: "🇫🇷" },
+  { code: "es" as Language, name: "Español", flag: "🇪🇸" },
+]
 
 export function LanguageSwitcher() {
   const { language, setLanguage } = useContext(LanguageContext)
   const [isOpen, setIsOpen] = useState(false)
+  const dropdownRef = useRef<HTMLDivElement>(null)
+
+  const currentLanguage = languages.find(lang => lang.code === language) || languages[0]
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOpen(false)
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
+  }, [])
+
+  // Close dropdown on escape key
+  useEffect(() => {
+    function handleEscape(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setIsOpen(false)
+      }
+    }
+
+    document.addEventListener("keydown", handleEscape)
+    return () => {
+      document.removeEventListener("keydown", handleEscape)
+    }
+  }, [])
+
+  const handleLanguageChange = (langCode: Language) => {
+    setLanguage(langCode)
+    setIsOpen(false)
+  }
 
   return (
-    <div className="relative">
+    <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center text-mainBackgroundV1 hover:text-gray-300 bg-mainBackgroundV1 bg-opacity-20 px-3 py-1 h-6 rounded"
+        className="flex items-center text-mainBackgroundV1 hover:text-gray-300 bg-mainBackgroundV1 bg-opacity-20 px-3 py-1 rounded-md transition-all duration-200 hover:bg-opacity-30 focus:outline-none focus:ring-2 focus:ring-mainBackgroundV1 focus:ring-opacity-50"
+        aria-label="Select language"
+        aria-expanded={isOpen}
+        aria-haspopup="true"
       >
-        <span className="mr-1">🇬🇧</span>
-        <span className="mr-2 font-medium">EN</span>
-        <ChevronDown className="h-4 w-4" />
+        <span className="mr-2 text-lg">{currentLanguage.flag}</span>
+        <span className="mr-2 font-medium text-sm uppercase">{currentLanguage.code}</span>
+        <ChevronDown 
+          className={`h-4 w-4 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} 
+        />
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 z-20 mt-2 w-32 origin-top-right rounded-sm bg-mainBackgroundV1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+        <div className="absolute right-0 z-50 mt-2 w-40 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none animate-in fade-in-0 zoom-in-95 duration-100">
           <div className="py-1">
-            <button
-              onClick={() => {
-                setLanguage("en")
-                setIsOpen(false)
-              }}
-              className={`flex w-full items-center px-4 py-2 text-sm ${
-                language === "en" ? "bg-gray-100 text-gray-900" : "text-gray-700"
-              } hover:bg-gray-100`}
-            >
-              <span className="mr-2">🇬🇧</span> EN
-            </button>
-            <button
-              onClick={() => {
-                setLanguage("de")
-                setIsOpen(false)
-              }}
-              className={`flex w-full items-center px-4 py-2 text-sm ${
-                language === "de" ? "bg-gray-100 text-gray-900" : "text-gray-700"
-              } hover:bg-gray-100`}
-            >
-              <span className="mr-2">🇩🇪</span> DE
-            </button>
-            <button
-              onClick={() => {
-                setLanguage("fr")
-                setIsOpen(false)
-              }}
-              className={`flex w-full items-center px-4 py-2 text-sm ${
-                language === "fr" ? "bg-gray-100 text-gray-900" : "text-gray-700"
-              } hover:bg-gray-100`}
-            >
-              <span className="mr-2">🇫🇷</span> FR
-            </button>
-            <button
-              onClick={() => {
-                setLanguage("es")
-                setIsOpen(false)
-              }}
-              className={`flex w-full items-center px-4 py-2 text-sm ${
-                language === "es" ? "bg-gray-100 text-gray-900" : "text-gray-700"
-              } hover:bg-gray-100`}
-            >
-              <span className="mr-2">🇪🇸</span> ES
-            </button>
+            {languages.map((lang) => (
+              <button
+                key={lang.code}
+                onClick={() => handleLanguageChange(lang.code)}
+                className={`flex w-full items-center px-4 py-3 text-sm transition-colors duration-150 ${
+                  language === lang.code 
+                    ? "bg-mainNavyText text-white" 
+                    : "text-gray-700 hover:bg-gray-100"
+                }`}
+                role="menuitem"
+              >
+                <span className="mr-3 text-lg">{lang.flag}</span>
+                <div className="flex flex-col items-start">
+                  <span className="font-medium">{lang.name}</span>
+                  <span className="text-xs opacity-70 uppercase">{lang.code}</span>
+                </div>
+                {language === lang.code && (
+                  <span className="ml-auto text-xs">✓</span>
+                )}
+              </button>
+            ))}
           </div>
         </div>
       )}

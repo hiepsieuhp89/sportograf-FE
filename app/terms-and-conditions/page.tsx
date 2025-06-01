@@ -1,13 +1,18 @@
+"use client"
+
 import { StaticPageLayout } from "@/components/static-page-layout"
+import { useTranslations } from "@/hooks/use-translations"
 
 export default function TermsPage() {
+  const { t } = useTranslations()
+
   return (
     <StaticPageLayout>
       <div className="max-w-7xl mx-auto px-4 py-12">
-        <h1 className="text-2xl font-bold mb-6">Our Terms and Conditions</h1>
+        <h1 className="text-2xl font-bold mb-6">{t("termsAndConditionsTitle")}</h1>
 
         <p className="mb-4">
-          Standard Terms and Conditions of Business of Sportograf Digital Solutions GmbH (referred to below as
+          Standard Terms and Conditions of Business of {t("companyAddress")} (referred to below as
           "Sportograf"), Süsterfeldstr 170, 52072 Aachen applicable worldwide
         </p>
 
@@ -15,7 +20,7 @@ export default function TermsPage() {
         <p className="mb-6">V 2.0</p>
 
         <div className="prose max-w-none">
-          <h2 className="text-xl font-semibold mt-8 mb-4">1. Scope</h2>
+          <h2 className="text-xl font-semibold mt-8 mb-4">{t("scope")}</h2>
           <p className="mb-4">
             (1) The following standard terms and conditions of business apply to all contracts between Sportograf and
             consumers (referred to below as "Customer") concerning the purchase and delivery of goods or digital content
@@ -29,7 +34,7 @@ export default function TermsPage() {
             with a separate agreement.
           </p>
 
-          <h2 className="text-xl font-semibold mt-8 mb-4">2. Offer and Conclusion of Contract</h2>
+          <h2 className="text-xl font-semibold mt-8 mb-4">{t("offerAndContract")}</h2>
           <p className="mb-4">
             (1) The presentation of products on our website does not constitute a legally binding offer, but is an
             invitation to place an order. The technical goods or digital content will be presented in your shopping
@@ -45,7 +50,7 @@ export default function TermsPage() {
             offer.
           </p>
 
-          <h2 className="text-xl font-semibold mt-8 mb-4">3. Prices</h2>
+          <h2 className="text-xl font-semibold mt-8 mb-4">{t("prices")}</h2>
           <p className="mb-4">
             (1) During the order process, the Customer may select the language that is familiar with from the languages
             offered in the navigation bar.
@@ -60,7 +65,7 @@ export default function TermsPage() {
             side of the image or on the event page itself.
           </p>
 
-          <h2 className="text-xl font-semibold mt-8 mb-4">4. Delivery and payment</h2>
+          <h2 className="text-xl font-semibold mt-8 mb-4">{t("deliveryAndPayment")}</h2>
           <p className="mb-4">
             (1) The complete production time (delivery of the ordered images. The delivery time depends heavily on the
             selected payment and delivery modes. The normal time is in any case delivered via download link and are
@@ -73,15 +78,15 @@ export default function TermsPage() {
             account.
           </p>
 
-          <h2 className="text-xl font-semibold mt-8 mb-4">5. Right of cancellation</h2>
+          <h2 className="text-xl font-semibold mt-8 mb-4">{t("rightOfCancellation")}</h2>
           <div className="bg-gray-100 p-4 rounded-sm mb-6">
-            <h3 className="font-semibold mb-2">Right of cancellation</h3>
+            <h3 className="font-semibold mb-2">{t("rightOfCancellation")}</h3>
             <p className="mb-4">
               You have the right to cancel this contract within fourteen days, without stating any reasons. The
               cancellation period is fourteen days from the date on which the contract is concluded.
             </p>
             <p className="mb-4">
-              To exercise your right of cancellation, you must inform us (Sportograf Digital Solutions GmbH,
+              To exercise your right of cancellation, you must inform us ({t("companyAddress")},
               Süsterfeldstr 170, 52072 Aachen, support@sportograf.com) of your decision to cancel this contract by means
               of an unambiguous declaration (e.g. by posted letter, fax or email). You may use the attached model
               cancellation form, but this is not mandatory. You may also complete and submit the model cancellation form
@@ -94,7 +99,7 @@ export default function TermsPage() {
             </p>
           </div>
 
-          <p className="mt-8 text-sm text-gray-500">Last updated: May 23, 2025</p>
+          <p className="mt-8 text-sm text-gray-500">{t("lastUpdated")} May 23, 2025</p>
         </div>
       </div>
     </StaticPageLayout>

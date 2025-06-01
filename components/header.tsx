@@ -22,23 +22,23 @@ export function Header() {
   const { auth } = useFirebase()
 
   const mainTabs = [
-    { text: "CONTACT", href: "/contact" },
-    { text: "LEGAL", href: "/legal" },
-    { text: "PRIVACY", href: "/privacy" },
-    { text: "TERMS AND CONDITIONS", href: "/terms-and-conditions" },
-    { text: "NEWSLETTER", href: "/newsletter" },
-    { text: "FAQ", href: "/faq" },
+    { text: t("contact"), href: "/contact" },
+    { text: t("legal"), href: "/legal" },
+    { text: t("privacy"), href: "/privacy" },
+    { text: t("termsAndConditions"), href: "/terms-and-conditions" },
+    { text: t("newsletter"), href: "/newsletter" },
+    { text: t("faq"), href: "/faq" },
   ]
 
   const getExtraTabs = () => {
     const baseTabs = [
-      { text: "HOME", href: "/" },
-      { text: "ABOUT US", href: "/about-us" },
-      { text: "JOBS", href: "/jobs" },
+      { text: t("home"), href: "/" },
+      { text: t("aboutUs"), href: "/about-us" },
+      // { text: t("jobs"), href: "/jobs" },
     ]
 
     if (loading) return baseTabs
-    if (!userData) return [...baseTabs, { text: "LOGIN", href: "/login" }]
+    if (!userData) return [...baseTabs, { text: t("login"), href: "/login" }]
     return baseTabs
   }
 

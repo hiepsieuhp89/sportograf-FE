@@ -1,6 +1,9 @@
+"use client"
+
 import Image from "next/image"
 import { Calendar, MapPin, ExternalLink, Clock, Tag as TagIcon, Info } from "lucide-react"
 import type { Event, EventType } from "@/lib/types"
+import { useTranslations } from "@/hooks/use-translations"
 import { Badge } from "@/components/ui/badge"
 import { RichTextPreview } from "@/components/ui/rich-text-preview"
 import { useEffect, useState } from "react"
@@ -12,6 +15,7 @@ interface PhotosNotReadyProps {
 }
 
 export function PhotosNotReady({ event }: PhotosNotReadyProps) {
+    const { t } = useTranslations()
     const [eventType, setEventType] = useState<EventType | null>(null)
 
     useEffect(() => {
@@ -51,13 +55,13 @@ export function PhotosNotReady({ event }: PhotosNotReadyProps) {
                 <div className="max-w-7xl mx-auto">
                     <div className="flex flex-col sm:flex-row items-center justify-between w-full p-6">
                         <div className="flex flex-col sm:flex-row items-center flex-1 w-full sm:w-auto gap-6">
-                            {/* Event Image */}
-                            <div className="w-44 h-44 relative flex-shrink-0">
+                            {/* Event Image - Full width/height with cover */}
+                            <div className="w-full sm:w-44 h-44 relative flex-shrink-0">
                                 <Image
                                     src={event.imageUrl || ""}
                                     alt={event.title}
                                     fill
-                                    className="object-contain"
+                                    className="object-cover rounded-lg"
                                     quality={100}
                                 />
                             </div>
@@ -83,7 +87,7 @@ export function PhotosNotReady({ event }: PhotosNotReadyProps) {
                                     <div className="flex items-center gap-2 justify-center sm:justify-start">
                                         <Calendar className="h-5 w-5 text-gray-500" />
                                         <div className="space-y-1">
-                                            <p className="font-medium">Date</p>
+                                            <p className="font-medium">{t("eventDate")}</p>
                                             <p className="text-sm text-gray-600">
                                                 {formatEventDate(event.date)}
                                                 {event.endDate && ` - ${formatEventDate(event.endDate)}`}
@@ -94,7 +98,7 @@ export function PhotosNotReady({ event }: PhotosNotReadyProps) {
                                     <div className="flex items-center gap-2 justify-center sm:justify-start">
                                         <Clock className="h-5 w-5 text-gray-500" />
                                         <div className="space-y-1">
-                                            <p className="font-medium">Time</p>
+                                            <p className="font-medium">{t("eventTime")}</p>
                                             <p className="text-sm text-gray-600">{event.time || "TBA"}</p>
                                         </div>
                                     </div>
@@ -102,7 +106,7 @@ export function PhotosNotReady({ event }: PhotosNotReadyProps) {
                                     <div className="flex items-center gap-2 justify-center sm:justify-start">
                                         <MapPin className="h-5 w-5 text-gray-500" />
                                         <div className="space-y-1">
-                                            <p className="font-medium">Location</p>
+                                            <p className="font-medium">{t("eventLocation")}</p>
                                             <p className="text-sm text-gray-600">
                                                 {event.location}
                                                 {event.country && (
@@ -118,14 +122,14 @@ export function PhotosNotReady({ event }: PhotosNotReadyProps) {
                                         <div className="flex items-center gap-2 justify-center sm:justify-start">
                                             <ExternalLink className="h-5 w-5 text-gray-500" />
                                             <div className="space-y-1">
-                                                <p className="font-medium">Website</p>
+                                                <p className="font-medium">{t("website")}</p>
                                                 <a
                                                     href={event.url}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
                                                     className="text-sm text-blue-600 hover:underline"
                                                 >
-                                                    Visit Website
+                                                    {t("visitWebsite")}
                                                 </a>
                                             </div>
                                         </div>
@@ -169,16 +173,16 @@ export function PhotosNotReady({ event }: PhotosNotReadyProps) {
 
                     {/* Message */}
                     <h2 className="text-3xl text-mainNavyText mb-6 tracking-wide">
-                        WE ARE ON IT!
+                        {t("weAreOnIt")}
                     </h2>
                     <p className="text-mainNavyText text-sm mb-2">
-                        The photos are not online yet.
+                        {t("photosNotOnlineYet")}
                     </p>
                     <p className="text-mainNavyText mb-8 text-sm">
-                        Get a notification as soon as your pictures are online.
+                        {t("getNotificationWhenReady")}
                     </p>
                     <button className="bg-mainNavyText hover:bg-mainNavyText/80 text-white font-semibold text-sm uppercase transition-colors duration-200 w-full h-12 flex items-center justify-center">
-                        Notify me
+                        {t("notifyMe")}
                     </button>
                 </div>
             </div>
@@ -187,7 +191,7 @@ export function PhotosNotReady({ event }: PhotosNotReadyProps) {
                 <div className="max-w-7xl mx-auto p-6 space-y-2 mt-12">
                     <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
                         <TagIcon className="h-5 w-5" />
-                        Tags
+                        {t("tags")}
                     </h2>
                     <div className="flex flex-wrap gap-2">
                         {event.tags.map((tag) => (

@@ -36,33 +36,33 @@ export function StaticPageLayout({ children }: StaticPageLayoutProps) {
   }
 
   const mainTabs = [
-    { text: "CONTACT", href: "/contact" },
-    { text: "LEGAL", href: "/legal" },
-    { text: "PRIVACY", href: "/privacy" },
-    { text: "TERMS AND CONDITIONS", href: "/terms-and-conditions" },
-    { text: "NEWSLETTER", href: "/newsletter" },
-    { text: "FAQ", href: "/faq" },
+    { text: t("contact"), href: "/contact" },
+    { text: t("legal"), href: "/legal" },
+    { text: t("privacy"), href: "/privacy" },
+    { text: t("termsAndConditions"), href: "/terms-and-conditions" },
+    { text: t("newsletter"), href: "/newsletter" },
+    { text: t("faq"), href: "/faq" },
   ]
 
   // Dynamically set auth-related tabs based on user state
   const extraTabs = [
-    { text: "HOME", href: "/" },
+    { text: t("home"), href: "/" },
     ...(initialized && !loading && !userData
-      ? [{ text: "LOGIN", href: "/login" }]
+      ? [{ text: t("login"), href: "/login" }]
       : [
-          { text: "PROFILE", href: "/profile" },
+          { text: t("profile"), href: "/profile" },
           {
             text: "LOGOUT",
             href: "#",
             onClick: handleLogout,
           },
         ]),
-    { text: "ABOUT US", href: "/about-us" },
-    { text: "JOBS", href: "/jobs" },
+    { text: t("aboutUs"), href: "/about-us" },
+    // { text: t("jobs"), href: "/jobs" },
   ]
 
   return (
-    <main className="bg-mainBackgroundV1 min-h-screen">
+    <main className="bg-white min-h-screen">
       {/* Static Header */}
       <header className="w-full bg-mainDarkBackgroundV1">
         <div className="bg-transparent text-mainBackgroundV1 py-2 px-4 md:px-8 w-full">
@@ -122,7 +122,7 @@ export function StaticPageLayout({ children }: StaticPageLayoutProps) {
           </div>
         </div>
       </header>
-      <div className="flex-1">{children}</div>
+      <div className="flex-1" style={{ minHeight: "calc(100vh - 64px)" }}>{children}</div>
       <Footer />
     </main>
   )
