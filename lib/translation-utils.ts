@@ -1,39 +1,39 @@
 import type { Language } from './types'
 
-// Google Translate API integration
-async function translateWithGoogle(text: string, targetLanguage: Language): Promise<string> {
-  try {
-    // Dynamic import to avoid build issues
-    const { translate } = await import('google-translate-api-x')
-    
-    // Map our language codes to Google Translate codes
-    const languageMap: Record<Language, string> = {
-      'en': 'en',
-      'de': 'de', 
-      'fr': 'fr',
-      'es': 'es'
-    }
-    
-    const result = await translate(text, { 
-      from: 'en', 
-      to: languageMap[targetLanguage] 
-    })
-    
-    return result.text
-  } catch (error) {
-    console.error(`Translation error for ${targetLanguage}:`, error)
-    // Fallback to original text if translation fails
-    return text
-  }
-}
-
-// Translation function with Google Translate API
+// Translation function using Next.js API route
 export async function translateText(text: string, targetLanguage: Language): Promise<string> {
   if (targetLanguage === 'en') {
     return text // No translation needed for English
   }
   
-  return await translateWithGoogle(text, targetLanguage)
+  try {
+    const response = await fetch('/api/translate', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        text,
+        targetLanguage
+      })
+    })
+
+    if (!response.ok) {
+      throw new Error(`Translation API error: ${response.status}`)
+    }
+
+    const data = await response.json()
+    
+    if (data.error) {
+      console.warn('Translation warning:', data.error)
+    }
+    
+    return data.translatedText || text
+  } catch (error) {
+    console.error(`Translation error for ${targetLanguage}:`, error)
+    // Fallback to original text if translation fails
+    return text
+  }
 }
 
 export async function translateFAQContent(
