@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
     const eventData: EventUpdateNotificationData = await request.json();
 
     // Validate required fields
-    if (!eventData.eventTitle || !eventData.eventDate || !eventData.eventLocation || !eventData.eventId) {
+    if (!eventData.eventTitle || !eventData.eventDate || !eventData.eventId) {
       return NextResponse.json(
         { success: false, message: 'Missing required event data' },
         { status: 400 }

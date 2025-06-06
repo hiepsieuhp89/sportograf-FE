@@ -4,13 +4,12 @@ import type React from "react"
 
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { collection, doc, getDoc, addDoc, updateDoc, serverTimestamp } from "firebase/firestore"
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage"
+import { collection, doc, getDoc, updateDoc, serverTimestamp, setDoc } from "firebase/firestore"
 import { createUserWithEmailAndPassword, getAuth } from "firebase/auth"
 import { initializeApp, getApps } from "firebase/app"
-import { db, storage, auth } from "@/lib/firebase"
-import type { Photographer } from "@/lib/types"
-import { User, Mail, FileImage, Info, ArrowLeft } from "lucide-react"
+import { db, auth } from "@/lib/firebase"
+import type { UserData } from "@/contexts/user-context"
+import { User, Mail, FileImage, ArrowLeft } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -40,9 +39,10 @@ export function PhotographerForm({ photographerId }: PhotographerFormProps) {
 
   const [loading, setLoading] = useState(false)
   const [saving, setSaving] = useState(false)
+  const [uploading, setUploading] = useState(false)
   const [error, setError] = useState("")
 
-  const [formData, setFormData] = useState<Partial<Photographer> & { password?: string }>({
+  const [formData, setFormData] = useState<Partial<UserData> & { password?: string }>({
     name: "",
     email: "",
     bio: "",
@@ -50,6 +50,7 @@ export function PhotographerForm({ photographerId }: PhotographerFormProps) {
 
   const [profileImageFile, setProfileImageFile] = useState<File | null>(null)
   const [profileImagePreview, setProfileImagePreview] = useState<string | null>(null)
+  const [uploadedImageUrl, setUploadedImageUrl] = useState<string | null>(null)
 
   // Fetch photographer data if editing
   useEffect(() => {
@@ -58,9 +59,9 @@ export function PhotographerForm({ photographerId }: PhotographerFormProps) {
 
       setLoading(true)
       try {
-        const photographerDoc = await getDoc(doc(db, "photographers", photographerId))
+        const photographerDoc = await getDoc(doc(db, "users", photographerId))
         if (photographerDoc.exists()) {
-          const photographerData = photographerDoc.data() as Photographer
+          const photographerData = photographerDoc.data() as UserData
           setFormData({
             name: photographerData.name || "",
             email: photographerData.email || "",
@@ -70,6 +71,7 @@ export function PhotographerForm({ photographerId }: PhotographerFormProps) {
 
           if (photographerData.profileImageUrl) {
             setProfileImagePreview(photographerData.profileImageUrl)
+            setUploadedImageUrl(photographerData.profileImageUrl)
           }
         }
       } catch (error) {
@@ -88,16 +90,36 @@ export function PhotographerForm({ photographerId }: PhotographerFormProps) {
     setFormData((prev) => ({ ...prev, [name]: value }))
   }
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const uploadImage = async (file: File) => {
+    if (!file) return
+    
+    setUploading(true)
+    setError("")
+    
+    try {
+      const path = `photographers/${Date.now()}_${file.name}`
+      const imageUrl = await uploadFile(file, path)
+      setUploadedImageUrl(imageUrl)
+    } catch (error) {
+      console.error("Error uploading image:", error)
+      setError("Failed to upload image. Please try again.")
+    } finally {
+      setUploading(false)
+    }
+  }
+
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0]
       setProfileImageFile(file)
       setProfileImagePreview(URL.createObjectURL(file))
+      
+      // Reset uploaded URL when new file is selected
+      setUploadedImageUrl(null)
+      
+      // Auto-upload the image
+      await uploadImage(file)
     }
-  }
-
-  const uploadImage = async (file: File, path: string): Promise<string> => {
-    return uploadFile(file, `photographers/${path}`)
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -106,31 +128,33 @@ export function PhotographerForm({ photographerId }: PhotographerFormProps) {
     setError("")
 
     try {
-      let profileImageUrl = formData.profileImageUrl
-
-      // Upload profile image if provided
-      if (profileImageFile) {
-        const path = `photographers/${Date.now()}_${profileImageFile.name}`
-        profileImageUrl = await uploadImage(profileImageFile, path)
+      // Validate required fields
+      if (!formData.name?.trim()) {
+        throw new Error("Name is required")
+      }
+      
+      if (!formData.email?.trim()) {
+        throw new Error("Email is required")
       }
 
-      const photographerData = {
-        name: formData.name,
-        email: formData.email,
-        bio: formData.bio,
-        profileImageUrl,
-        updatedAt: serverTimestamp(),
+      if (!isEditing && !formData.password) {
+        throw new Error("Password is required for new photographers")
       }
+
+      const profileImageUrl = uploadedImageUrl || formData.profileImageUrl
 
       if (isEditing) {
-        // Update existing photographer
-        await updateDoc(doc(db, "photographers", photographerId), photographerData)
-      } else {
-        // Create new photographer and Firebase auth account
-        if (!formData.password) {
-          throw new Error("Password is required for new photographers")
+        // Update existing photographer user
+        const userData = {
+          name: formData.name,
+          email: formData.email,
+          bio: formData.bio,
+          profileImageUrl,
+          updatedAt: serverTimestamp(),
         }
-
+        await updateDoc(doc(db, "users", photographerId), userData)
+      } else {
+        // Create new photographer user and Firebase auth account
         // Create a separate Firebase app instance for user creation
         let secondaryApp
         try {
@@ -146,27 +170,24 @@ export function PhotographerForm({ photographerId }: PhotographerFormProps) {
         const secondaryAuth = getAuth(secondaryApp)
 
         // Create Firebase auth account using secondary app
-        const userCredential = await createUserWithEmailAndPassword(secondaryAuth, formData.email!, formData.password)
+        const userCredential = await createUserWithEmailAndPassword(secondaryAuth, formData.email!, formData.password!)
         const uid = userCredential.user.uid
 
         // Sign out from secondary auth to avoid session conflicts
         await secondaryAuth.signOut()
 
-        // Create photographer document
-        const docRef = await addDoc(collection(db, "photographers"), {
-          ...photographerData,
+        // Create user document with photographer role
+        const userData: UserData = {
           uid,
-          createdAt: serverTimestamp(),
-        })
-
-        // Create user role document
-        await addDoc(collection(db, "users"), {
-          uid,
-          email: formData.email,
+          email: formData.email!,
+          name: formData.name || "",
           role: "photographer",
-          photographerId: docRef.id,
-          createdAt: serverTimestamp(),
-        })
+          bio: formData.bio || "",
+          profileImageUrl: profileImageUrl || "",
+          createdAt: new Date().toISOString(),
+        }
+
+        await setDoc(doc(db, "users", uid), userData)
       }
 
       router.push("/admin/photographers")
@@ -302,10 +323,10 @@ export function PhotographerForm({ photographerId }: PhotographerFormProps) {
                   <div className="flex flex-col items-center">
                     <label
                       htmlFor="profileImage"
-                      className="cursor-pointer inline-flex items-center px-4 py-2 bg-mainNavyText text-mainBackgroundV1 rounded-lg hover:bg-blue-700 transition-colors"
+                      className={`cursor-pointer inline-flex items-center px-4 py-2 bg-mainNavyText text-mainBackgroundV1 rounded-lg hover:bg-blue-700 transition-colors ${uploading ? 'opacity-50 cursor-not-allowed' : ''}`}
                     >
                       <FileImage className="h-5 w-5 mr-2" />
-                      Choose Image
+                      {uploading ? "Uploading..." : "Choose Image"}
                     </label>
                     <input
                       id="profileImage"
@@ -314,6 +335,7 @@ export function PhotographerForm({ photographerId }: PhotographerFormProps) {
                       accept="image/*"
                       onChange={handleImageChange}
                       className="hidden"
+                      disabled={uploading}
                     />
                     <p className="text-sm text-gray-500 mt-2">
                       Upload a profile picture. Images will be cropped to a circle.
@@ -322,6 +344,11 @@ export function PhotographerForm({ photographerId }: PhotographerFormProps) {
                       <p className="text-sm text-mainNavyText mt-2">
                         Selected: {profileImageFile.name}
                       </p>
+                    )}
+                    {uploadedImageUrl && !uploading && (
+                      <div className="mt-2 p-2 bg-green-100 text-green-700 rounded text-sm">
+                        ✓ Image uploaded successfully
+                      </div>
                     )}
                   </div>
                 </div>
@@ -338,7 +365,7 @@ export function PhotographerForm({ photographerId }: PhotographerFormProps) {
               </Button>
               <Button
                 type="submit"
-                disabled={saving}
+                disabled={saving || uploading}
                 className="bg-mainNavyText text-mainBackgroundV1 hover:bg-blue-700"
               >
                 {saving ? (

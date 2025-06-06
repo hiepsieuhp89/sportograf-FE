@@ -19,13 +19,18 @@ import {
 } from "@/components/ui/tooltip"
 import { getCountryByCode } from "@/lib/countries"
 import { auth, db, isAdmin, isPhotographer } from "@/lib/firebase"
-import type { Event, EventType, Photographer } from "@/lib/types"
+import type { Event, EventType } from "@/lib/types"
+import type { UserData } from "@/contexts/user-context"
 import { format } from "date-fns"
-import { collection, deleteDoc, doc, getDocs, orderBy, query } from "firebase/firestore"
+import { collection, deleteDoc, doc, getDocs, orderBy, query, where, updateDoc } from "firebase/firestore"
 import { Calendar, CheckCircle, Clock, Edit, Eye, MapPin, Plus, Trash2, Users, XCircle } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { useEffect, useState } from "react"
+
+interface PhotographerData extends UserData {
+  id: string
+}
 
 const getEventStatus = (event: Event) => {
   const now = new Date()
@@ -45,10 +50,11 @@ const getEventStatus = (event: Event) => {
 export function EnhancedEventsList() {
   const [events, setEvents] = useState<Event[]>([])
   const [eventTypes, setEventTypes] = useState<EventType[]>([])
-  const [photographers, setPhotographers] = useState<Photographer[]>([])
+  const [photographers, setPhotographers] = useState<PhotographerData[]>([])
   const [loading, setLoading] = useState(true)
   const [userRole, setUserRole] = useState<"admin" | "photographer" | null>(null)
   const [userId, setUserId] = useState<string | null>(null)
+  const [confirmingEvents, setConfirmingEvents] = useState<Set<string>>(new Set())
 
   useEffect(() => {
     const checkUserRole = async () => {
@@ -60,21 +66,50 @@ export function EnhancedEventsList() {
       
       if (currentUser) {
         setUserId(currentUser.uid)
-        if (await isAdmin(currentUser.uid)) {
-          setUserRole("admin")
-          console.log("User role set to admin")
-        } else if (await isPhotographer(currentUser.uid)) {
-          setUserRole("photographer")
-          console.log("User role set to photographer")
+        try {
+          const adminCheck = await isAdmin(currentUser.uid)
+          const photographerCheck = await isPhotographer(currentUser.uid)
+          
+          console.log("Role check results:", { adminCheck, photographerCheck })
+          
+          if (adminCheck) {
+            setUserRole("admin")
+            console.log("User role set to admin")
+          } else if (photographerCheck) {
+            setUserRole("photographer")
+            console.log("User role set to photographer")
+          } else {
+            console.log("User has no valid role")
+            setUserRole(null)
+          }
+        } catch (error) {
+          console.error("Error checking user role:", error)
+          setUserRole(null)
         }
       } else {
         console.log("No current user found")
+        setUserId(null)
+        setUserRole(null)
       }
     }
 
-    // Wait a bit for auth to be ready, then check
-    const timer = setTimeout(checkUserRole, 100)
-    return () => clearTimeout(timer)
+    // Check immediately if user is already loaded
+    if (auth.currentUser) {
+      checkUserRole()
+    }
+
+    // Also listen for auth state changes
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      console.log("Auth state changed:", user?.uid)
+      if (user) {
+        checkUserRole()
+      } else {
+        setUserId(null)
+        setUserRole(null)
+      }
+    })
+
+    return () => unsubscribe()
   }, [])
 
   useEffect(() => {
@@ -92,13 +127,17 @@ export function EnhancedEventsList() {
           ...doc.data(),
         })) as Event[]
 
-        console.log("eventsList: ", JSON.stringify(eventsList))
+        console.log("Total events fetched:", eventsList.length)
+        console.log("eventsList: ", JSON.stringify(eventsList.map(e => ({ id: e.id, title: e.title, photographerIds: e.photographerIds }))))
 
         // If photographer, filter events assigned to them
         if (userRole === "photographer") {
+          const originalCount = eventsList.length
           eventsList = eventsList.filter((event) => 
             event.photographerIds && event.photographerIds.includes(userId)
           )
+          console.log(`Photographer ${userId} - Filtered from ${originalCount} to ${eventsList.length} events`)
+          console.log("Filtered events for photographer:", eventsList.map(e => ({ id: e.id, title: e.title, photographerIds: e.photographerIds })))
         }
 
         setEvents(eventsList)
@@ -112,14 +151,20 @@ export function EnhancedEventsList() {
         })) as EventType[]
         setEventTypes(eventTypesList)
 
-        // Fetch photographers
-        const photographersQuery = query(collection(db, "photographers"), orderBy("name"))
-        const photographersSnapshot = await getDocs(photographersQuery)
-        const photographersList = photographersSnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        })) as Photographer[]
-        setPhotographers(photographersList)
+        // Fetch photographers (only if admin)
+        if (userRole === "admin") {
+          const photographersQuery = query(
+            collection(db, "users"), 
+            where("role", "==", "photographer"),
+            orderBy("name")
+          )
+          const photographersSnapshot = await getDocs(photographersQuery)
+          const photographersList = photographersSnapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+          })) as PhotographerData[]
+          setPhotographers(photographersList)
+        }
 
       } catch (error) {
         console.error("Error fetching data:", error)
@@ -139,6 +184,42 @@ export function EnhancedEventsList() {
       setEvents(events.filter((event) => event.id !== eventId))
     } catch (error) {
       console.error("Error deleting event:", error)
+    }
+  }
+
+  const handleEventConfirmation = async (eventId: string, confirm: boolean) => {
+    if (!userId) return
+
+    setConfirmingEvents(prev => new Set(prev).add(eventId))
+    
+    try {
+      await updateDoc(doc(db, "events", eventId), {
+        [`photographerConfirmations.${userId}`]: confirm
+      })
+
+      // Update the local state
+      setEvents(prevEvents => 
+        prevEvents.map(event => {
+          if (event.id === eventId) {
+            return {
+              ...event,
+              photographerConfirmations: {
+                ...event.photographerConfirmations,
+                [userId]: confirm
+              }
+            }
+          }
+          return event
+        })
+      )
+    } catch (error) {
+      console.error("Error updating confirmation:", error)
+    } finally {
+      setConfirmingEvents(prev => {
+        const newSet = new Set(prev)
+        newSet.delete(eventId)
+        return newSet
+      })
     }
   }
 
@@ -183,33 +264,26 @@ export function EnhancedEventsList() {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-2xl font-bold">Events</h1>
-          <p className="text-gray-600 mt-1">
-            {userRole === "admin" ? "Manage all events" : "Your assigned events"}
-          </p>
-        </div>
-        {userRole === "admin" && (
-          <Link href="/admin/events/create">
-            <Button className="flex items-center gap-2">
-              <Plus className="h-4 w-4" />
-              Create Event
-            </Button>
-          </Link>
-        )}
-      </div>
-
       {events.length === 0 ? (
         <Card>
           <CardContent className="p-6 text-center">
-            <p className="text-gray-500">No events found.</p>
+            <p className="text-gray-500">
+              {userRole === "photographer" 
+                ? "No events assigned to you yet." 
+                : "No events found."
+              }
+            </p>
             {userRole === "admin" && (
               <Link href="/admin/events/create">
                 <Button className="mt-4">
                   Create your first event
                 </Button>
               </Link>
+            )}
+            {userRole === "photographer" && (
+              <p className="text-sm text-gray-400 mt-2">
+                Events will appear here when an admin assigns you to photograph them.
+              </p>
             )}
           </CardContent>
         </Card>
@@ -226,7 +300,7 @@ export function EnhancedEventsList() {
                   <TableHead>Status</TableHead>
                   <TableHead>Photographers</TableHead>
                   {userRole === "photographer" && (
-                    <TableHead>Status</TableHead>
+                    <TableHead>My Status</TableHead>
                   )}
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
@@ -236,6 +310,8 @@ export function EnhancedEventsList() {
                   const eventType = getEventType(event.eventTypeId)
                   const country = getCountryByCode(event.country)
                   const { status, color } = getEventStatus(event)
+                  const photographerStatus = userRole === "photographer" ? getPhotographerConfirmationStatus(event, userId!) : null
+                  const isConfirming = confirmingEvents.has(event.id)
                   
                   return (
                     <TableRow key={event.id}>
@@ -330,7 +406,7 @@ export function EnhancedEventsList() {
                               <div className="flex space-x-1">
                                 {event.photographerIds.slice(0, 3).map((photographerId) => {
                                   const photographer = photographers.find(p => p.id === photographerId)
-                                  const status = getConfirmationStatus(event, photographerId)
+                                  const status = getPhotographerConfirmationStatus(event, photographerId)
                                   
                                   return (
                                     <Tooltip key={photographerId}>
@@ -357,9 +433,9 @@ export function EnhancedEventsList() {
                       {userRole === "photographer" && (
                         <TableCell>
                           <div className="flex items-center gap-2">
-                            {getConfirmationIcon(getPhotographerConfirmationStatus(event, userId!))}
+                            {getConfirmationIcon(photographerStatus!)}
                             <span className="text-sm">
-                              {getConfirmationText(getPhotographerConfirmationStatus(event, userId!))}
+                              {getConfirmationText(photographerStatus!)}
                             </span>
                           </div>
                         </TableCell>
@@ -381,6 +457,48 @@ export function EnhancedEventsList() {
                               </TooltipContent>
                             </Tooltip>
                           </TooltipProvider>
+                          
+                          {userRole === "photographer" && photographerStatus === "pending" && (
+                            <>
+                              <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Button 
+                                      variant="outline" 
+                                      size="sm"
+                                      onClick={() => handleEventConfirmation(event.id, true)}
+                                      disabled={isConfirming}
+                                      className="text-green-600 hover:text-green-700 hover:bg-green-50"
+                                    >
+                                      <CheckCircle className="h-4 w-4" />
+                                    </Button>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p>Confirm Event</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
+                              
+                              <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Button 
+                                      variant="outline" 
+                                      size="sm"
+                                      onClick={() => handleEventConfirmation(event.id, false)}
+                                      disabled={isConfirming}
+                                      className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                    >
+                                      <XCircle className="h-4 w-4" />
+                                    </Button>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p>Decline Event</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
+                            </>
+                          )}
                           
                           {userRole === "admin" && (
                             <>

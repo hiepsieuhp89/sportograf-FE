@@ -7,7 +7,7 @@ export async function POST(request: NextRequest) {
     const { excludeEmails = [], ...eventData }: { excludeEmails?: string[] } & EventNotificationData = requestBody;
 
     // Validate required fields
-    if (!eventData.eventTitle || !eventData.eventDate || !eventData.eventLocation || !eventData.eventId) {
+    if (!eventData.eventTitle || !eventData.eventDate || !eventData.eventId) {
       return NextResponse.json(
         { success: false, message: 'Missing required event data' },
         { status: 400 }

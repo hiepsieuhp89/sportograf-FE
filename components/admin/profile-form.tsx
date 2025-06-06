@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { auth, db } from "@/lib/firebase"
-import type { Photographer } from "@/lib/types"
+import type { UserData } from "@/contexts/user-context"
 import { uploadFile } from "@/lib/upload-utils"
 import { EmailAuthProvider, reauthenticateWithCredential, updatePassword, updateProfile } from "firebase/auth"
 import { collection, doc, getDoc, getDocs, query, updateDoc, where } from "firebase/firestore"
@@ -18,10 +18,11 @@ import { useEffect, useState } from "react"
 export function ProfileForm() {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
+  const [uploading, setUploading] = useState(false)
   const [error, setError] = useState("")
   const [success, setSuccess] = useState("")
   const [isPhotographer, setIsPhotographer] = useState(false)
-  const [photographerId, setPhotographerId] = useState<string | null>(null)
+  const [userDocId, setUserDocId] = useState<string | null>(null)
 
   const [formData, setFormData] = useState<{
     name: string
@@ -43,6 +44,7 @@ export function ProfileForm() {
 
   const [profileImageFile, setProfileImageFile] = useState<File | null>(null)
   const [profileImagePreview, setProfileImagePreview] = useState<string | null>(null)
+  const [uploadedImageUrl, setUploadedImageUrl] = useState<string | null>(null)
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -51,41 +53,29 @@ export function ProfileForm() {
         const currentUser = auth.currentUser
         if (!currentUser) return
 
-        // Check if user is a photographer
+        // Find user document by UID
         const usersQuery = query(collection(db, "users"), where("uid", "==", currentUser.uid))
         const userSnapshot = await getDocs(usersQuery)
 
         if (!userSnapshot.empty) {
           console.log("userSnapshot", userSnapshot)
-          const userData = userSnapshot.docs[0].data()
-          if (userData.role === "photographer" && userData.photographerId) {
-            setIsPhotographer(true)
-            setPhotographerId(userData.photographerId)
+          const userData = userSnapshot.docs[0].data() as UserData
+          const docId = userSnapshot.docs[0].id
+          
+          setUserDocId(docId)
+          setIsPhotographer(userData.role === "photographer")
 
-            // Fetch photographer data
-            const photographerDoc = await getDoc(doc(db, "photographers", userData.photographerId))
-            if (photographerDoc.exists()) {
-              const photographerData = photographerDoc.data() as Photographer
-              setFormData((prev) => ({
-                ...prev,
-                name: photographerData.name || "",
-                email: currentUser.email || "",
-                bio: photographerData.bio || "",
-                profileImageUrl: photographerData.profileImageUrl || "",
-              }))
+          setFormData((prev) => ({
+            ...prev,
+            name: userData.name || "",
+            email: userData.email || "",
+            bio: userData.bio || "",
+            profileImageUrl: userData.profileImageUrl || "",
+          }))
 
-              if (photographerData.profileImageUrl) {
-                setProfileImagePreview(photographerData.profileImageUrl)
-              }
-            }
-          } else {
-            // Admin user
-            setFormData((prev) => ({
-              ...prev,
-              name: userData.name || "",
-              email: userData.email || "",
-              profileImageUrl: userData.profileImageUrl || "",
-            }))
+          if (userData.profileImageUrl) {
+            setProfileImagePreview(userData.profileImageUrl)
+            setUploadedImageUrl(userData.profileImageUrl)
           }
         }
       } catch (error) {
@@ -104,11 +94,35 @@ export function ProfileForm() {
     setFormData((prev) => ({ ...prev, [name]: value }))
   }
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const uploadImage = async (file: File) => {
+    if (!file || !auth.currentUser) return
+    
+    setUploading(true)
+    setError("")
+    
+    try {
+      const path = `profiles/${auth.currentUser.uid}/${Date.now()}_${file.name}`
+      const imageUrl = await uploadFile(file, path)
+      setUploadedImageUrl(imageUrl)
+    } catch (error) {
+      console.error("Error uploading image:", error)
+      setError("Failed to upload image. Please try again.")
+    } finally {
+      setUploading(false)
+    }
+  }
+
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0]
       setProfileImageFile(file)
       setProfileImagePreview(URL.createObjectURL(file))
+      
+      // Reset uploaded URL when new file is selected
+      setUploadedImageUrl(null)
+      
+      // Auto-upload the image
+      await uploadImage(file)
     }
   }
 
@@ -120,15 +134,14 @@ export function ProfileForm() {
 
     try {
       const currentUser = auth.currentUser
-      if (!currentUser) throw new Error("User not authenticated")
+      if (!currentUser || !userDocId) throw new Error("User not authenticated")
 
-      let profileImageUrl = formData.profileImageUrl
-
-      // Upload profile image if provided
-      if (profileImageFile) {
-        const path = `profiles/${currentUser.uid}/${Date.now()}_${profileImageFile.name}`
-        profileImageUrl = await uploadFile(profileImageFile, path)
+      // Validate required fields
+      if (!formData.name?.trim()) {
+        throw new Error("Name is required")
       }
+
+      const profileImageUrl = uploadedImageUrl || formData.profileImageUrl
 
       // Update Firebase Auth profile
       await updateProfile(currentUser, {
@@ -136,26 +149,12 @@ export function ProfileForm() {
         photoURL: profileImageUrl || null,
       })
 
-      if (isPhotographer && photographerId) {
-        // Update photographer document
-        await updateDoc(doc(db, "photographers", photographerId), {
-          name: formData.name,
-          bio: formData.bio,
-          profileImageUrl,
-        })
-      } else {
-        // Update admin user document
-        const usersQuery = query(collection(db, "users"), where("uid", "==", currentUser.uid))
-        const userSnapshot = await getDocs(usersQuery)
-
-        if (!userSnapshot.empty) {
-          const userDoc = userSnapshot.docs[0]
-          await updateDoc(doc(db, "users", userDoc.id), {
-            name: formData.name,
-            profileImageUrl,
-          })
-        }
-      }
+      // Update user document
+      await updateDoc(doc(db, "users", userDocId), {
+        name: formData.name,
+        bio: formData.bio,
+        profileImageUrl,
+      })
 
       setSuccess("Profile updated successfully")
     } catch (error: any) {
@@ -303,10 +302,10 @@ export function ProfileForm() {
                   <div className="flex flex-col items-center">
                     <label
                       htmlFor="profileImage"
-                      className="cursor-pointer inline-flex items-center px-4 py-2 bg-mainNavyText text-mainBackgroundV1 rounded-lg hover:bg-blue-700 transition-colors"
+                      className={`cursor-pointer inline-flex items-center px-4 py-2 bg-mainNavyText text-mainBackgroundV1 rounded-lg hover:bg-blue-700 transition-colors ${uploading ? 'opacity-50 cursor-not-allowed' : ''}`}
                     >
                       <FileImage className="h-5 w-5 mr-2" />
-                      Choose Image
+                      {uploading ? "Uploading..." : "Choose Image"}
                     </label>
                     <input
                       id="profileImage"
@@ -315,6 +314,7 @@ export function ProfileForm() {
                       accept="image/*"
                       onChange={handleImageChange}
                       className="hidden"
+                      disabled={uploading}
                     />
                     <p className="text-sm text-gray-500 mt-2">
                       Upload a profile picture. Images will be cropped to a circle.
@@ -324,6 +324,11 @@ export function ProfileForm() {
                         Selected: {profileImageFile.name}
                       </p>
                     )}
+                    {uploadedImageUrl && !uploading && (
+                      <div className="mt-2 p-2 bg-green-100 text-green-700 rounded text-sm">
+                        ✓ Image uploaded successfully
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -332,7 +337,7 @@ export function ProfileForm() {
             <div className="flex justify-end">
               <Button
                 type="submit"
-                disabled={saving}
+                disabled={saving || uploading}
                 className="bg-mainNavyText text-mainBackgroundV1 hover:bg-blue-700"
               >
                 {saving ? (

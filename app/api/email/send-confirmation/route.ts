@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { sendEventConfirmationEmail, generateConfirmationLink } from '@/lib/email-service-simple';
+import { sendEventConfirmationEmail, generateConfirmationLink } from '@/lib/email-service';
 
 export interface ConfirmationEmailRequest {
   photographerEmails: Array<{

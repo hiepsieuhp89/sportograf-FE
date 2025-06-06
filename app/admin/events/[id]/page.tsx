@@ -2,9 +2,10 @@
 
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { doc, getDoc, getDocs, collection, query, orderBy } from "firebase/firestore"
+import { doc, getDoc, getDocs, collection, query, orderBy, where } from "firebase/firestore"
 import { db } from "@/lib/firebase"
-import type { Event, EventType, Photographer } from "@/lib/types"
+import type { Event, EventType } from "@/lib/types"
+import type { UserData } from "@/contexts/user-context"
 import { getCountryByCode } from "@/lib/countries"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -27,11 +28,15 @@ import Image from "next/image"
 import { format } from "date-fns"
 import Link from "next/link"
 
+interface PhotographerData extends UserData {
+  id: string
+}
+
 export default function ViewEventPage({ params }: { params: { id: string } }) {
   const router = useRouter()
   const [event, setEvent] = useState<Event | null>(null)
   const [eventType, setEventType] = useState<EventType | null>(null)
-  const [photographers, setPhotographers] = useState<Photographer[]>([])
+  const [photographers, setPhotographers] = useState<PhotographerData[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
 
@@ -57,13 +62,17 @@ export default function ViewEventPage({ params }: { params: { id: string } }) {
           }
         }
 
-        // Fetch photographers
-        const photographersQuery = query(collection(db, "photographers"), orderBy("name"))
+        // Fetch photographers from users with photographer role
+        const photographersQuery = query(
+          collection(db, "users"), 
+          where("role", "==", "photographer"),
+          orderBy("name")
+        )
         const photographersSnapshot = await getDocs(photographersQuery)
         const photographersList = photographersSnapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
-        })) as Photographer[]
+        })) as PhotographerData[]
         setPhotographers(photographersList)
 
       } catch (error) {
@@ -132,7 +141,7 @@ export default function ViewEventPage({ params }: { params: { id: string } }) {
 
   const country = getCountryByCode(event.country)
   const assignedPhotographers = photographers.filter(p => 
-    event.photographerIds?.includes(p.id)
+    event.photographerIds?.includes(p.uid)
   )
 
   return (
@@ -323,13 +332,13 @@ export default function ViewEventPage({ params }: { params: { id: string } }) {
               ) : (
                 <div className="space-y-3">
                   {assignedPhotographers.map((photographer) => {
-                    const status = getPhotographerConfirmationStatus(photographer.id)
+                    const status = getPhotographerConfirmationStatus(photographer.uid)
                     return (
                       <div key={photographer.id} className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
                           <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
                             <span className="text-sm font-medium">
-                              {photographer.name.charAt(0).toUpperCase()}
+                              {photographer.name?.charAt(0).toUpperCase()}
                             </span>
                           </div>
                           <div>

@@ -1,13 +1,18 @@
 import { useState, useCallback, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { format } from "date-fns";
-import { doc, getDoc, getDocs, orderBy, query, collection } from "firebase/firestore";
+import { doc, getDoc, getDocs, orderBy, query, collection, where } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import type { Event, EventType, Photographer } from "@/lib/types";
+import type { Event, EventType } from "@/lib/types";
+import type { UserData } from "@/contexts/user-context";
 import { getCountries } from "@/lib/countries";
 
 interface UseEventFormProps {
   eventId?: string;
+}
+
+interface PhotographerData extends UserData {
+  id: string;
 }
 
 export function useEventForm({ eventId }: UseEventFormProps) {
@@ -18,7 +23,7 @@ export function useEventForm({ eventId }: UseEventFormProps) {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [eventTypes, setEventTypes] = useState<EventType[]>([]);
-  const [photographers, setPhotographers] = useState<Photographer[]>([]);
+  const [photographers, setPhotographers] = useState<PhotographerData[]>([]);
   const [countries] = useState(getCountries());
 
   const [formData, setFormData] = useState<Partial<Event>>({
@@ -127,16 +132,17 @@ export function useEventForm({ eventId }: UseEventFormProps) {
         })) as EventType[];
         setEventTypes(eventTypesList);
 
-        // Fetch photographers
+        // Fetch photographers from users with photographer role
         const photographersQuery = query(
-          collection(db, "photographers"),
+          collection(db, "users"),
+          where("role", "==", "photographer"),
           orderBy("name")
         );
         const photographersSnapshot = await getDocs(photographersQuery);
         const photographersList = photographersSnapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
-        })) as Photographer[];
+        })) as PhotographerData[];
         setPhotographers(photographersList);
       } catch (error) {
         console.error("Error fetching data:", error);

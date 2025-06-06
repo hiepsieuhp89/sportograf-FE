@@ -31,10 +31,12 @@ export default function ProfilePage() {
     profileImageUrl: "",
   })
   const [saving, setSaving] = useState(false)
+  const [uploading, setUploading] = useState(false)
   const [error, setError] = useState("")
   const [success, setSuccess] = useState(false)
   const [profileImageFile, setProfileImageFile] = useState<File | null>(null)
   const [profileImagePreview, setProfileImagePreview] = useState<string | null>(null)
+  const [uploadedImageUrl, setUploadedImageUrl] = useState<string | null>(null)
   const [uploadProgress, setUploadProgress] = useState<number>(0)
 
   useEffect(() => {
@@ -53,6 +55,7 @@ export default function ProfilePage() {
       })
       if (userData.profileImageUrl) {
         setProfileImagePreview(userData.profileImageUrl)
+        setUploadedImageUrl(userData.profileImageUrl)
       }
     }
   }, [userData])
@@ -62,7 +65,27 @@ export default function ProfilePage() {
     setFormData((prev) => ({ ...prev, [name]: value }))
   }
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const uploadImage = async (file: File) => {
+    if (!file || !userData) return
+    
+    setUploading(true)
+    setError('')
+    setUploadProgress(0)
+    
+    try {
+      const path = `users/${userData.uid}/profile`
+      const imageUrl = await uploadFile(file, path)
+      setUploadedImageUrl(imageUrl)
+      setUploadProgress(100)
+    } catch (uploadError: any) {
+      console.error("Error uploading image:", uploadError)
+      setError(t("imageUploadError"))
+    } finally {
+      setUploading(false)
+    }
+  }
+
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0]
       
@@ -81,6 +104,12 @@ export default function ProfilePage() {
       setProfileImageFile(file)
       setProfileImagePreview(URL.createObjectURL(file))
       setError('')
+      
+      // Reset uploaded URL when new file is selected
+      setUploadedImageUrl(null)
+      
+      // Auto-upload the image
+      await uploadImage(file)
     }
   }
 
@@ -92,24 +121,14 @@ export default function ProfilePage() {
     setSaving(true)
     setError("")
     setSuccess(false)
-    setUploadProgress(0)
 
     try {
-      let profileImageUrl = formData.profileImageUrl
-
-      // Upload profile image if provided
-      if (profileImageFile) {
-        try {
-          const path = `users/${userData.uid}/profile`
-          profileImageUrl = await uploadFile(profileImageFile, path)
-          setUploadProgress(100)
-        } catch (uploadError: any) {
-          console.error("Error uploading image:", uploadError)
-          setError(t("imageUploadError"))
-          setSaving(false)
-          return
-        }
+      // Validate required fields
+      if (!formData.name?.trim()) {
+        throw new Error(t("nameRequired") || "Name is required")
       }
+
+      const profileImageUrl = uploadedImageUrl || formData.profileImageUrl
 
       // Update Firebase Auth profile
       await updateProfile(auth.currentUser, {
@@ -177,9 +196,9 @@ export default function ProfilePage() {
                         height={128}
                         className="w-full h-full object-cover"
                       />
-                      {uploadProgress > 0 && uploadProgress < 100 && (
+                      {uploading && (
                         <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-                          <div className="text-white font-medium">{uploadProgress}%</div>
+                          <div className="text-white font-medium">Uploading...</div>
                         </div>
                       )}
                     </>
@@ -192,10 +211,10 @@ export default function ProfilePage() {
 
                 <label
                   htmlFor="profileImage"
-                  className="cursor-pointer inline-flex items-center px-4 py-2 bg-mainActiveV1 text-black rounded-lg hover:bg-mainActiveV1/80 transition-colors shadow-lg backdrop-blur-sm"
+                  className={`cursor-pointer inline-flex items-center px-4 py-2 bg-mainActiveV1 text-black rounded-lg hover:bg-mainActiveV1/80 transition-colors shadow-lg backdrop-blur-sm ${uploading ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
                   <FileImage className="h-5 w-5 mr-2" />
-                  {t("chooseImage")}
+                  {uploading ? t("uploading") : t("chooseImage")}
                 </label>
                 <input
                   id="profileImage"
@@ -203,11 +222,17 @@ export default function ProfilePage() {
                   accept="image/*"
                   onChange={handleImageChange}
                   className="hidden"
+                  disabled={uploading}
                 />
                 {profileImageFile && (
                   <p className="text-sm text-white/80 mt-2 font-medium">
                     {t("selectedFile")}: {profileImageFile.name}
                   </p>
+                )}
+                {uploadedImageUrl && !uploading && (
+                  <div className="mt-2 p-2 bg-green-500/20 text-green-200 rounded text-sm">
+                    ✓ {t("imageUploadedSuccessfully") || "Image uploaded successfully"}
+                  </div>
                 )}
               </div>
             </div>
@@ -270,13 +295,13 @@ export default function ProfilePage() {
 
               <button
                 type="submit"
-                disabled={saving}
+                disabled={saving || uploading}
                 className="w-full bg-mainActiveV1 text-black py-3 rounded-lg hover:bg-mainActiveV1/80 transition-colors disabled:bg-mainActiveV1/50 flex items-center justify-center shadow-lg backdrop-blur-sm font-medium"
               >
                 {saving ? (
                   <>
                     <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
-                    {uploadProgress > 0 && uploadProgress < 100 ? t("uploading") : t("saving")}...
+                    {t("saving")}...
                   </>
                 ) : (
                   t("saveChanges")

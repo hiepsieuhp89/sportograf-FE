@@ -1,28 +1,38 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { collection, getDocs, deleteDoc, doc, query, orderBy } from "firebase/firestore"
+import { collection, getDocs, deleteDoc, doc, query, orderBy, where } from "firebase/firestore"
 import { db } from "@/lib/firebase"
-import type { Photographer } from "@/lib/types"
+import type { UserData } from "@/contexts/user-context"
 import Link from "next/link"
-import { Edit, Trash2, Plus, User } from "lucide-react"
-import Image from "next/image"
+import { Edit, Trash2, Plus, User, CheckCircle } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+
+interface PhotographerData extends UserData {
+  id: string
+}
 
 export function PhotographersList() {
-  const [photographers, setPhotographers] = useState<Photographer[]>([])
+  const [photographers, setPhotographers] = useState<PhotographerData[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const fetchPhotographers = async () => {
       try {
-        const photographersQuery = query(collection(db, "photographers"), orderBy("name"))
+        // Fetch users with photographer role
+        const photographersQuery = query(
+          collection(db, "users"), 
+          where("role", "==", "photographer"),
+          orderBy("name")
+        )
 
         const snapshot = await getDocs(photographersQuery)
         const photographersList = snapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
-        })) as Photographer[]
+        })) as PhotographerData[]
 
         setPhotographers(photographersList)
       } catch (error) {
@@ -39,7 +49,7 @@ export function PhotographersList() {
     if (!confirm("Are you sure you want to delete this photographer?")) return
 
     try {
-      await deleteDoc(doc(db, "photographers", photographerId))
+      await deleteDoc(doc(db, "users", photographerId))
       setPhotographers(photographers.filter((photographer) => photographer.id !== photographerId))
     } catch (error) {
       console.error("Error deleting photographer:", error)
@@ -88,6 +98,9 @@ export function PhotographersList() {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Email
                 </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Status
+                </th>
                 <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Actions
                 </th>
@@ -106,25 +119,38 @@ export function PhotographersList() {
                       </Avatar>
                       <div className="ml-4">
                         <div className="text-sm font-medium text-gray-900">{photographer.name}</div>
+                        {photographer.uid && (
+                          <div className="text-xs text-gray-500">UID: {photographer.uid.substring(0, 8)}...</div>
+                        )}
                       </div>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-500">{photographer.email}</div>
                   </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="flex items-center gap-2">
+                      <Badge variant="secondary" className="bg-green-100 text-green-800">
+                        <CheckCircle className="h-3 w-3 mr-1" />
+                        Active
+                      </Badge>
+                    </div>
+                  </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    <Link
-                      href={`/admin/photographers/${photographer.id}/edit`}
-                      className="text-mainNavyText hover:text-blue-900 mr-4"
-                    >
-                      <Edit className="h-5 w-5 inline" />
-                    </Link>
-                    <button
-                      onClick={() => handleDeletePhotographer(photographer.id)}
-                      className="text-red-600 hover:text-red-900"
-                    >
-                      <Trash2 className="h-5 w-5 inline" />
-                    </button>
+                    <div className="flex justify-end gap-2">
+                      <Link
+                        href={`/admin/photographers/${photographer.id}/edit`}
+                        className="text-mainNavyText hover:text-blue-900 mr-2"
+                      >
+                        <Edit className="h-5 w-5 inline" />
+                      </Link>
+                      <button
+                        onClick={() => handleDeletePhotographer(photographer.id)}
+                        className="text-red-600 hover:text-red-900"
+                      >
+                        <Trash2 className="h-5 w-5 inline" />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}

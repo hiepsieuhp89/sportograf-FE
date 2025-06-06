@@ -36,6 +36,7 @@ export function BannerForm({ bannerId }: BannerFormProps) {
 
   const [loading, setLoading] = useState(false)
   const [saving, setSaving] = useState(false)
+  const [uploading, setUploading] = useState(false)
   const [error, setError] = useState("")
 
   const [formData, setFormData] = useState<Partial<BannerImage>>({
@@ -48,6 +49,7 @@ export function BannerForm({ bannerId }: BannerFormProps) {
 
   const [imageFile, setImageFile] = useState<File | null>(null)
   const [imagePreview, setImagePreview] = useState<string | null>(null)
+  const [uploadedImageUrl, setUploadedImageUrl] = useState<string | null>(null)
 
   useEffect(() => {
     const initializeForm = async () => {
@@ -69,6 +71,7 @@ export function BannerForm({ bannerId }: BannerFormProps) {
 
             if (bannerData.imageUrl) {
               setImagePreview(bannerData.imageUrl)
+              setUploadedImageUrl(bannerData.imageUrl)
             }
           }
         } else {
@@ -136,11 +139,35 @@ export function BannerForm({ bannerId }: BannerFormProps) {
     })
   }
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0]
       setImageFile(file)
       setImagePreview(URL.createObjectURL(file))
+      
+      // Reset uploaded URL when new file is selected
+      setUploadedImageUrl(null)
+      
+      // Auto-upload the image
+      await uploadImage(file)
+    }
+  }
+
+  const uploadImage = async (file: File) => {
+    if (!file) return
+    
+    setUploading(true)
+    setError("")
+    
+    try {
+      const path = `banners/${Date.now()}_${file.name}`
+      const imageUrl = await uploadFile(file, path)
+      setUploadedImageUrl(imageUrl)
+    } catch (error) {
+      console.error("Error uploading image:", error)
+      setError("Failed to upload image. Please try again.")
+    } finally {
+      setUploading(false)
     }
   }
 
@@ -149,13 +176,16 @@ export function BannerForm({ bannerId }: BannerFormProps) {
     setError("")
 
     try {
-      let imageUrl = formData.imageUrl
-
-      // Upload image if provided
-      if (imageFile) {
-        const path = `banners/${Date.now()}_${imageFile.name}`
-        imageUrl = await uploadFile(imageFile, path)
+      // Validate required fields
+      if (!formData.title?.trim()) {
+        throw new Error("Title is required")
       }
+
+      if (!uploadedImageUrl && !formData.imageUrl) {
+        throw new Error("Image is required")
+      }
+
+      const imageUrl = uploadedImageUrl || formData.imageUrl
 
       const bannerData = {
         ...formData,
@@ -175,9 +205,9 @@ export function BannerForm({ bannerId }: BannerFormProps) {
       }
 
       router.push("/admin/banners")
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error saving banner:", error)
-      setError("Failed to save banner. Please try again.")
+      setError(error.message || "Failed to save banner. Please try again.")
     } finally {
       setSaving(false)
     }
@@ -280,7 +310,18 @@ export function BannerForm({ bannerId }: BannerFormProps) {
                 type="file"
                 accept="image/*"
                 onChange={handleImageChange}
+                disabled={uploading}
               />
+              {uploading && (
+                <div className="mt-2 p-2 bg-blue-50 text-blue-700 rounded text-sm">
+                  Uploading image...
+                </div>
+              )}
+              {uploadedImageUrl && (
+                <div className="mt-2 p-2 bg-green-50 text-green-700 rounded text-sm">
+                  ✓ Image uploaded successfully
+                </div>
+              )}
               {imagePreview && (
                 <div className="mt-2">
                   <Image
@@ -301,7 +342,10 @@ export function BannerForm({ bannerId }: BannerFormProps) {
               >
                 Cancel
               </Button>
-              <Button onClick={handleSubmit} disabled={saving}>
+              <Button 
+                onClick={handleSubmit} 
+                disabled={saving || uploading}
+              >
                 {saving ? "Saving..." : "Save Banner"}
               </Button>
             </div>

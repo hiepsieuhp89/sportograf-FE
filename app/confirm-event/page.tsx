@@ -2,17 +2,22 @@
 
 import { useState, useEffect } from "react"
 import { useSearchParams } from "next/navigation"
-import { doc, getDoc, updateDoc } from "firebase/firestore"
+import { doc, getDoc, updateDoc, query, collection, where, getDocs } from "firebase/firestore"
 import { db } from "@/lib/firebase"
-import type { Event, Photographer } from "@/lib/types"
+import type { Event } from "@/lib/types"
+import type { UserData } from "@/contexts/user-context"
 import { getCountryByCode } from "@/lib/countries"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
-import { CheckCircle, XCircle, Calendar, MapPin, Clock, Users, MessageSquare } from "lucide-react"
+import { CheckCircle, XCircle, Calendar, MapPin, Clock, Users, MessageSquare, Home, Shield } from "lucide-react"
 import Image from "next/image"
 import { format } from "date-fns"
+
+interface PhotographerData extends UserData {
+  id: string
+}
 
 export default function ConfirmEventPage() {
   const searchParams = useSearchParams()
@@ -20,7 +25,7 @@ export default function ConfirmEventPage() {
   const photographerId = searchParams.get("photographerId")
 
   const [event, setEvent] = useState<Event | null>(null)
-  const [photographer, setPhotographer] = useState<Photographer | null>(null)
+  const [photographer, setPhotographer] = useState<PhotographerData | null>(null)
   const [loading, setLoading] = useState(true)
   const [confirming, setConfirming] = useState(false)
   const [confirmed, setConfirmed] = useState<boolean | null>(null)
@@ -53,16 +58,24 @@ export default function ConfirmEventPage() {
           return
         }
 
-        // Fetch photographer
-        const photographerDoc = await getDoc(doc(db, "photographers", photographerId))
-        if (!photographerDoc.exists()) {
+        // Fetch photographer from users collection
+        const photographerQuery = query(
+          collection(db, "users"), 
+          where("uid", "==", photographerId)
+        )
+        const photographerSnapshot = await getDocs(photographerQuery)
+        
+        if (photographerSnapshot.empty) {
           setError("Photographer not found")
           setLoading(false)
           return
         }
 
-        const photographerData = photographerDoc.data() as Photographer
-        setPhotographer({ ...photographerData, id: photographerDoc.id })
+        const photographerData = photographerSnapshot.docs[0].data() as UserData
+        setPhotographer({ 
+          ...photographerData, 
+          id: photographerSnapshot.docs[0].id 
+        })
 
         // Check if already confirmed
         if (eventData.photographerConfirmations && eventData.photographerConfirmations[photographerId] !== undefined) {
@@ -143,7 +156,7 @@ export default function ConfirmEventPage() {
               <>
                 <CheckCircle className="h-12 w-12 text-green-500 mx-auto mb-4" />
                 <h2 className="text-xl font-semibold mb-2">Confirmed!</h2>
-                <p className="text-gray-600">
+                <p className="text-gray-600 mb-6">
                   Thank you for confirming your participation in "{event.title}".
                 </p>
               </>
@@ -151,11 +164,30 @@ export default function ConfirmEventPage() {
               <>
                 <XCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
                 <h2 className="text-xl font-semibold mb-2">Declined</h2>
-                <p className="text-gray-600">
+                <p className="text-gray-600 mb-6">
                   You have declined to participate in "{event.title}".
                 </p>
               </>
             )}
+            
+            {/* Navigation Buttons */}
+            <div className="space-y-3">
+              <Button
+                onClick={() => window.location.href = '/'}
+                className="w-full bg-mainNavyText hover:bg-mainNavyText/90 text-white"
+              >
+                <Home className="h-4 w-4 mr-2" />
+                Return to Homepage
+              </Button>
+              <Button
+                onClick={() => window.location.href = '/admin'}
+                variant="outline"
+                className="w-full border-mainNavyText text-mainNavyText hover:bg-mainNavyText/10"
+              >
+                <Shield className="h-4 w-4 mr-2" />
+                Photographer Login
+              </Button>
+            </div>
           </CardContent>
         </Card>
       </div>

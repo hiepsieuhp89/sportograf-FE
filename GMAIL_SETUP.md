@@ -98,14 +98,14 @@ GMAIL_APP_PASSWORD=abcdefghijklmnop
 ```
 
 ### Bước 4: Sử dụng Simple Email Service
-Thay vì sử dụng `email-service.ts`, sử dụng `email-service-simple.ts`:
+Thay vì sử dụng `email-service.ts`, sử dụng `email-service.ts`:
 
 ```typescript
 // Trong enhanced-event-form.tsx, thay đổi import
 import { 
   sendEventConfirmationEmail, 
   generateConfirmationLink 
-} from "@/lib/email-service-simple";
+} from "@/lib/email-service";
 ```
 
 ### Bước 5: Cài đặt Dependencies

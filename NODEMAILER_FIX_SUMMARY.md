@@ -5,7 +5,7 @@
 ```
 ⨯ Module not found: Can't resolve 'fs'
 nodemailer/lib/dkim/index.js:10:1
-Import trace: email-service-simple.ts → enhanced-event-form.tsx
+Import trace: email-service.ts → enhanced-event-form.tsx
 ```
 
 **Root Cause**: `nodemailer` là server-side library, không thể chạy trong browser environment. Khi import vào React component, webpack cố bundle nodemailer cho client, dẫn đến lỗi missing Node.js modules (`fs`, `crypto`, etc.).
@@ -56,7 +56,7 @@ webpack: (config, { isServer }) => {
 **Before** (❌ Problematic):
 ```typescript
 // enhanced-event-form.tsx
-import { sendEventConfirmationEmail } from "@/lib/email-service-simple";
+import { sendEventConfirmationEmail } from "@/lib/email-service";
 
 // Direct server function call in client component
 await sendEventConfirmationEmail(params);
@@ -79,7 +79,7 @@ Client Component (enhanced-event-form.tsx)
     ↓ API Call
 Server API Route (/api/email/send-confirmation)
     ↓ Import
-Server Service (lib/email-service-simple.ts)
+Server Service (lib/email-service.ts)
     ↓ SMTP
 Gmail Server
     ↓ Email

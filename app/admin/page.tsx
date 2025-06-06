@@ -1,7 +1,8 @@
 "use client"
 
 import { useFirebase } from "@/components/firebase-provider"
-import type { Event, Photographer } from "@/lib/types"
+import type { Event } from "@/lib/types"
+import type { UserData } from "@/contexts/user-context"
 import { collection, getDocs, limit, orderBy, query, where } from "firebase/firestore"
 import { ArrowRight, Calendar, Camera, Users, TrendingUp, BarChart3, CheckCircle, Tag } from "lucide-react"
 import Link from "next/link"
@@ -14,9 +15,13 @@ import { Badge } from "@/components/ui/badge"
 import { format } from "date-fns"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
+interface PhotographerData extends UserData {
+  id: string
+}
+
 export default function AdminPage() {
   const [recentEvents, setRecentEvents] = useState<Event[]>([])
-  const [photographers, setPhotographers] = useState<Photographer[]>([])
+  const [photographers, setPhotographers] = useState<PhotographerData[]>([])
   const [stats, setStats] = useState({
     totalEvents: 0,
     totalPhotographers: 0,
@@ -106,17 +111,23 @@ export default function AdminPage() {
           })) as Event[]
           setRecentEvents(eventsList)
 
-          // Fetch photographers
-          const photographersQuery = query(collection(db, "photographers"), orderBy("name"), limit(5))
+          // Fetch photographers from users with photographer role
+          const photographersQuery = query(
+            collection(db, "users"), 
+            where("role", "==", "photographer"),
+            orderBy("name"), 
+            limit(5)
+          )
           const photographersSnapshot = await getDocs(photographersQuery)
           const photographersList = photographersSnapshot.docs.map((doc) => ({
             id: doc.id,
             ...doc.data(),
-          })) as Photographer[]
+          })) as PhotographerData[]
           setPhotographers(photographersList)
 
           // Get total photographers count
-          const allPhotographersSnapshot = await getDocs(collection(db, "photographers"))
+          const allPhotographersQuery = query(collection(db, "users"), where("role", "==", "photographer"))
+          const allPhotographersSnapshot = await getDocs(allPhotographersQuery)
 
           setStats({
             totalEvents: allEvents.length,
@@ -506,7 +517,7 @@ export default function AdminPage() {
                       <Avatar className="h-10 w-10">
                         <AvatarImage src={photographer.profileImageUrl} alt={photographer.name} />
                         <AvatarFallback>
-                          {photographer.name.charAt(0).toUpperCase()}
+                          {photographer.name?.charAt(0).toUpperCase()}
                         </AvatarFallback>
                       </Avatar>
                       <div>

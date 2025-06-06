@@ -20,6 +20,10 @@ interface SubmitEventParams {
   sendUpdateNotification: boolean;
   photographers: Photographer[];
   detectChanges: () => string[];
+  uploadedImageUrl?: string;
+  uploadedBestOfUrls?: string[];
+  onImageUploaded?: (url: string) => void;
+  onBestOfUploaded?: (urls: string[]) => void;
 }
 
 export async function submitEvent({
@@ -33,27 +37,55 @@ export async function submitEvent({
   sendUpdateNotification,
   photographers,
   detectChanges,
+  uploadedImageUrl,
+  uploadedBestOfUrls = [],
+  onImageUploaded,
+  onBestOfUploaded,
 }: SubmitEventParams): Promise<void> {
   let imageUrl = formData.imageUrl;
   let bestOfImageUrls = formData.bestOfImageUrls || [];
 
-  // Upload main image if provided
-  if (imageFile) {
+  // Upload main image if provided and not already uploaded
+  if (imageFile && !uploadedImageUrl) {
     const path = `${Date.now()}_${imageFile.name}`;
     imageUrl = await uploadFile(imageFile, `events/${path}`);
+    // Notify parent component about the uploaded URL
+    onImageUploaded?.(imageUrl);
+  } else if (uploadedImageUrl) {
+    // Use already uploaded image URL
+    imageUrl = uploadedImageUrl;
   }
 
-  // Upload best of images if provided
-  const uploadPromises = bestOfImageFiles.map(async (file) => {
-    const path = `best-of/${Date.now()}_${file.name}`;
-    return uploadFile(file, `events/${path}`);
-  });
+  // Upload best of images if provided and not already uploaded
+  if (bestOfImageFiles.length > 0) {
+    // Filter out files that are already uploaded
+    const newFilesToUpload = bestOfImageFiles.filter((_, index) => !uploadedBestOfUrls[index]);
+    
+    if (newFilesToUpload.length > 0) {
+      const uploadPromises = newFilesToUpload.map(async (file) => {
+        const path = `best-of/${Date.now()}_${file.name}`;
+        return uploadFile(file, `events/${path}`);
+      });
 
-  const newBestOfImageUrls = await Promise.all(uploadPromises);
-  bestOfImageUrls = [
-    ...(formData.bestOfImageUrls || []),
-    ...newBestOfImageUrls,
-  ];
+      const newBestOfImageUrls = await Promise.all(uploadPromises);
+      
+      // Combine existing uploaded URLs with new ones
+      const allBestOfUrls = [...uploadedBestOfUrls, ...newBestOfImageUrls];
+      bestOfImageUrls = [
+        ...(formData.bestOfImageUrls || []),
+        ...allBestOfUrls,
+      ];
+      
+      // Notify parent component about the uploaded URLs
+      onBestOfUploaded?.(allBestOfUrls);
+    } else {
+      // Use already uploaded URLs
+      bestOfImageUrls = [
+        ...(formData.bestOfImageUrls || []),
+        ...uploadedBestOfUrls,
+      ];
+    }
+  }
 
   const eventData = {
     ...formData,

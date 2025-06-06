@@ -66,7 +66,7 @@ Subject: 🎯 New Event: {Event Title}
 
 ### **Updated Files:**
 - ✅ `lib/newsletter-service.ts` - Chuyển từ EmailJS sang Gmail SMTP
-- ✅ `lib/email-service-simple.ts` - Gmail SMTP cho event confirmation  
+- ✅ `lib/email-service.ts` - Gmail SMTP cho event confirmation  
 - ✅ `app/api/newsletter/subscribe/route.ts` - Subscription API
 - ✅ `app/api/newsletter/unsubscribe/route.ts` - Unsubscription API
 - ✅ `app/api/newsletter/notify/route.ts` - Event notification API

@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useState } from "react"
 import { onAuthStateChanged, User as FirebaseUser } from "firebase/auth"
-import { doc, getDoc, setDoc } from "firebase/firestore"
+import { doc, getDoc, setDoc, query, collection, where, getDocs } from "firebase/firestore"
 import { useFirebase } from "@/components/firebase-provider"
 
 export interface UserData {
@@ -51,27 +51,52 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
 
       try {
         if (firebaseUser) {
-          // Get user data from Firestore
-          const userRef = doc(db, "users", firebaseUser.uid)
-          const userSnap = await getDoc(userRef)
+          // First, check if user already exists by email (to handle photographer accounts)
+          const existingUserQuery = query(
+            collection(db, "users"), 
+            where("email", "==", firebaseUser.email)
+          )
+          const existingUserSnap = await getDocs(existingUserQuery)
 
-          if (!userSnap.exists()) {
-            console.log("Creating new user document...")
-            // Create new user document if it doesn't exist
-            const newUserData: UserData = {
-              uid: firebaseUser.uid,
-              email: firebaseUser.email || "",
-              role: "client",
-              name: firebaseUser.displayName || "",
-              profileImageUrl: firebaseUser.photoURL || "",
-              createdAt: new Date().toISOString(),
+          if (!existingUserSnap.empty) {
+            // User exists, use existing data (preserves photographer role)
+            console.log("Existing user found, using existing data...")
+            const existingUserData = existingUserSnap.docs[0].data() as UserData
+            
+            // Update the UID if it's different (for cases where photographer was created first)
+            if (existingUserData.uid !== firebaseUser.uid) {
+              const userDocRef = doc(db, "users", existingUserSnap.docs[0].id)
+              await setDoc(userDocRef, {
+                ...existingUserData,
+                uid: firebaseUser.uid
+              }, { merge: true })
+              existingUserData.uid = firebaseUser.uid
             }
-            await setDoc(userRef, newUserData)
-            setUserData(newUserData)
-          } else {
-            console.log("User document exists, setting data...")
-            const existingUserData = userSnap.data() as UserData
+            
             setUserData(existingUserData)
+          } else {
+            // Check by UID as fallback
+            const userRef = doc(db, "users", firebaseUser.uid)
+            const userSnap = await getDoc(userRef)
+
+            if (!userSnap.exists()) {
+              console.log("Creating new user document...")
+              // Create new user document with client role by default
+              const newUserData: UserData = {
+                uid: firebaseUser.uid,
+                email: firebaseUser.email || "",
+                role: "client",
+                name: firebaseUser.displayName || "",
+                profileImageUrl: firebaseUser.photoURL || "",
+                createdAt: new Date().toISOString(),
+              }
+              await setDoc(userRef, newUserData)
+              setUserData(newUserData)
+            } else {
+              console.log("User document exists, setting data...")
+              const existingUserData = userSnap.data() as UserData
+              setUserData(existingUserData)
+            }
           }
         } else {
           console.log("No user signed in, clearing user data...")
@@ -100,6 +125,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       loading,
       userEmail: user?.email,
       userData: userData?.email,
+      userRole: userData?.role,
     })
   }, [initialized, loading, user, userData])
 

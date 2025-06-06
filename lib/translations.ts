@@ -1,6 +1,7 @@
 import type { Language } from "./types"
 
 type TranslationKeys =
+  | "imageUploadedSuccessfully"
   | "home"
   | "login"
   | "aboutUs"
@@ -227,6 +228,7 @@ type TranslationKeys =
   | "subscribing"
   | "unsubscribing"
   | "newEventNotification"
+  | "nameRequired"
   | "newEventAvailable"
   | "checkOutEvent"
   | "unsubscribeLink"
@@ -277,10 +279,12 @@ export const translations: Translations = {
     showPhotos: "SHOW PHOTOS",
     signupLogin: "Signup / Login",
     enterYourEmail: "ENTER YOUR EMAIL",
+    nameRequired: "Name is required",
     sendMagicLink: "Send Magic Link",
     whatIsAMagicLink: "What is a magic link?",
     privacyPolicy: "privacy policy",
     joinTheNewsletter: "JOIN THE SPORTOGRAF RACELETTER",
+    imageUploadedSuccessfully: "Image uploaded successfully",
     subscribe: "Subscribe",
     presaleEvent: "PRESALE EVENT",
     yourPrivacyMatters: "YOUR PRIVACY MATTERS",
@@ -516,6 +520,7 @@ export const translations: Translations = {
     aboutUs: "ÜBER UNS",
     contact: "KONTAKT",
     legal: "RECHTLICHES",
+    nameRequired: "Name ist erforderlich",
     privacy: "DATENSCHUTZ",
     termsAndConditions: "AGB",
     newsletter: "NEWSLETTER",
@@ -544,6 +549,7 @@ export const translations: Translations = {
     createPhotographer: "Fotograf erstellen",
     editPhotographer: "Fotograf bearbeiten",
     deletePhotographer: "Fotograf löschen",
+    imageUploadedSuccessfully: "Bild hochgeladen erfolgreich",
     title: "Titel",
     description: "Beschreibung",
     date: "Datum",
@@ -775,6 +781,7 @@ export const translations: Translations = {
     enterYourEmail: "ENTREZ VOTRE EMAIL",
     sendMagicLink: "Envoyer un lien magique",
     whatIsAMagicLink: "Qu'est-ce qu'un lien magique?",
+    nameRequired: "Le nom est requis",
     privacyPolicy: "politique de confidentialité",
     joinTheNewsletter: "REJOIGNEZ LA NEWSLETTER SPORTOGRAF",
     subscribe: "S'abonner",
@@ -805,6 +812,7 @@ export const translations: Translations = {
     name: "Nom",
     email: "Email",
     bio: "Bio",
+    imageUploadedSuccessfully: "Image téléchargée avec succès",
     profileImage: "Photo de profil",
     password: "Mot de passe",
     confirmPassword: "Confirmer le mot de passe",
@@ -1015,11 +1023,13 @@ export const translations: Translations = {
     privacy: "PRIVACIDAD",
     termsAndConditions: "TÉRMINOS Y CONDICIONES",
     newsletter: "BOLETÍN",
+    nameRequired: "Nombre es requerido",
     faq: "PREGUNTAS FRECUENTES",
     searchPlaceholder: "Buscar eventos...",
     photographyForTheLoveOfSport: "FOTOGRAFÍA POR AMOR AL DEPORTE",
     showPhotos: "MOSTRAR FOTOS",
     signupLogin: "Registrarse / Iniciar sesión",
+    imageUploadedSuccessfully: "Imagen subida con éxito",
     enterYourEmail: "INGRESE SU EMAIL",
     sendMagicLink: "Enviar enlace mágico",
     whatIsAMagicLink: "¿Qué es un enlace mágico?",
