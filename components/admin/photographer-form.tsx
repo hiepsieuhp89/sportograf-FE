@@ -6,7 +6,8 @@ import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { collection, doc, getDoc, addDoc, updateDoc, serverTimestamp } from "firebase/firestore"
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage"
-import { createUserWithEmailAndPassword } from "firebase/auth"
+import { createUserWithEmailAndPassword, getAuth } from "firebase/auth"
+import { initializeApp, getApps } from "firebase/app"
 import { db, storage, auth } from "@/lib/firebase"
 import type { Photographer } from "@/lib/types"
 import { User, Mail, FileImage, Info, ArrowLeft } from "lucide-react"
@@ -20,6 +21,17 @@ import { uploadFile } from "@/lib/upload-utils"
 
 interface PhotographerFormProps {
   photographerId?: string
+}
+
+// Firebase config for creating new users without affecting current session
+const firebaseConfig = {
+  apiKey: "AIzaSyBwNujju8j0ReZiZyEmXZNzDgjjvVvVJfc",
+  authDomain: "pix-4d40e.firebaseapp.com",
+  projectId: "pix-4d40e",
+  storageBucket: "pix-4d40e.firebasestorage.app",
+  messagingSenderId: "701410865281",
+  appId: "1:701410865281:web:1bd3b6015951f7acb75d80",
+  measurementId: "G-YL95JKXST4",
 }
 
 export function PhotographerForm({ photographerId }: PhotographerFormProps) {
@@ -119,9 +131,26 @@ export function PhotographerForm({ photographerId }: PhotographerFormProps) {
           throw new Error("Password is required for new photographers")
         }
 
-        // Create Firebase auth account
-        const userCredential = await createUserWithEmailAndPassword(auth, formData.email!, formData.password)
+        // Create a separate Firebase app instance for user creation
+        let secondaryApp
+        try {
+          secondaryApp = getApps().find(app => app.name === "UserCreation")
+          if (!secondaryApp) {
+            secondaryApp = initializeApp(firebaseConfig, "UserCreation")
+          }
+        } catch (error) {
+          // If app already exists, get it
+          secondaryApp = getApps().find(app => app.name === "UserCreation")
+        }
+
+        const secondaryAuth = getAuth(secondaryApp)
+
+        // Create Firebase auth account using secondary app
+        const userCredential = await createUserWithEmailAndPassword(secondaryAuth, formData.email!, formData.password)
         const uid = userCredential.user.uid
+
+        // Sign out from secondary auth to avoid session conflicts
+        await secondaryAuth.signOut()
 
         // Create photographer document
         const docRef = await addDoc(collection(db, "photographers"), {

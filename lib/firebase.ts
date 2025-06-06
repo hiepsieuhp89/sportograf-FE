@@ -4,7 +4,7 @@
 "use client"
 
 import { initializeApp, getApps, FirebaseApp } from "firebase/app"
-import { getAuth, Auth } from "firebase/auth"
+import { getAuth, Auth, onAuthStateChanged } from "firebase/auth"
 import { getFirestore, doc, getDoc, setDoc, collection, getDocs, Firestore } from "firebase/firestore"
 import { getStorage, FirebaseStorage } from "firebase/storage"
 
@@ -29,6 +29,23 @@ if (typeof window !== "undefined") {
   auth = getAuth(app)
   db = getFirestore(app)
   storage = getStorage(app)
+
+  // Debug auth state changes
+  onAuthStateChanged(auth, (user) => {
+    console.log("Firebase auth state changed:", {
+      email: user?.email,
+      uid: user?.uid,
+      timestamp: new Date().toISOString()
+    })
+  })
+}
+
+// Get current auth instance (useful for ensuring we're using the right instance)
+export const getCurrentAuth = (): Auth => {
+  if (typeof window === "undefined") {
+    throw new Error("Firebase auth can only be used in browser environment")
+  }
+  return auth
 }
 
 // User roles type
@@ -62,6 +79,7 @@ export const createUserInFirestore = async (uid: string, email: string, role: Us
       role,
       createdAt: new Date().toISOString(),
     });
+    console.log(`Created user in Firestore: ${email} with role: ${role}`)
   } catch (error) {
     console.error('Error creating user in Firestore:', error);
     throw error;
@@ -88,7 +106,9 @@ export const isAdmin = async (uid: string): Promise<boolean> => {
     }
     
     const userData = userSnap.data() as UserData;
-    return userData.role === 'admin';
+    const isAdminUser = userData.role === 'admin';
+    console.log(`Checking admin status for ${uid}: ${isAdminUser}`)
+    return isAdminUser;
   } catch (error) {
     console.error('Error checking admin status:', error);
     return false;
@@ -105,7 +125,9 @@ export const isPhotographer = async (uid: string): Promise<boolean> => {
     if (!userSnap.exists()) return false;
     
     const userData = userSnap.data() as UserData;
-    return userData.role === 'photographer';
+    const isPhotographerUser = userData.role === 'photographer';
+    console.log(`Checking photographer status for ${uid}: ${isPhotographerUser}`)
+    return isPhotographerUser;
   } catch (error) {
     console.error('Error checking photographer status:', error);
     return false;
@@ -122,7 +144,9 @@ export const getUserData = async (uid: string): Promise<UserData | null> => {
     
     if (!userSnap.exists()) return null;
     
-    return userSnap.data() as UserData;
+    const userData = userSnap.data() as UserData;
+    console.log(`Retrieved user data for ${uid}:`, userData)
+    return userData;
   } catch (error) {
     console.error('Error fetching user data:', error);
     return null;

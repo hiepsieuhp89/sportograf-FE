@@ -38,17 +38,28 @@ export function EnhancedEventsList() {
   useEffect(() => {
     const checkUserRole = async () => {
       const currentUser = auth.currentUser
+      console.log("Checking user role in enhanced-events-list:", {
+        userEmail: currentUser?.email,
+        uid: currentUser?.uid
+      })
+      
       if (currentUser) {
         setUserId(currentUser.uid)
         if (await isAdmin(currentUser.uid)) {
           setUserRole("admin")
+          console.log("User role set to admin")
         } else if (await isPhotographer(currentUser.uid)) {
           setUserRole("photographer")
+          console.log("User role set to photographer")
         }
+      } else {
+        console.log("No current user found")
       }
     }
 
-    checkUserRole()
+    // Wait a bit for auth to be ready, then check
+    const timer = setTimeout(checkUserRole, 100)
+    return () => clearTimeout(timer)
   }, [])
 
   useEffect(() => {
@@ -66,7 +77,7 @@ export function EnhancedEventsList() {
           ...doc.data(),
         })) as Event[]
 
-        console.log("eventsList", eventsList)
+        console.log("eventsList: ", JSON.stringify(eventsList))
 
         // If photographer, filter events assigned to them
         if (userRole === "photographer") {

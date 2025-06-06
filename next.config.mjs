@@ -34,6 +34,13 @@ const nextConfig = {
       config.externals = config.externals || [];
       config.externals.push('nodemailer', 'googleapis');
     }
+
+    // Add flag-icons CSS handling
+    config.module.rules.push({
+      test: /flag-icons.*\.css$/,
+      type: "asset/resource",
+    });
+
     return config;
   },
 }

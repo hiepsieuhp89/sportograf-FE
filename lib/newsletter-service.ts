@@ -1,4 +1,4 @@
-import { db } from './firebase';
+import { db } from './firebase-server';
 import { collection, doc, setDoc, deleteDoc, getDoc, getDocs, query, where } from 'firebase/firestore';
 import nodemailer, { Transporter } from 'nodemailer';
 
@@ -351,6 +351,242 @@ export class NewsletterService {
       };
     } catch (error) {
       console.error('Error sending event notifications:', error);
+      return {
+        success: false,
+        sentCount: 0,
+        errors: 1
+      };
+    }
+  }
+
+  /**
+   * Send event update notification to all subscribers
+   */
+  static async sendEventUpdateNotification(eventData: EventNotificationData & { changes: string[] }): Promise<{ success: boolean; sentCount: number; errors: number }> {
+    try {
+      if (!GMAIL_USER || !GMAIL_APP_PASSWORD) {
+        console.error('Gmail SMTP configuration is missing for newsletter');
+        return { success: false, sentCount: 0, errors: 1 };
+      }
+
+      const allSubscribers = await this.getActiveSubscribers();
+      
+      let sentCount = 0;
+      let errors = 0;
+
+      const transporter = createNewsletterTransporter();
+
+      const emailPromises = allSubscribers.map(async (subscriber) => {
+        try {
+          const subscriberName = subscriber.email.split('@')[0];
+          const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://sportograf.com';
+          
+          // Create changes list HTML
+          const changesHtml = eventData.changes.length > 0 
+            ? `
+              <div style="background-color: #fff5f5; border: 1px solid #fed7d7; border-radius: 8px; padding: 20px; margin: 20px 0;">
+                <h3 style="color: #c53030; margin-top: 0;">🔄 What's Changed:</h3>
+                <ul style="margin: 0; padding-left: 20px;">
+                  ${eventData.changes.map(change => `<li style="margin: 5px 0;">${change}</li>`).join('')}
+                </ul>
+              </div>
+            `
+            : '';
+
+          // Create HTML email template for update newsletter
+          const htmlContent = `
+            <!DOCTYPE html>
+            <html>
+            <head>
+              <meta charset="utf-8">
+              <title>Event Updated - ${eventData.eventTitle}</title>
+              <style>
+                body { 
+                  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+                  line-height: 1.6; 
+                  color: #333; 
+                  margin: 0; 
+                  padding: 0; 
+                  background-color: #f4f6f8;
+                }
+                .container { 
+                  max-width: 600px; 
+                  margin: 20px auto; 
+                  background-color: white;
+                  border-radius: 12px;
+                  overflow: hidden;
+                  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                }
+                .header { 
+                  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+                  color: white; 
+                  padding: 30px 20px; 
+                  text-align: center; 
+                }
+                .header h1 {
+                  margin: 0;
+                  font-size: 24px;
+                  font-weight: 600;
+                }
+                .content { 
+                  padding: 30px; 
+                }
+                .event-card { 
+                  background-color: #f8f9fa; 
+                  padding: 25px; 
+                  border-radius: 8px; 
+                  margin: 25px 0;
+                  border-left: 4px solid #f59e0b;
+                }
+                .event-card h2 {
+                  margin-top: 0;
+                  color: #2d3748;
+                  font-size: 20px;
+                }
+                .event-image {
+                  width: 100%;
+                  max-width: 400px;
+                  height: 200px;
+                  object-fit: cover;
+                  border-radius: 8px;
+                  margin: 15px 0;
+                }
+                .detail-item {
+                  margin: 12px 0;
+                  display: flex;
+                  align-items: flex-start;
+                }
+                .detail-label {
+                  font-weight: 600;
+                  color: #4a5568;
+                  min-width: 80px;
+                  margin-right: 10px;
+                }
+                .button { 
+                  display: inline-block; 
+                  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+                  color: white; 
+                  padding: 15px 30px; 
+                  text-decoration: none; 
+                  border-radius: 8px; 
+                  margin: 25px 10px 25px 0;
+                  font-weight: 600;
+                  text-align: center;
+                }
+                .button-secondary { 
+                  display: inline-block; 
+                  background: #6b7280;
+                  color: white; 
+                  padding: 10px 20px; 
+                  text-decoration: none; 
+                  border-radius: 6px; 
+                  margin: 25px 0;
+                  font-size: 12px;
+                }
+                .footer { 
+                  text-align: center; 
+                  padding: 25px; 
+                  color: #718096;
+                  background-color: #f7fafc;
+                  border-top: 1px solid #e2e8f0;
+                }
+              </style>
+            </head>
+            <body>
+              <div class="container">
+                <div class="header">
+                  <h1>🔄 Event Updated!</h1>
+                  <p style="margin: 10px 0 0 0; opacity: 0.9;">An event you might be interested in has been updated</p>
+                </div>
+                
+                <div class="content">
+                  <p>Hi <strong>${subscriberName}</strong>,</p>
+                  <p>An event has been updated with important changes:</p>
+                  
+                  <div class="event-card">
+                    <h2>${eventData.eventTitle}</h2>
+                    ${eventData.eventImage ? `<img src="${eventData.eventImage}" alt="${eventData.eventTitle}" class="event-image" />` : ''}
+                    
+                    <div class="detail-item">
+                      <span class="detail-label">📅 Date:</span>
+                      <span>${eventData.eventDate}</span>
+                    </div>
+                    
+                    <div class="detail-item">
+                      <span class="detail-label">📍 Location:</span>
+                      <span>${eventData.eventLocation}</span>
+                    </div>
+                    
+                    <div class="detail-item">
+                      <span class="detail-label">📝 Description:</span>
+                      <span>${eventData.eventDescription}</span>
+                    </div>
+                  </div>
+                  
+                  ${changesHtml}
+                  
+                  <div style="text-align: center;">
+                    <a href="${baseUrl}/events/${eventData.eventId}" class="button">📸 View Updated Event</a>
+                  </div>
+                  
+                  <p style="margin-top: 30px; font-size: 14px; color: #6b7280;">
+                    Make sure to check out the latest event details!
+                  </p>
+                </div>
+                
+                <div class="footer">
+                  <p><strong>Sportograf Team</strong></p>
+                  <p>📧 You received this because you subscribed to our newsletter</p>
+                  <a href="${baseUrl}/newsletter/unsubscribe?email=${encodeURIComponent(subscriber.email)}" class="button-secondary">Unsubscribe</a>
+                </div>
+              </div>
+            </body>
+            </html>
+          `;
+
+          const mailOptions = {
+            from: `"Sportograf Newsletter" <${GMAIL_USER}>`,
+            to: subscriber.email,
+            subject: `🔄 Event Updated: ${eventData.eventTitle}`,
+            html: htmlContent,
+            text: `
+              Hi ${subscriberName},
+              
+              Event Updated: ${eventData.eventTitle}
+              
+              Event Details:
+              - Date: ${eventData.eventDate}
+              - Location: ${eventData.eventLocation}
+              - Description: ${eventData.eventDescription}
+              
+              ${eventData.changes.length > 0 ? `Changes made:\n${eventData.changes.map(change => `- ${change}`).join('\n')}` : ''}
+              
+              View event: ${baseUrl}/events/${eventData.eventId}
+              
+              Unsubscribe: ${baseUrl}/newsletter/unsubscribe?email=${encodeURIComponent(subscriber.email)}
+              
+              Best regards,
+              Sportograf Team
+            `
+          };
+
+          await transporter.sendMail(mailOptions);
+          sentCount++;
+        } catch (error) {
+          console.error(`Error sending update newsletter email to ${subscriber.email}:`, error);
+          errors++;
+        }
+      });
+
+      await Promise.allSettled(emailPromises);
+
+      return {
+        success: sentCount > 0,
+        sentCount,
+        errors
+      };
+    } catch (error) {
+      console.error('Error sending event update notifications:', error);
       return {
         success: false,
         sentCount: 0,

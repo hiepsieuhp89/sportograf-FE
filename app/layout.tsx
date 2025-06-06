@@ -3,6 +3,8 @@
 import type React from "react"
 import { Inter, Montserrat } from "next/font/google"
 import "./globals.css"
+import "@fortawesome/fontawesome-svg-core/styles.css"
+import "flag-icons/css/flag-icons.min.css"
 import { LanguageProvider } from "@/components/language-provider"
 import { ThemeProvider } from "@/components/theme-provider"
 import { FirebaseProvider } from "@/components/firebase-provider"

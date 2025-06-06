@@ -27,6 +27,16 @@ export interface NewsletterNotificationData {
   excludeEmails?: string[];
 }
 
+export interface EventUpdateNotificationData {
+  eventTitle: string;
+  eventDate: string;
+  eventLocation: string;
+  eventDescription: string;
+  eventId: string;
+  eventImage?: string;
+  changes: string[]; // List of what was changed
+}
+
 /**
  * Send confirmation emails to photographers via API
  */
@@ -75,6 +85,32 @@ export const sendNewsletterNotification = async (data: NewsletterNotificationDat
     return result;
   } catch (error) {
     console.error('Error sending newsletter notification:', error);
+    throw error;
+  }
+};
+
+/**
+ * Send event update notification via API
+ */
+export const sendEventUpdateNotification = async (data: EventUpdateNotificationData) => {
+  try {
+    const response = await fetch('/api/newsletter/update-notify', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
+
+    const result = await response.json();
+    
+    if (!response.ok) {
+      throw new Error(result.message || 'Failed to send event update notification');
+    }
+
+    return result;
+  } catch (error) {
+    console.error('Error sending event update notification:', error);
     throw error;
   }
 };

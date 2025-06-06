@@ -7,7 +7,9 @@ import {
   setPersistence, 
   initializeAuth,
   indexedDBLocalPersistence,
-  type Auth 
+  onAuthStateChanged,
+  type Auth,
+  type User
 } from "firebase/auth"
 import { getFirestore, type Firestore } from "firebase/firestore"
 import { getStorage } from "firebase/storage"
@@ -19,6 +21,7 @@ interface FirebaseContextType {
   db: Firestore | null
   storage: any | null
   isInitialized: boolean
+  user: User | null
 }
 
 const FirebaseContext = createContext<FirebaseContextType>({
@@ -27,6 +30,7 @@ const FirebaseContext = createContext<FirebaseContextType>({
   db: null,
   storage: null,
   isInitialized: false,
+  user: null,
 })
 
 export const useFirebase = () => useContext(FirebaseContext)
@@ -42,6 +46,7 @@ export function FirebaseProvider({ children }: FirebaseProviderProps) {
     db: null,
     storage: null,
     isInitialized: false,
+    user: null,
   })
 
   useEffect(() => {
@@ -83,21 +88,48 @@ export function FirebaseProvider({ children }: FirebaseProviderProps) {
         const db = getFirestore(app)
         const storage = getStorage(app)
 
-        setFirebaseState({
+        setFirebaseState(prev => ({
+          ...prev,
           app,
           auth,
           db,
           storage,
           isInitialized: true,
+        }))
+
+        // Monitor auth state changes
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+          console.log("Auth state changed:", user?.email || "No user")
+          setFirebaseState(prev => ({
+            ...prev,
+            user,
+          }))
         })
 
         console.log("Firebase initialized with persistence")
+
+        // Cleanup function
+        return () => {
+          unsubscribe()
+        }
       } catch (error) {
         console.error("Firebase initialization error:", error)
       }
     }
 
-    initializeFirebase()
+    let cleanup: (() => void) | undefined
+
+    const initFirebase = async () => {
+      cleanup = await initializeFirebase()
+    }
+
+    initFirebase()
+    
+    return () => {
+      if (cleanup) {
+        cleanup()
+      }
+    }
   }, [])
 
   return <FirebaseContext.Provider value={firebaseState}>{children}</FirebaseContext.Provider>

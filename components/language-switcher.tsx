@@ -6,10 +6,10 @@ import { ChevronDown } from "lucide-react"
 import type { Language } from "@/lib/types"
 
 const languages = [
-  { code: "en" as Language, name: "English", flag: "🇬🇧" },
-  { code: "de" as Language, name: "Deutsch", flag: "🇩🇪" },
-  { code: "fr" as Language, name: "Français", flag: "🇫🇷" },
-  { code: "es" as Language, name: "Español", flag: "🇪🇸" },
+  { code: "en" as Language, name: "English", flagCode: "gb" },
+  { code: "de" as Language, name: "Deutsch", flagCode: "de" },
+  { code: "fr" as Language, name: "Français", flagCode: "fr" },
+  { code: "es" as Language, name: "Español", flagCode: "es" },
 ]
 
 export function LanguageSwitcher() {
@@ -61,7 +61,7 @@ export function LanguageSwitcher() {
         aria-expanded={isOpen}
         aria-haspopup="true"
       >
-        <span className="mr-2 text-lg">{currentLanguage.flag}</span>
+        <span className={`fi fi-${currentLanguage.flagCode} mr-2`} style={{ fontSize: '18px' }}></span>
         <span className="mr-2 font-medium text-sm uppercase">{currentLanguage.code}</span>
         <ChevronDown 
           className={`h-4 w-4 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} 
@@ -82,7 +82,7 @@ export function LanguageSwitcher() {
                 }`}
                 role="menuitem"
               >
-                <span className="mr-3 text-lg">{lang.flag}</span>
+                <span className={`fi fi-${lang.flagCode} mr-3`} style={{ fontSize: '18px' }}></span>
                 <div className="flex flex-col items-start">
                   <span className="font-medium">{lang.name}</span>
                   <span className="text-xs opacity-70 uppercase">{lang.code}</span>
