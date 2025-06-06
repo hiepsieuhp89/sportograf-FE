@@ -87,9 +87,20 @@ export const SettingsTab = memo(({
                   Send event update notification to newsletter subscribers
                 </Label>
               </div>
+
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="sendConfirmationEmail"
+                  checked={sendConfirmationEmail}
+                  onCheckedChange={onConfirmationEmailChange}
+                />
+                <Label htmlFor="sendConfirmationEmail" className="font-medium">
+                  Send update notification to assigned photographers
+                </Label>
+              </div>
               
               <p className="text-sm text-gray-600">
-                💡 Note: This will notify all newsletter subscribers about the event updates.
+                💡 Note: This will notify all newsletter subscribers and assigned photographers about the event updates.
               </p>
             </>
           ) : (

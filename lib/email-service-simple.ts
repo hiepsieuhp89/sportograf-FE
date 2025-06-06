@@ -41,93 +41,176 @@ export const sendEventConfirmationEmail = async (params: EmailParams): Promise<b
       <html>
       <head>
         <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Event Confirmation</title>
         <style>
-          body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            line-height: 1.6; 
-            color: #333; 
-            margin: 0; 
-            padding: 0; 
-            background-color: #f4f6f8;
+          /* Reset styles */
+          * { 
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
           }
+          
+          body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6; 
+            color: #1a1a1a; 
+            background-color: #f4f6f8;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+          }
+          
           .container { 
             max-width: 600px; 
             margin: 20px auto; 
             background-color: white;
-            border-radius: 12px;
+            border-radius: 16px;
             overflow: hidden;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
           }
+          
           .header { 
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white; 
-            padding: 30px 20px; 
+            padding: 40px 20px; 
             text-align: center; 
           }
+          
           .header h1 {
             margin: 0;
-            font-size: 24px;
-            font-weight: 600;
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
           }
+          
+          .header p {
+            margin: 10px 0 0 0;
+            opacity: 0.9;
+            font-size: 16px;
+          }
+          
           .content { 
-            padding: 30px; 
+            padding: 32px; 
           }
+          
           .event-details { 
-            background-color: #f8f9fa; 
-            padding: 25px; 
-            border-radius: 8px; 
-            margin: 25px 0;
+            background-color: #f8fafc; 
+            padding: 24px; 
+            border-radius: 12px; 
+            margin: 24px 0;
             border-left: 4px solid #667eea;
           }
+          
           .event-details h2 {
-            margin-top: 0;
-            color: #2d3748;
+            margin: 0 0 16px 0;
+            color: #1e293b;
             font-size: 20px;
+            font-weight: 600;
           }
+          
           .detail-item {
-            margin: 12px 0;
+            margin: 16px 0;
             display: flex;
             align-items: flex-start;
           }
+          
           .detail-label {
             font-weight: 600;
-            color: #4a5568;
+            color: #475569;
             min-width: 100px;
-            margin-right: 10px;
+            margin-right: 12px;
           }
+          
+          .detail-content {
+            color: #334155;
+            flex: 1;
+          }
+          
           .button { 
             display: inline-block; 
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white; 
-            padding: 15px 30px; 
+            padding: 16px 32px; 
             text-decoration: none; 
             border-radius: 8px; 
-            margin: 25px 0;
+            margin: 24px 0;
             font-weight: 600;
+            font-size: 16px;
             text-align: center;
-            transition: transform 0.2s;
+            transition: all 0.2s ease;
           }
+          
           .button:hover {
             transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
           }
-          .footer { 
-            text-align: center; 
-            padding: 25px; 
-            color: #718096;
-            background-color: #f7fafc;
-            border-top: 1px solid #e2e8f0;
-          }
+          
           .note-section {
-            background-color: #fff5f5;
-            border: 1px solid #fed7d7;
+            background-color: #fef2f2;
+            border: 1px solid #fee2e2;
             border-radius: 8px;
             padding: 20px;
-            margin: 20px 0;
+            margin: 24px 0;
           }
+          
           .note-section h3 {
-            color: #c53030;
-            margin-top: 0;
+            color: #991b1b;
+            margin: 0 0 12px 0;
+            font-size: 18px;
+            font-weight: 600;
+          }
+          
+          .note-section p {
+            color: #b91c1c;
+            margin: 0;
+            font-size: 15px;
+          }
+          
+          .footer { 
+            text-align: center; 
+            padding: 24px; 
+            color: #64748b;
+            background-color: #f8fafc;
+            border-top: 1px solid #e2e8f0;
+          }
+          
+          .footer p {
+            margin: 8px 0;
+            font-size: 14px;
+          }
+          
+          .footer strong {
+            color: #475569;
+          }
+          
+          /* Mobile Responsive */
+          @media only screen and (max-width: 600px) {
+            .container {
+              margin: 0;
+              border-radius: 0;
+            }
+            
+            .content {
+              padding: 24px 16px;
+            }
+            
+            .event-details {
+              padding: 20px 16px;
+            }
+            
+            .detail-item {
+              flex-direction: column;
+            }
+            
+            .detail-label {
+              margin-bottom: 4px;
+            }
+            
+            .button {
+              display: block;
+              width: 100%;
+              text-align: center;
+            }
           }
         </style>
       </head>
@@ -135,7 +218,7 @@ export const sendEventConfirmationEmail = async (params: EmailParams): Promise<b
         <div class="container">
           <div class="header">
             <h1>📸 Event Assignment</h1>
-            <p style="margin: 10px 0 0 0; opacity: 0.9;">You have a new photography assignment</p>
+            <p>You have a new photography assignment</p>
           </div>
           
           <div class="content">
@@ -146,18 +229,18 @@ export const sendEventConfirmationEmail = async (params: EmailParams): Promise<b
               <h2>${params.event_title}</h2>
               
               <div class="detail-item">
-                <span class="detail-label">📅 Date:</span>
-                <span>${params.event_date}</span>
+                <span class="detail-label">📅 Date</span>
+                <span class="detail-content">${params.event_date}</span>
               </div>
               
               <div class="detail-item">
-                <span class="detail-label">📍 Location:</span>
-                <span>${params.event_location}</span>
+                <span class="detail-label">📍 Location</span>
+                <span class="detail-content">${params.event_location}</span>
               </div>
               
               <div class="detail-item">
-                <span class="detail-label">📝 Description:</span>
-                <span>${params.event_description}</span>
+                <span class="detail-label">📝 Description</span>
+                <span class="detail-content">${params.event_description}</span>
               </div>
             </div>
             
@@ -173,7 +256,10 @@ export const sendEventConfirmationEmail = async (params: EmailParams): Promise<b
               <a href="${params.confirmation_link}" class="button">✅ Confirm Attendance</a>
             </div>
             
-            <p>⏰ <strong>Important:</strong> If you cannot attend this event, please contact us as soon as possible so we can arrange alternative coverage.</p>
+            <p style="margin-top: 24px;">
+              <strong style="color: #dc2626;">⏰ Important:</strong> 
+              If you cannot attend this event, please contact us as soon as possible so we can arrange alternative coverage.
+            </p>
           </div>
           
           <div class="footer">

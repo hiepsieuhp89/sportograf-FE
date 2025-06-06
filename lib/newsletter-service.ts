@@ -142,22 +142,29 @@ export class NewsletterService {
    */
   static async sendEventNotification(eventData: EventNotificationData, excludeEmails: string[] = []): Promise<{ success: boolean; sentCount: number; errors: number }> {
     try {
+      console.log('[Newsletter] Starting event notification process for event:', eventData.eventTitle);
+      
       if (!GMAIL_USER || !GMAIL_APP_PASSWORD) {
-        console.error('Gmail SMTP configuration is missing for newsletter');
+        console.error('[Newsletter] Gmail SMTP configuration is missing for newsletter');
         return { success: false, sentCount: 0, errors: 1 };
       }
 
       const allSubscribers = await this.getActiveSubscribers();
+      console.log(`[Newsletter] Total active subscribers: ${allSubscribers.length}`);
+      
       // Filter out excluded emails (e.g., photographers who already received confirmation emails)
       const subscribers = allSubscribers.filter(subscriber => !excludeEmails.includes(subscriber.email));
+      console.log(`[Newsletter] Subscribers after exclusion: ${subscribers.length} (Excluded ${excludeEmails.length} emails)`);
       
       let sentCount = 0;
       let errors = 0;
 
       const transporter = createNewsletterTransporter();
+      console.log('[Newsletter] Email transporter created successfully');
 
       const emailPromises = subscribers.map(async (subscriber) => {
         try {
+          console.log(`[Newsletter] Attempting to send notification to: ${subscriber.email}`);
           const subscriberName = subscriber.email.split('@')[0];
           const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://sportograf.com';
           
@@ -167,96 +174,176 @@ export class NewsletterService {
             <html>
             <head>
               <meta charset="utf-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
               <title>New Event - ${eventData.eventTitle}</title>
               <style>
-                body { 
-                  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-                  line-height: 1.6; 
-                  color: #333; 
-                  margin: 0; 
-                  padding: 0; 
-                  background-color: #f4f6f8;
+                /* Reset styles */
+                * { 
+                  margin: 0;
+                  padding: 0;
+                  box-sizing: border-box;
                 }
+                
+                body { 
+                  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+                  line-height: 1.6; 
+                  color: #1a1a1a; 
+                  background-color: #f4f6f8;
+                  -webkit-font-smoothing: antialiased;
+                  -moz-osx-font-smoothing: grayscale;
+                }
+                
                 .container { 
                   max-width: 600px; 
                   margin: 20px auto; 
                   background-color: white;
-                  border-radius: 12px;
+                  border-radius: 16px;
                   overflow: hidden;
                   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
                 }
+                
                 .header { 
                   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
                   color: white; 
-                  padding: 30px 20px; 
+                  padding: 40px 20px; 
                   text-align: center; 
                 }
+                
                 .header h1 {
                   margin: 0;
-                  font-size: 24px;
-                  font-weight: 600;
+                  font-size: 28px;
+                  font-weight: 700;
+                  letter-spacing: -0.5px;
                 }
+                
+                .header p {
+                  margin: 10px 0 0 0;
+                  opacity: 0.9;
+                  font-size: 16px;
+                }
+                
                 .content { 
-                  padding: 30px; 
+                  padding: 32px; 
                 }
+                
                 .event-card { 
-                  background-color: #f8f9fa; 
-                  padding: 25px; 
-                  border-radius: 8px; 
-                  margin: 25px 0;
+                  background-color: #f8fafc; 
+                  padding: 24px; 
+                  border-radius: 12px; 
+                  margin: 24px 0;
                   border-left: 4px solid #667eea;
                 }
+                
                 .event-card h2 {
-                  margin-top: 0;
-                  color: #2d3748;
+                  margin: 0 0 16px 0;
+                  color: #1e293b;
                   font-size: 20px;
+                  font-weight: 600;
                 }
+                
                 .event-image {
                   width: 100%;
                   max-width: 400px;
                   height: 200px;
                   object-fit: cover;
-                  border-radius: 8px;
-                  margin: 15px 0;
+                  border-radius: 12px;
+                  margin: 16px auto;
+                  display: block;
                 }
+                
                 .detail-item {
-                  margin: 12px 0;
+                  margin: 16px 0;
                   display: flex;
                   align-items: flex-start;
                 }
+                
                 .detail-label {
                   font-weight: 600;
-                  color: #4a5568;
-                  min-width: 80px;
-                  margin-right: 10px;
+                  color: #475569;
+                  min-width: 100px;
+                  margin-right: 12px;
                 }
+                
+                .detail-content {
+                  color: #334155;
+                  flex: 1;
+                }
+                
                 .button { 
                   display: inline-block; 
                   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
                   color: white; 
-                  padding: 15px 30px; 
+                  padding: 16px 32px; 
                   text-decoration: none; 
                   border-radius: 8px; 
-                  margin: 25px 10px 25px 0;
+                  margin: 24px 0;
                   font-weight: 600;
+                  font-size: 16px;
                   text-align: center;
+                  transition: all 0.2s ease;
                 }
+                
+                .button:hover {
+                  transform: translateY(-2px);
+                  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                }
+                
                 .button-secondary { 
                   display: inline-block; 
-                  background: #6b7280;
+                  background: #64748b;
                   color: white; 
-                  padding: 10px 20px; 
+                  padding: 12px 24px; 
                   text-decoration: none; 
                   border-radius: 6px; 
-                  margin: 25px 0;
-                  font-size: 12px;
+                  margin: 16px 0;
+                  font-size: 14px;
                 }
+                
                 .footer { 
                   text-align: center; 
-                  padding: 25px; 
-                  color: #718096;
-                  background-color: #f7fafc;
+                  padding: 24px; 
+                  color: #64748b;
+                  background-color: #f8fafc;
                   border-top: 1px solid #e2e8f0;
+                }
+                
+                .footer p {
+                  margin: 8px 0;
+                  font-size: 14px;
+                }
+                
+                .footer strong {
+                  color: #475569;
+                }
+                
+                /* Mobile Responsive */
+                @media only screen and (max-width: 600px) {
+                  .container {
+                    margin: 0;
+                    border-radius: 0;
+                  }
+                  
+                  .content {
+                    padding: 24px 16px;
+                  }
+                  
+                  .event-card {
+                    padding: 20px 16px;
+                  }
+                  
+                  .detail-item {
+                    flex-direction: column;
+                  }
+                  
+                  .detail-label {
+                    margin-bottom: 4px;
+                  }
+                  
+                  .button {
+                    display: block;
+                    width: 100%;
+                    text-align: center;
+                  }
                 }
               </style>
             </head>
@@ -264,7 +351,7 @@ export class NewsletterService {
               <div class="container">
                 <div class="header">
                   <h1>🎯 New Event Available!</h1>
-                  <p style="margin: 10px 0 0 0; opacity: 0.9;">A new photography event has been added</p>
+                  <p>A new photography event has been added</p>
                 </div>
                 
                 <div class="content">
@@ -276,18 +363,18 @@ export class NewsletterService {
                     ${eventData.eventImage ? `<img src="${eventData.eventImage}" alt="${eventData.eventTitle}" class="event-image" />` : ''}
                     
                     <div class="detail-item">
-                      <span class="detail-label">📅 Date:</span>
-                      <span>${eventData.eventDate}</span>
+                      <span class="detail-label">📅 Date</span>
+                      <span class="detail-content">${eventData.eventDate}</span>
                     </div>
                     
                     <div class="detail-item">
-                      <span class="detail-label">📍 Location:</span>
-                      <span>${eventData.eventLocation}</span>
+                      <span class="detail-label">📍 Location</span>
+                      <span class="detail-content">${eventData.eventLocation}</span>
                     </div>
                     
                     <div class="detail-item">
-                      <span class="detail-label">📝 Description:</span>
-                      <span>${eventData.eventDescription}</span>
+                      <span class="detail-label">📝 Description</span>
+                      <span class="detail-content">${eventData.eventDescription}</span>
                     </div>
                   </div>
                   
@@ -295,7 +382,7 @@ export class NewsletterService {
                     <a href="${baseUrl}/events/${eventData.eventId}" class="button">📸 View Event Details</a>
                   </div>
                   
-                  <p style="margin-top: 30px; font-size: 14px; color: #6b7280;">
+                  <p style="margin-top: 24px; font-size: 15px; color: #475569;">
                     Don't miss out on this amazing photography opportunity!
                   </p>
                 </div>
@@ -336,13 +423,15 @@ export class NewsletterService {
 
           await transporter.sendMail(mailOptions);
           sentCount++;
+          console.log(`[Newsletter] Successfully sent notification to: ${subscriber.email}`);
         } catch (error) {
-          console.error(`Error sending newsletter email to ${subscriber.email}:`, error);
+          console.error(`[Newsletter] Error sending newsletter email to ${subscriber.email}:`, error);
           errors++;
         }
       });
 
       await Promise.allSettled(emailPromises);
+      console.log(`[Newsletter] Event notification process completed. Sent: ${sentCount}, Errors: ${errors}`);
 
       return {
         success: sentCount > 0,
@@ -350,7 +439,7 @@ export class NewsletterService {
         errors
       };
     } catch (error) {
-      console.error('Error sending event notifications:', error);
+      console.error('[Newsletter] Error in sendEventNotification:', error);
       return {
         success: false,
         sentCount: 0,
@@ -364,20 +453,26 @@ export class NewsletterService {
    */
   static async sendEventUpdateNotification(eventData: EventNotificationData & { changes: string[] }): Promise<{ success: boolean; sentCount: number; errors: number }> {
     try {
+      console.log('[Newsletter] Starting event update notification process for event:', eventData.eventTitle);
+      console.log('[Newsletter] Changes to be notified:', eventData.changes);
+      
       if (!GMAIL_USER || !GMAIL_APP_PASSWORD) {
-        console.error('Gmail SMTP configuration is missing for newsletter');
+        console.error('[Newsletter] Gmail SMTP configuration is missing for newsletter');
         return { success: false, sentCount: 0, errors: 1 };
       }
 
       const allSubscribers = await this.getActiveSubscribers();
+      console.log(`[Newsletter] Total subscribers to notify: ${allSubscribers.length}`);
       
       let sentCount = 0;
       let errors = 0;
 
       const transporter = createNewsletterTransporter();
+      console.log('[Newsletter] Email transporter created successfully');
 
       const emailPromises = allSubscribers.map(async (subscriber) => {
         try {
+          console.log(`[Newsletter] Attempting to send update notification to: ${subscriber.email}`);
           const subscriberName = subscriber.email.split('@')[0];
           const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://sportograf.com';
           
@@ -399,96 +494,176 @@ export class NewsletterService {
             <html>
             <head>
               <meta charset="utf-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
               <title>Event Updated - ${eventData.eventTitle}</title>
               <style>
-                body { 
-                  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-                  line-height: 1.6; 
-                  color: #333; 
-                  margin: 0; 
-                  padding: 0; 
-                  background-color: #f4f6f8;
+                /* Reset styles */
+                * { 
+                  margin: 0;
+                  padding: 0;
+                  box-sizing: border-box;
                 }
+                
+                body { 
+                  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+                  line-height: 1.6; 
+                  color: #1a1a1a; 
+                  background-color: #f4f6f8;
+                  -webkit-font-smoothing: antialiased;
+                  -moz-osx-font-smoothing: grayscale;
+                }
+                
                 .container { 
                   max-width: 600px; 
                   margin: 20px auto; 
                   background-color: white;
-                  border-radius: 12px;
+                  border-radius: 16px;
                   overflow: hidden;
                   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
                 }
+                
                 .header { 
                   background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
                   color: white; 
-                  padding: 30px 20px; 
+                  padding: 40px 20px; 
                   text-align: center; 
                 }
+                
                 .header h1 {
                   margin: 0;
-                  font-size: 24px;
-                  font-weight: 600;
+                  font-size: 28px;
+                  font-weight: 700;
+                  letter-spacing: -0.5px;
                 }
+                
+                .header p {
+                  margin: 10px 0 0 0;
+                  opacity: 0.9;
+                  font-size: 16px;
+                }
+                
                 .content { 
-                  padding: 30px; 
+                  padding: 32px; 
                 }
+                
                 .event-card { 
-                  background-color: #f8f9fa; 
-                  padding: 25px; 
-                  border-radius: 8px; 
-                  margin: 25px 0;
+                  background-color: #f8fafc; 
+                  padding: 24px; 
+                  border-radius: 12px; 
+                  margin: 24px 0;
                   border-left: 4px solid #f59e0b;
                 }
+                
                 .event-card h2 {
-                  margin-top: 0;
-                  color: #2d3748;
+                  margin: 0 0 16px 0;
+                  color: #1e293b;
                   font-size: 20px;
+                  font-weight: 600;
                 }
+                
                 .event-image {
                   width: 100%;
                   max-width: 400px;
                   height: 200px;
                   object-fit: cover;
-                  border-radius: 8px;
-                  margin: 15px 0;
+                  border-radius: 12px;
+                  margin: 16px auto;
+                  display: block;
                 }
+                
                 .detail-item {
-                  margin: 12px 0;
+                  margin: 16px 0;
                   display: flex;
                   align-items: flex-start;
                 }
+                
                 .detail-label {
                   font-weight: 600;
-                  color: #4a5568;
-                  min-width: 80px;
-                  margin-right: 10px;
+                  color: #475569;
+                  min-width: 100px;
+                  margin-right: 12px;
                 }
+                
+                .detail-content {
+                  color: #334155;
+                  flex: 1;
+                }
+                
                 .button { 
                   display: inline-block; 
                   background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
                   color: white; 
-                  padding: 15px 30px; 
+                  padding: 16px 32px; 
                   text-decoration: none; 
                   border-radius: 8px; 
-                  margin: 25px 10px 25px 0;
+                  margin: 24px 0;
                   font-weight: 600;
+                  font-size: 16px;
                   text-align: center;
+                  transition: all 0.2s ease;
                 }
+                
+                .button:hover {
+                  transform: translateY(-2px);
+                  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                }
+                
                 .button-secondary { 
                   display: inline-block; 
-                  background: #6b7280;
+                  background: #64748b;
                   color: white; 
-                  padding: 10px 20px; 
+                  padding: 12px 24px; 
                   text-decoration: none; 
                   border-radius: 6px; 
-                  margin: 25px 0;
-                  font-size: 12px;
+                  margin: 16px 0;
+                  font-size: 14px;
                 }
+                
                 .footer { 
                   text-align: center; 
-                  padding: 25px; 
-                  color: #718096;
-                  background-color: #f7fafc;
+                  padding: 24px; 
+                  color: #64748b;
+                  background-color: #f8fafc;
                   border-top: 1px solid #e2e8f0;
+                }
+                
+                .footer p {
+                  margin: 8px 0;
+                  font-size: 14px;
+                }
+                
+                .footer strong {
+                  color: #475569;
+                }
+                
+                /* Mobile Responsive */
+                @media only screen and (max-width: 600px) {
+                  .container {
+                    margin: 0;
+                    border-radius: 0;
+                  }
+                  
+                  .content {
+                    padding: 24px 16px;
+                  }
+                  
+                  .event-card {
+                    padding: 20px 16px;
+                  }
+                  
+                  .detail-item {
+                    flex-direction: column;
+                  }
+                  
+                  .detail-label {
+                    margin-bottom: 4px;
+                  }
+                  
+                  .button {
+                    display: block;
+                    width: 100%;
+                    text-align: center;
+                  }
                 }
               </style>
             </head>
@@ -496,7 +671,7 @@ export class NewsletterService {
               <div class="container">
                 <div class="header">
                   <h1>🔄 Event Updated!</h1>
-                  <p style="margin: 10px 0 0 0; opacity: 0.9;">An event you might be interested in has been updated</p>
+                  <p>An event you might be interested in has been updated</p>
                 </div>
                 
                 <div class="content">
@@ -508,18 +683,18 @@ export class NewsletterService {
                     ${eventData.eventImage ? `<img src="${eventData.eventImage}" alt="${eventData.eventTitle}" class="event-image" />` : ''}
                     
                     <div class="detail-item">
-                      <span class="detail-label">📅 Date:</span>
-                      <span>${eventData.eventDate}</span>
+                      <span class="detail-label">📅 Date</span>
+                      <span class="detail-content">${eventData.eventDate}</span>
                     </div>
                     
                     <div class="detail-item">
-                      <span class="detail-label">📍 Location:</span>
-                      <span>${eventData.eventLocation}</span>
+                      <span class="detail-label">📍 Location</span>
+                      <span class="detail-content">${eventData.eventLocation}</span>
                     </div>
                     
                     <div class="detail-item">
-                      <span class="detail-label">📝 Description:</span>
-                      <span>${eventData.eventDescription}</span>
+                      <span class="detail-label">📝 Description</span>
+                      <span class="detail-content">${eventData.eventDescription}</span>
                     </div>
                   </div>
                   
@@ -529,7 +704,7 @@ export class NewsletterService {
                     <a href="${baseUrl}/events/${eventData.eventId}" class="button">📸 View Updated Event</a>
                   </div>
                   
-                  <p style="margin-top: 30px; font-size: 14px; color: #6b7280;">
+                  <p style="margin-top: 24px; font-size: 15px; color: #475569;">
                     Make sure to check out the latest event details!
                   </p>
                 </div>
@@ -572,13 +747,15 @@ export class NewsletterService {
 
           await transporter.sendMail(mailOptions);
           sentCount++;
+          console.log(`[Newsletter] Successfully sent update notification to: ${subscriber.email}`);
         } catch (error) {
-          console.error(`Error sending update newsletter email to ${subscriber.email}:`, error);
+          console.error(`[Newsletter] Error sending update newsletter email to ${subscriber.email}:`, error);
           errors++;
         }
       });
 
       await Promise.allSettled(emailPromises);
+      console.log(`[Newsletter] Event update notification process completed. Sent: ${sentCount}, Errors: ${errors}`);
 
       return {
         success: sentCount > 0,
@@ -586,7 +763,7 @@ export class NewsletterService {
         errors
       };
     } catch (error) {
-      console.error('Error sending event update notifications:', error);
+      console.error('[Newsletter] Error in sendEventUpdateNotification:', error);
       return {
         success: false,
         sentCount: 0,

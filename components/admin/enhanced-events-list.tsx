@@ -27,6 +27,21 @@ import Image from "next/image"
 import Link from "next/link"
 import { useEffect, useState } from "react"
 
+const getEventStatus = (event: Event) => {
+  const now = new Date()
+  const startDate = new Date(event.date)
+  const endDate = event.endDate ? new Date(event.endDate) : new Date(event.date)
+  endDate.setHours(23, 59, 59) // Set end of day
+
+  if (now < startDate) {
+    return { status: "upcoming", color: "bg-blue-100 text-blue-800" }
+  } else if (now > endDate) {
+    return { status: "past", color: "bg-gray-100 text-gray-800" }
+  } else {
+    return { status: "ongoing", color: "bg-green-100 text-green-800" }
+  }
+}
+
 export function EnhancedEventsList() {
   const [events, setEvents] = useState<Event[]>([])
   const [eventTypes, setEventTypes] = useState<EventType[]>([])
@@ -208,6 +223,7 @@ export function EnhancedEventsList() {
                   <TableHead>Type</TableHead>
                   <TableHead>Date</TableHead>
                   <TableHead>Location</TableHead>
+                  <TableHead>Status</TableHead>
                   <TableHead>Photographers</TableHead>
                   {userRole === "photographer" && (
                     <TableHead>Status</TableHead>
@@ -219,6 +235,7 @@ export function EnhancedEventsList() {
                 {events.map((event) => {
                   const eventType = getEventType(event.eventTypeId)
                   const country = getCountryByCode(event.country)
+                  const { status, color } = getEventStatus(event)
                   
                   return (
                     <TableRow key={event.id}>
@@ -292,6 +309,16 @@ export function EnhancedEventsList() {
                             )}
                           </div>
                         </div>
+                      </TableCell>
+                      
+                      <TableCell>
+                        {(() => {
+                          return (
+                            <Badge className={`${color} capitalize`}>
+                              {status}
+                            </Badge>
+                          )
+                        })()}
                       </TableCell>
                       
                       <TableCell>
