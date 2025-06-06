@@ -1,16 +1,8 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { collection, getDocs, deleteDoc, doc, query, orderBy } from "firebase/firestore"
-import { db, auth, isAdmin, isPhotographer } from "@/lib/firebase"
-import type { Event, EventType, Photographer } from "@/lib/types"
-import { getCountryByCode } from "@/lib/countries"
-import Link from "next/link"
-import { Edit, Trash2, Plus, Calendar, MapPin, Users, Tag, Eye, CheckCircle, XCircle, Clock } from "lucide-react"
-import Image from "next/image"
-import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card"
 import {
   Table,
   TableBody,
@@ -25,7 +17,15 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
+import { getCountryByCode } from "@/lib/countries"
+import { auth, db, isAdmin, isPhotographer } from "@/lib/firebase"
+import type { Event, EventType, Photographer } from "@/lib/types"
 import { format } from "date-fns"
+import { collection, deleteDoc, doc, getDocs, orderBy, query } from "firebase/firestore"
+import { Calendar, CheckCircle, Clock, Edit, Eye, MapPin, Plus, Trash2, Users, XCircle } from "lucide-react"
+import Image from "next/image"
+import Link from "next/link"
+import { useEffect, useState } from "react"
 
 export function EnhancedEventsList() {
   const [events, setEvents] = useState<Event[]>([])
@@ -53,16 +53,20 @@ export function EnhancedEventsList() {
 
   useEffect(() => {
     const fetchData = async () => {
+      console.log("fetching data for userRole", userRole, "and userId", userId)
       if (!userRole || !userId) return
 
       try {
         // Fetch events
+        console.log("fetching events")
         const eventsQuery = query(collection(db, "events"), orderBy("date", "desc"))
         const eventsSnapshot = await getDocs(eventsQuery)
         let eventsList = eventsSnapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
         })) as Event[]
+
+        console.log("eventsList", eventsList)
 
         // If photographer, filter events assigned to them
         if (userRole === "photographer") {

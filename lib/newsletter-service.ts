@@ -1,6 +1,6 @@
 import { db } from './firebase';
 import { collection, doc, setDoc, deleteDoc, getDoc, getDocs, query, where } from 'firebase/firestore';
-import emailjs from '@emailjs/browser';
+import nodemailer, { Transporter } from 'nodemailer';
 
 export interface NewsletterSubscriber {
   email: string;
@@ -18,12 +18,20 @@ export interface EventNotificationData {
   eventImage?: string;
 }
 
-// Initialize EmailJS
-const EMAILJS_SERVICE_ID = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID || 'service_sportograf';
-const EMAILJS_TEMPLATE_ID = process.env.NEXT_PUBLIC_EMAILJS_NEWSLETTER_TEMPLATE_ID || 'template_newsletter';
-const EMAILJS_PUBLIC_KEY = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY || 'your_public_key';
+// Gmail SMTP configuration
+const GMAIL_USER = process.env.GMAIL_USER || '';
+const GMAIL_APP_PASSWORD = process.env.GMAIL_APP_PASSWORD || '';
 
-emailjs.init(EMAILJS_PUBLIC_KEY);
+// Create Gmail transporter
+const createNewsletterTransporter = (): Transporter => {
+  return nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: GMAIL_USER,
+      pass: GMAIL_APP_PASSWORD
+    }
+  });
+};
 
 export class NewsletterService {
   private static readonly COLLECTION_NAME = 'newsletter_subscribers';
@@ -132,37 +140,204 @@ export class NewsletterService {
   /**
    * Send event notification to all subscribers
    */
-  static async sendEventNotification(eventData: EventNotificationData): Promise<{ success: boolean; sentCount: number; errors: number }> {
+  static async sendEventNotification(eventData: EventNotificationData, excludeEmails: string[] = []): Promise<{ success: boolean; sentCount: number; errors: number }> {
     try {
-      const subscribers = await this.getActiveSubscribers();
+      if (!GMAIL_USER || !GMAIL_APP_PASSWORD) {
+        console.error('Gmail SMTP configuration is missing for newsletter');
+        return { success: false, sentCount: 0, errors: 1 };
+      }
+
+      const allSubscribers = await this.getActiveSubscribers();
+      // Filter out excluded emails (e.g., photographers who already received confirmation emails)
+      const subscribers = allSubscribers.filter(subscriber => !excludeEmails.includes(subscriber.email));
+      
       let sentCount = 0;
       let errors = 0;
 
+      const transporter = createNewsletterTransporter();
+
       const emailPromises = subscribers.map(async (subscriber) => {
         try {
-          const templateParams = {
-            to_email: subscriber.email,
-            to_name: subscriber.email.split('@')[0], // Use email prefix as name
-            event_title: eventData.eventTitle,
-            event_date: eventData.eventDate,
-            event_location: eventData.eventLocation,
-            event_description: eventData.eventDescription,
-            event_link: `${process.env.NEXT_PUBLIC_BASE_URL || 'https://sportograf.com'}/events/${eventData.eventId}`,
-            unsubscribe_link: `${process.env.NEXT_PUBLIC_BASE_URL || 'https://sportograf.com'}/newsletter/unsubscribe?email=${encodeURIComponent(subscriber.email)}`,
-            event_image: eventData.eventImage || '',
-            language: subscriber.language || 'en'
+          const subscriberName = subscriber.email.split('@')[0];
+          const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://sportograf.com';
+          
+          // Create HTML email template for newsletter
+          const htmlContent = `
+            <!DOCTYPE html>
+            <html>
+            <head>
+              <meta charset="utf-8">
+              <title>New Event - ${eventData.eventTitle}</title>
+              <style>
+                body { 
+                  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+                  line-height: 1.6; 
+                  color: #333; 
+                  margin: 0; 
+                  padding: 0; 
+                  background-color: #f4f6f8;
+                }
+                .container { 
+                  max-width: 600px; 
+                  margin: 20px auto; 
+                  background-color: white;
+                  border-radius: 12px;
+                  overflow: hidden;
+                  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                }
+                .header { 
+                  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                  color: white; 
+                  padding: 30px 20px; 
+                  text-align: center; 
+                }
+                .header h1 {
+                  margin: 0;
+                  font-size: 24px;
+                  font-weight: 600;
+                }
+                .content { 
+                  padding: 30px; 
+                }
+                .event-card { 
+                  background-color: #f8f9fa; 
+                  padding: 25px; 
+                  border-radius: 8px; 
+                  margin: 25px 0;
+                  border-left: 4px solid #667eea;
+                }
+                .event-card h2 {
+                  margin-top: 0;
+                  color: #2d3748;
+                  font-size: 20px;
+                }
+                .event-image {
+                  width: 100%;
+                  max-width: 400px;
+                  height: 200px;
+                  object-fit: cover;
+                  border-radius: 8px;
+                  margin: 15px 0;
+                }
+                .detail-item {
+                  margin: 12px 0;
+                  display: flex;
+                  align-items: flex-start;
+                }
+                .detail-label {
+                  font-weight: 600;
+                  color: #4a5568;
+                  min-width: 80px;
+                  margin-right: 10px;
+                }
+                .button { 
+                  display: inline-block; 
+                  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                  color: white; 
+                  padding: 15px 30px; 
+                  text-decoration: none; 
+                  border-radius: 8px; 
+                  margin: 25px 10px 25px 0;
+                  font-weight: 600;
+                  text-align: center;
+                }
+                .button-secondary { 
+                  display: inline-block; 
+                  background: #6b7280;
+                  color: white; 
+                  padding: 10px 20px; 
+                  text-decoration: none; 
+                  border-radius: 6px; 
+                  margin: 25px 0;
+                  font-size: 12px;
+                }
+                .footer { 
+                  text-align: center; 
+                  padding: 25px; 
+                  color: #718096;
+                  background-color: #f7fafc;
+                  border-top: 1px solid #e2e8f0;
+                }
+              </style>
+            </head>
+            <body>
+              <div class="container">
+                <div class="header">
+                  <h1>🎯 New Event Available!</h1>
+                  <p style="margin: 10px 0 0 0; opacity: 0.9;">A new photography event has been added</p>
+                </div>
+                
+                <div class="content">
+                  <p>Hi <strong>${subscriberName}</strong>,</p>
+                  <p>We have an exciting new event that might interest you:</p>
+                  
+                  <div class="event-card">
+                    <h2>${eventData.eventTitle}</h2>
+                    ${eventData.eventImage ? `<img src="${eventData.eventImage}" alt="${eventData.eventTitle}" class="event-image" />` : ''}
+                    
+                    <div class="detail-item">
+                      <span class="detail-label">📅 Date:</span>
+                      <span>${eventData.eventDate}</span>
+                    </div>
+                    
+                    <div class="detail-item">
+                      <span class="detail-label">📍 Location:</span>
+                      <span>${eventData.eventLocation}</span>
+                    </div>
+                    
+                    <div class="detail-item">
+                      <span class="detail-label">📝 Description:</span>
+                      <span>${eventData.eventDescription}</span>
+                    </div>
+                  </div>
+                  
+                  <div style="text-align: center;">
+                    <a href="${baseUrl}/events/${eventData.eventId}" class="button">📸 View Event Details</a>
+                  </div>
+                  
+                  <p style="margin-top: 30px; font-size: 14px; color: #6b7280;">
+                    Don't miss out on this amazing photography opportunity!
+                  </p>
+                </div>
+                
+                <div class="footer">
+                  <p><strong>Sportograf Team</strong></p>
+                  <p>📧 You received this because you subscribed to our newsletter</p>
+                  <a href="${baseUrl}/newsletter/unsubscribe?email=${encodeURIComponent(subscriber.email)}" class="button-secondary">Unsubscribe</a>
+                </div>
+              </div>
+            </body>
+            </html>
+          `;
+
+          const mailOptions = {
+            from: `"Sportograf Newsletter" <${GMAIL_USER}>`,
+            to: subscriber.email,
+            subject: `🎯 New Event: ${eventData.eventTitle}`,
+            html: htmlContent,
+            text: `
+              Hi ${subscriberName},
+              
+              New Event: ${eventData.eventTitle}
+              
+              Event Details:
+              - Date: ${eventData.eventDate}
+              - Location: ${eventData.eventLocation}
+              - Description: ${eventData.eventDescription}
+              
+              View event: ${baseUrl}/events/${eventData.eventId}
+              
+              Unsubscribe: ${baseUrl}/newsletter/unsubscribe?email=${encodeURIComponent(subscriber.email)}
+              
+              Best regards,
+              Sportograf Team
+            `
           };
 
-          await emailjs.send(
-            EMAILJS_SERVICE_ID,
-            EMAILJS_TEMPLATE_ID,
-            templateParams,
-            EMAILJS_PUBLIC_KEY
-          );
-
+          await transporter.sendMail(mailOptions);
           sentCount++;
         } catch (error) {
-          console.error(`Error sending email to ${subscriber.email}:`, error);
+          console.error(`Error sending newsletter email to ${subscriber.email}:`, error);
           errors++;
         }
       });

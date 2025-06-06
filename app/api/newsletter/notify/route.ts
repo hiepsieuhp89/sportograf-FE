@@ -3,7 +3,8 @@ import { NewsletterService, EventNotificationData } from '@/lib/newsletter-servi
 
 export async function POST(request: NextRequest) {
   try {
-    const eventData: EventNotificationData = await request.json();
+    const requestBody = await request.json();
+    const { excludeEmails = [], ...eventData }: { excludeEmails?: string[] } & EventNotificationData = requestBody;
 
     // Validate required fields
     if (!eventData.eventTitle || !eventData.eventDate || !eventData.eventLocation || !eventData.eventId) {
@@ -13,8 +14,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Send notifications to all subscribers
-    const result = await NewsletterService.sendEventNotification(eventData);
+    // Send notifications to all subscribers except excluded emails
+    const result = await NewsletterService.sendEventNotification(eventData, excludeEmails);
 
     return NextResponse.json({
       success: result.success,

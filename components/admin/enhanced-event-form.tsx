@@ -31,10 +31,12 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { getCountries } from "@/lib/countries";
-import {
-  generateConfirmationLink,
-  sendEventConfirmationEmail,
-} from "@/lib/email-service";
+import { 
+  sendConfirmationEmails, 
+  sendNewsletterNotification as sendNewsletterEmail, 
+  preparePhotographerEmails 
+} from "@/lib/email-client";
+import { EventDetail } from "@/components/event-detail";
 import { db } from "@/lib/firebase";
 import type { Event, EventType, Photographer } from "@/lib/types";
 import { uploadFile } from "@/lib/upload-utils";
@@ -61,6 +63,9 @@ import {
   Tag,
   Users,
   Trash2,
+  Smartphone,
+  Tablet,
+  Monitor,
 } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -113,6 +118,13 @@ export function EnhancedEventForm({ eventId }: EnhancedEventFormProps) {
   const [selectedDate, setSelectedDate] = useState<Date>();
   const [selectedEndDate, setSelectedEndDate] = useState<Date>();
   const [tagInput, setTagInput] = useState("");
+  
+  // Email sending options
+  const [sendConfirmationEmail, setSendConfirmationEmail] = useState(true);
+  const [sendNewsletterNotification, setSendNewsletterNotification] = useState(true);
+  
+  // Preview viewport options
+  const [previewViewport, setPreviewViewport] = useState<'mobile' | 'tablet' | 'desktop'>('desktop');
 
   // Fetch event data if editing
   useEffect(() => {
@@ -288,6 +300,60 @@ export function EnhancedEventForm({ eventId }: EnhancedEventFormProps) {
     setShowPreview(true);
   };
 
+  // Get viewport styles for preview
+  const getViewportStyles = () => {
+    switch (previewViewport) {
+      case 'mobile':
+        return {
+          width: '375px',
+          height: '100%',
+          margin: '0 auto',
+          border: '1px solid #e5e7eb',
+          borderRadius: '0.5rem'
+        };
+      case 'tablet':
+        return {
+          width: '768px',
+          height: '100%',
+          margin: '0 auto',
+          border: '1px solid #e5e7eb',
+          borderRadius: '0.5rem'
+        };
+      case 'desktop':
+        return {
+          width: '100%',
+          height: '100%'
+        };
+      default:
+        return {
+          width: '100%',
+          height: '100%'
+        };
+    }
+  };
+
+  // Convert form data to Event object for preview
+  const createPreviewEvent = (): Event => {
+    return {
+      id: eventId || "preview",
+      title: formData.title || "",
+      description: formData.description || "",
+      date: formData.date || "",
+      endDate: formData.endDate || "",
+      time: formData.time || "",
+      location: formData.location || "",
+      country: formData.country || "",
+      eventTypeId: formData.eventTypeId || "",
+      tags: formData.tags || [],
+      noteToPhotographer: formData.noteToPhotographer || "",
+      url: formData.url || "",
+      photographerIds: formData.photographerIds || [],
+      imageUrl: imagePreview || formData.imageUrl || "",
+      bestOfImageUrls: bestOfImagePreviews.length > 0 ? bestOfImagePreviews : (formData.bestOfImageUrls || []),
+      geoSnapshotEmbed: formData.geoSnapshotEmbed || ""
+    };
+  };
+
   const handleRemoveBestOfImage = (index: number) => {
     setBestOfImageFiles((prev) => prev.filter((_, i) => i !== index));
     setBestOfImagePreviews((prev) => prev.filter((_, i) => i !== index));
@@ -332,6 +398,7 @@ export function EnhancedEventForm({ eventId }: EnhancedEventFormProps) {
       };
 
       let eventDocId = eventId;
+      let photographerEmails: string[] = [];
 
       if (isEditing) {
         // Update existing event
@@ -343,52 +410,50 @@ export function EnhancedEventForm({ eventId }: EnhancedEventFormProps) {
           createdAt: serverTimestamp(),
         });
         eventDocId = docRef.id;
+      }
 
-        // Send newsletter notifications for new events
+      // Send confirmation emails to photographers if enabled
+      if (sendConfirmationEmail && formData.photographerIds && formData.photographerIds.length > 0) {
         try {
-          await fetch('/api/newsletter/notify', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              eventTitle: formData.title || '',
-              eventDate: formData.date || '',
-              eventLocation: formData.location || '',
-              eventDescription: formData.description || '',
-              eventId: eventDocId,
-              eventImage: imageUrl || ''
-            }),
+          const photographerEmailData = preparePhotographerEmails(formData.photographerIds, photographers);
+          
+          // Track photographer emails for duplicate prevention
+          photographerEmails = photographerEmailData.map(p => p.email);
+
+          if (photographerEmailData.length > 0) {
+            await sendConfirmationEmails({
+              photographerEmails: photographerEmailData,
+              eventData: {
+                title: formData.title || "",
+                date: formData.date || "",
+                location: formData.location || "",
+                description: formData.description || "",
+                noteToPhotographer: formData.noteToPhotographer,
+              },
+              eventId: eventDocId!
+            });
+          }
+        } catch (emailError) {
+          console.warn('Failed to send confirmation emails:', emailError);
+          // Don't fail the event creation if email sending fails
+        }
+      }
+
+      // Send newsletter notifications for new events if enabled (only for new events)
+      if (!isEditing && sendNewsletterNotification) {
+        try {
+          await sendNewsletterEmail({
+            eventTitle: formData.title || '',
+            eventDate: formData.date || '',
+            eventLocation: formData.location || '',
+            eventDescription: formData.description || '',
+            eventId: eventDocId || "",
+            eventImage: imageUrl || '',
+            excludeEmails: photographerEmails // Pass photographer emails to exclude
           });
         } catch (notificationError) {
           console.warn('Failed to send newsletter notifications:', notificationError);
           // Don't fail the event creation if newsletter notification fails
-        }
-      }
-
-      // Send confirmation emails to photographers
-      if (formData.photographerIds && formData.photographerIds.length > 0) {
-        for (const photographerId of formData.photographerIds) {
-          const photographer = photographers.find(
-            (p) => p.id === photographerId
-          );
-          if (photographer) {
-            const confirmationLink = generateConfirmationLink(
-              eventDocId!,
-              photographerId
-            );
-
-            await sendEventConfirmationEmail({
-              to_email: photographer.email,
-              to_name: photographer.name,
-              event_title: formData.title || "",
-              event_date: formData.date || "",
-              event_location: formData.location || "",
-              event_description: formData.description || "",
-              confirmation_link: confirmationLink,
-              note_to_photographer: formData.noteToPhotographer,
-            });
-          }
         }
       }
 
@@ -880,6 +945,41 @@ export function EnhancedEventForm({ eventId }: EnhancedEventFormProps) {
 
           <Separator className="my-8" />
 
+          {/* Email Options */}
+          <div className="space-y-4 mb-6">
+            <h3 className="text-lg font-semibold flex items-center gap-2">
+              📧 Email Options
+            </h3>
+            
+            <div className="space-y-3 bg-gray-50 p-4 rounded-lg">
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="sendConfirmationEmail"
+                  checked={sendConfirmationEmail}
+                  onCheckedChange={(checked) => setSendConfirmationEmail(checked as boolean)}
+                />
+                <Label htmlFor="sendConfirmationEmail" className="font-medium">
+                  Send confirmation email to assigned photographers
+                </Label>
+              </div>
+              
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="sendNewsletterNotification"
+                  checked={sendNewsletterNotification}
+                  onCheckedChange={(checked) => setSendNewsletterNotification(checked as boolean)}
+                />
+                <Label htmlFor="sendNewsletterNotification" className="font-medium">
+                  Send new event notification to newsletter subscribers
+                </Label>
+              </div>
+              
+              <p className="text-sm text-gray-600">
+                💡 Note: If a photographer is also a newsletter subscriber, they will only receive the confirmation email.
+              </p>
+            </div>
+          </div>
+
           <div className="flex justify-end space-x-4">
             <Button
               type="button"
@@ -900,144 +1000,75 @@ export function EnhancedEventForm({ eventId }: EnhancedEventFormProps) {
 
       {/* Preview Dialog */}
       <Dialog open={showPreview} onOpenChange={setShowPreview}>
-        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Event Preview</DialogTitle>
-            <DialogDescription>
-              Review your event details before saving
-            </DialogDescription>
-          </DialogHeader>
-
-          <div className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <DialogContent className="max-w-7xl max-h-[90vh] overflow-hidden p-0">
+          <DialogHeader className="p-6 pb-0">
+            <div className="flex items-center justify-between">
               <div>
-                <h4 className="font-semibold mb-2">Event Images</h4>
-                <div className="space-y-4">
-                  {imagePreview && (
-                    <div>
-                      <p className="text-sm text-gray-600 mb-1">Event Image</p>
-                      <Image
-                        src={imagePreview}
-                        alt="Event preview"
-                        width={300}
-                        height={200}
-                        className="rounded-md object-cover"
-                      />
-                    </div>
-                  )}
-                  {bestOfImagePreviews.length > 0 &&
-                    bestOfImagePreviews.map((preview, index) => (
-                      <div key={index}>
-                        <p className="text-sm text-gray-600 mb-1">
-                          Best of Image {index + 1}
-                        </p>
-                        <Image
-                          src={preview}
-                          alt={`Best of preview ${index + 1}`}
-                          width={300}
-                          height={200}
-                          className="rounded-md object-cover"
-                        />
-                      </div>
-                    ))}
-                </div>
+                <DialogTitle>Event Preview</DialogTitle>
+                <DialogDescription>
+                  Review your event details before saving
+                </DialogDescription>
               </div>
-
-              <div className="space-y-4">
-                <div>
-                  <h4 className="font-semibold">Title</h4>
-                  <p>{formData.title}</p>
-                </div>
-
-                <div>
-                  <h4 className="font-semibold">Event Type</h4>
-                  <p>
-                    {
-                      eventTypes.find((et) => et.id === formData.eventTypeId)
-                        ?.name
-                    }
-                  </p>
-                </div>
-
-                <div>
-                  <h4 className="font-semibold">Date & Time</h4>
-                  <p>
-                    {formData.date} {formData.time && `at ${formData.time}`}
-                  </p>
-                </div>
-
-                <div>
-                  <h4 className="font-semibold">Location</h4>
-                  <p>{formData.location}</p>
-                  <p className="text-sm text-gray-600">
-                    {countries.find((c) => c.code === formData.country)?.name}
-                  </p>
-                </div>
-
-                {formData.tags && formData.tags.length > 0 && (
-                  <div>
-                    <h4 className="font-semibold">Tags</h4>
-                    <div className="flex flex-wrap gap-1">
-                      {formData.tags.map((tag) => (
-                        <Badge key={tag} variant="secondary">
-                          {tag}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                <div>
-                  <h4 className="font-semibold">Assigned Photographers</h4>
-                  <ul className="list-disc list-inside">
-                    {formData.photographerIds?.map((id) => {
-                      const photographer = photographers.find(
-                        (p) => p.id === id
-                      );
-                      return <li key={id}>{photographer?.name}</li>;
-                    })}
-                  </ul>
-                </div>
-
-                {formData.noteToPhotographer && (
-                  <div>
-                    <h4 className="font-semibold">Note to Photographer</h4>
-                    <p className="text-sm">{formData.noteToPhotographer}</p>
-                  </div>
-                )}
+              
+              {/* Viewport Controls */}
+              <div className="flex items-center gap-2 bg-gray-100 rounded-lg p-1">
+                <Button
+                  variant={previewViewport === 'mobile' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => setPreviewViewport('mobile')}
+                  className="h-8 px-3"
+                >
+                  <Smartphone className="h-4 w-4 mr-1" />
+                  Mobile
+                </Button>
+                <Button
+                  variant={previewViewport === 'tablet' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => setPreviewViewport('tablet')}
+                  className="h-8 px-3"
+                >
+                  <Tablet className="h-4 w-4 mr-1" />
+                  Tablet
+                </Button>
+                <Button
+                  variant={previewViewport === 'desktop' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => setPreviewViewport('desktop')}
+                  className="h-8 px-3"
+                >
+                  <Monitor className="h-4 w-4 mr-1" />
+                  Desktop
+                </Button>
               </div>
             </div>
+          </DialogHeader>
 
-            {formData.description && (
-              <div>
-                <h4 className="font-semibold mb-2">Description</h4>
-                <div
-                  className="prose max-w-none"
-                  dangerouslySetInnerHTML={{ __html: formData.description }}
-                />
-              </div>
-            )}
-
-            {formData.geoSnapshotEmbed && (
-              <div>
-                <h4 className="font-semibold mb-2">Geo Snapshot Preview</h4>
-                <div
-                  className="w-full"
-                  dangerouslySetInnerHTML={{
-                    __html: formData.geoSnapshotEmbed,
-                  }}
-                />
-              </div>
-            )}
+          {/* Preview Content with EventDetail component */}
+          <div className="overflow-y-auto max-h-[calc(90vh-140px)] bg-gray-50">
+            <div style={getViewportStyles()}>
+              <EventDetail event={createPreviewEvent()} />
+            </div>
           </div>
 
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowPreview(false)}>
-              Edit More
-            </Button>
-            <Button onClick={handleSubmit} disabled={saving}>
-              {saving ? "Saving..." : "Confirm & Save Event"}
-            </Button>
+          <DialogFooter className="p-6 pt-0 border-t bg-white">
+            <div className="flex items-center justify-between w-full">
+              <div className="text-sm text-gray-500">
+                Current viewport: <span className="font-medium capitalize">{previewViewport}</span>
+                {previewViewport !== 'desktop' && (
+                  <span className="ml-2">
+                    ({previewViewport === 'mobile' ? '375px' : '768px'} width)
+                  </span>
+                )}
+              </div>
+              <div className="flex gap-2">
+                <Button variant="outline" onClick={() => setShowPreview(false)}>
+                  Edit More
+                </Button>
+                <Button onClick={handleSubmit} disabled={saving}>
+                  {saving ? "Saving..." : "Confirm & Save Event"}
+                </Button>
+              </div>
+            </div>
           </DialogFooter>
         </DialogContent>
       </Dialog>
